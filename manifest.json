@@ -1,14 +1,23 @@
 {
-  "name": "EstéticaGYR — Seu Perfil Ideal",
+  "name": "EstéticaGYR — Perfil Ideal",
   "short_name": "EstéticaGYR",
-  "description": "Amiga virtual de beleza, autocuidado, estilo e rotina personalizada.",
-  "start_url": "./",
+  "description": "Sua amiga virtual para autocuidado, estilo, rotina e evolução pessoal.",
+  "id": "/Esteticagyr/",
+  "start_url": "./?source=pwa",
   "scope": "./",
   "display": "standalone",
-  "background_color": "#fff8fb",
-  "theme_color": "#ff5fa2",
+  "display_override": ["window-controls-overlay", "standalone", "minimal-ui"],
+  "background_color": "#fff7fb",
+  "theme_color": "#ff4f9a",
   "orientation": "portrait-primary",
+  "lang": "pt-BR",
+  "categories": ["lifestyle", "beauty", "productivity"],
   "icons": [
     {"src":"icon.svg","sizes":"any","type":"image/svg+xml","purpose":"any maskable"}
+  ],
+  "shortcuts": [
+    {"name":"Falar com Gigi","short_name":"Gigi","url":"./?open=gigi","icons":[{"src":"icon.svg","sizes":"any","type":"image/svg+xml"}]},
+    {"name":"Rotina de hoje","short_name":"Rotina","url":"./?open=rotina","icons":[{"src":"icon.svg","sizes":"any","type":"image/svg+xml"}]},
+    {"name":"Minha evolução","short_name":"Evolução","url":"./?open=evolucao","icons":[{"src":"icon.svg","sizes":"any","type":"image/svg+xml"}]}
   ]
 }
