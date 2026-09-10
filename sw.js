@@ -1,6 +1,6 @@
 const APP_PREFIX='esteticagyr-';
-const CACHE='esteticagyr-v3-safe-shell';
-const CORE=['./','./index.html','./manifest.json','./manifest.webmanifest','./icon.svg'];
+const CACHE='esteticagyr-v4-png-safe-shell';
+const CORE=['./','./index.html','./manifest.json','./manifest.webmanifest','./icon.svg','./icon-192.png','./icon-512.png','./icon-maskable-512.png'];
 const SENSITIVE_QUERY=/^(token|access_token|refresh_token|auth|session|password|senha|code|key|api_key)$/i;
 const SENSITIVE_PATH=/(\/auth\b|\/login\b|\/logout\b|\/session\b|\/token\b|\/api\b)/i;
 function hasSensitiveHeaders(req){return req.headers.has('authorization')||req.headers.has('cookie')||req.headers.has('range')||req.headers.has('if-range')}
