@@ -1,24 +1,35 @@
-# EstéticaGYR
+# EstéticaGYR V2 🌸
 
-PWA mobile-first para criação de um **Perfil Ideal** personalizado de beleza, autocuidado e estilo, com uma amiga virtual chamada **Gigi**.
+PWA mobile-first para ajudar cada pessoa a construir seu **Perfil Ideal** de autocuidado, estilo e bem-estar sem perseguir padrões externos.
 
 ## O que já existe
-- Onboarding para sensação desejada, prioridades, estilo, tempo e objetivo.
-- Geração do Perfil GYR personalizado.
-- Rotina diária com checklist e progresso.
-- Diário de evolução salvo localmente no aparelho.
-- Amiga virtual Gigi com respostas de autocuidado e limites de segurança.
-- Interface premium rosa, responsiva e mobile-first.
-- PWA com `manifest.json` e Service Worker para funcionamento offline.
-- Dados desta versão armazenados apenas no navegador via `localStorage`.
 
-## Próxima evolução recomendada
-1. Supabase Auth + banco para perfil e histórico sincronizados.
-2. IA real para a Gigi, com contexto do perfil e memória do usuário.
-3. Scanner/diário fotográfico opcional com consentimento e armazenamento privado.
-4. Calendário de rotina, lembretes e notificações push.
-5. Recomendações personalizadas de produtos por orçamento, preferências e alergias informadas.
-6. Modo profissional para esteticistas criarem planos para clientes.
-7. Assinatura Free / GYR Pro.
+- Perfil Ideal personalizado por sensação desejada, prioridades, estilo, tempo e objetivo.
+- Gigi, amiga virtual contextual que usa o perfil salvo no aparelho para responder de forma personalizada.
+- Ritual diário adaptado às prioridades escolhidas.
+- Checklist, sequência de autocuidado e métricas de conclusão.
+- Check-in diário de bem-estar com linha do tempo e média de evolução.
+- Dados locais/offline com `localStorage`.
+- PWA instalável, service worker e atalhos para Gigi, Rotina e Evolução.
+- Estrutura de banco segura em `supabase-schema.sql`, com RLS por usuário, pronta para um projeto Supabase dedicado.
 
-> O app oferece organização de autocuidado e informações gerais. Não realiza diagnóstico médico nem substitui profissionais qualificados.
+## Privacidade
+
+A V2 atualmente guarda perfil, conversas, rotina e check-ins **somente no dispositivo**. Nenhuma foto ou dado pessoal é enviado para servidor.
+
+O arquivo `supabase-schema.sql` foi preparado para a futura versão com login e sincronização em nuvem. Não use o banco de outro produto em produção para isso; crie/conecte um projeto dedicado ao EstéticaGYR.
+
+## Próxima camada
+
+1. Supabase Auth (email/Google).
+2. Sincronização segura dos dados do usuário.
+3. Gigi com modelo de IA via Edge Function autenticada, sem expor chave secreta no navegador.
+4. Fotos privadas de evolução via Storage com RLS.
+5. Push notifications reais e agenda adaptativa.
+6. Plano Free / GYR PRO.
+
+## Publicação
+
+O app é estático e compatível com GitHub Pages. O arquivo principal é `index.html` e o `manifest.json` usa escopo relativo para funcionar dentro do caminho `/Esteticagyr/`.
+
+> O EstéticaGYR oferece organização de autocuidado e estilo. Não realiza diagnóstico médico e não substitui profissionais de saúde qualificados.
