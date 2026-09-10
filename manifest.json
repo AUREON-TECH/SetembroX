@@ -1,0 +1,14 @@
+{
+  "name": "EstéticaGYR — Seu Perfil Ideal",
+  "short_name": "EstéticaGYR",
+  "description": "Amiga virtual de beleza, autocuidado, estilo e rotina personalizada.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#fff8fb",
+  "theme_color": "#ff5fa2",
+  "orientation": "portrait-primary",
+  "icons": [
+    {"src":"icon.svg","sizes":"any","type":"image/svg+xml","purpose":"any maskable"}
+  ]
+}
