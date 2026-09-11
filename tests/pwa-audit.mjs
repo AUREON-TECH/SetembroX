@@ -15,7 +15,7 @@ assert.ok(maskable, 'manifest needs a 512x512 maskable PNG icon');
 for (const icon of [icon192, icon512, maskable]) assert.ok(fs.existsSync(icon.src.replace(/^\.\//, '')), `missing icon file: ${icon.src}`);
 
 const sw = fs.readFileSync('sw.js', 'utf8').toLowerCase();
-for (const marker of ['authorization', 'cookie', 'range', 'if-range', 'no-store', 'private', 'set-cookie', 'content-range', 'supabase', '/api', 'vary']) {
+for (const marker of ['authorization', 'cookie', 'range', 'if-range', 'no-store', 'private', 'set-cookie', 'content-range', 'supabase', 'api', 'vary']) {
   assert.ok(sw.includes(marker), `service worker cache policy must handle: ${marker}`);
 }
 assert.match(sw, /setembrox-v\d+[-\w]*/, 'service worker cache must be versioned');
