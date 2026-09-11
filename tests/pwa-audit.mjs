@@ -23,7 +23,9 @@ assert.match(swLower, /setembrox-v\d+[-\w]*/, 'service worker cache must be vers
 assert.ok(swLower.includes('response.status === 206') || swLower.includes('response.status!==206') || swLower.includes('response.status != 206'), 'service worker must reject partial responses');
 assert.match(sw, /function\s+isPublicShellRequest\s*\(/, 'service worker must explicitly whitelist public shell requests');
 assert.match(sw, /fetch\(request,\s*\{[^}]*cache:\s*['"]no-store['"][^}]*\}/s, 'navigation must use network fetch with no-store');
-assert.doesNotMatch(sw, /if\s*\(isNavigation\)[\s\S]*?cache\.put\(request/s, 'navigation responses must not be written to cache');
+const navigationMatch = sw.match(/if\s*\(isNavigation\)\s*\{([\s\S]*?)\n\s*\}\n\s*\n\s*if\s*\(!isPublicShellRequest/);
+assert.ok(navigationMatch, 'navigation branch must be isolated from shell caching');
+assert.doesNotMatch(navigationMatch[1], /cache\.put\(/, 'navigation responses must not be written to cache');
 
 const html = fs.readFileSync('index.html', 'utf8');
 assert.match(html, /rel=["']manifest["'][^>]*manifest\.webmanifest/i, 'index must link manifest.webmanifest');
