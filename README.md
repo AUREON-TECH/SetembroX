@@ -1,35 +1,31 @@
-# EstéticaGYR V2 🌸
+# SETEMBRO X
 
-PWA mobile-first para ajudar cada pessoa a construir seu **Perfil Ideal** de autocuidado, estilo e bem-estar sem perseguir padrões externos.
+**Sistema de Performance da Captação — AUREON**
 
-## O que já existe
+O SETEMBRO X transforma dados da captação em leitura de performance e ação prática.
 
-- Perfil Ideal personalizado por sensação desejada, prioridades, estilo, tempo e objetivo.
-- Gigi, amiga virtual contextual que usa o perfil salvo no aparelho para responder de forma personalizada.
-- Ritual diário adaptado às prioridades escolhidas.
-- Checklist, sequência de autocuidado e métricas de conclusão.
-- Check-in diário de bem-estar com linha do tempo e média de evolução.
-- Dados locais/offline com `localStorage`.
-- PWA instalável, service worker e atalhos para Gigi, Rotina e Evolução.
-- Estrutura de banco segura em `supabase-schema.sql`, com RLS por usuário, pronta para um projeto Supabase dedicado.
+## Módulos
 
-## Privacidade
+- Dashboard executivo
+- Perfil de Casais e Perfil Ideal do Mês
+- Ranking por casais, vendas, VGV, conversão, Q, MQ e custo
+- Performance Individual
+- Professor X — treinador de performance baseado nos indicadores
+- Projeções: cenário atual, +10% e alta performance +25%
+- Custo de Brinde e eficiência de aquisição
 
-A V2 atualmente guarda perfil, conversas, rotina e check-ins **somente no dispositivo**. Nenhuma foto ou dado pessoal é enviado para servidor.
+## Identidade
 
-O arquivo `supabase-schema.sql` foi preparado para a futura versão com login e sincronização em nuvem. Não use o banco de outro produto em produção para isso; crie/conecte um projeto dedicado ao EstéticaGYR.
+Interface dark premium com azul elétrico, ciano, violeta, magenta, verde de performance e âmbar para custos/atenção.
 
-## Próxima camada
+## PWA
 
-1. Supabase Auth (email/Google).
-2. Sincronização segura dos dados do usuário.
-3. Gigi com modelo de IA via Edge Function autenticada, sem expor chave secreta no navegador.
-4. Fotos privadas de evolução via Storage com RLS.
-5. Push notifications reais e agenda adaptativa.
-6. Plano Free / GYR PRO.
+O projeto contém `manifest.webmanifest` e `sw.js`, podendo ser instalado como aplicativo em navegadores compatíveis.
 
-## Publicação
+## Dados
 
-O app é estático e compatível com GitHub Pages. O arquivo principal é `index.html` e o `manifest.json` usa escopo relativo para funcionar dentro do caminho `/Esteticagyr/`.
+A interface inicial usa dados demonstrativos para validar experiência, cálculos e visualizações. O arquivo `supabase-schema.sql` contém a base de dados proposta para conectar dados reais de profissionais, casais, qualificações, vendas, VGV, metas e brindes.
 
-> O EstéticaGYR oferece organização de autocuidado e estilo. Não realiza diagnóstico médico e não substitui profissionais de saúde qualificados.
+## Histórico anterior
+
+A versão anterior do repositório foi preservada na branch `backup-esteticagyr-2026-09-10`. O `main` passa a representar exclusivamente o SETEMBRO X.
