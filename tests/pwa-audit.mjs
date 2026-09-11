@@ -14,12 +14,16 @@ assert.ok(icon512, 'manifest needs a 512x512 PNG icon');
 assert.ok(maskable, 'manifest needs a 512x512 maskable PNG icon');
 for (const icon of [icon192, icon512, maskable]) assert.ok(fs.existsSync(icon.src.replace(/^\.\//, '')), `missing icon file: ${icon.src}`);
 
-const sw = fs.readFileSync('sw.js', 'utf8').toLowerCase();
+const sw = fs.readFileSync('sw.js', 'utf8');
+const swLower = sw.toLowerCase();
 for (const marker of ['authorization', 'cookie', 'range', 'if-range', 'no-store', 'private', 'set-cookie', 'content-range', 'supabase', 'api', 'vary']) {
-  assert.ok(sw.includes(marker), `service worker cache policy must handle: ${marker}`);
+  assert.ok(swLower.includes(marker), `service worker cache policy must handle: ${marker}`);
 }
-assert.match(sw, /setembrox-v\d+[-\w]*/, 'service worker cache must be versioned');
-assert.ok(sw.includes('response.status === 206') || sw.includes('response.status!==206') || sw.includes('response.status != 206'), 'service worker must reject partial responses');
+assert.match(swLower, /setembrox-v\d+[-\w]*/, 'service worker cache must be versioned');
+assert.ok(swLower.includes('response.status === 206') || swLower.includes('response.status!==206') || swLower.includes('response.status != 206'), 'service worker must reject partial responses');
+assert.match(sw, /function\s+isPublicShellRequest\s*\(/, 'service worker must explicitly whitelist public shell requests');
+assert.match(sw, /fetch\(request,\s*\{[^}]*cache:\s*['"]no-store['"][^}]*\}/s, 'navigation must use network fetch with no-store');
+assert.doesNotMatch(sw, /if\s*\(isNavigation\)[\s\S]*?cache\.put\(request/s, 'navigation responses must not be written to cache');
 
 const html = fs.readFileSync('index.html', 'utf8');
 assert.match(html, /rel=["']manifest["'][^>]*manifest\.webmanifest/i, 'index must link manifest.webmanifest');
