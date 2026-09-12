@@ -22,10 +22,20 @@ Interface dark premium com azul elétrico, ciano, violeta, magenta, verde de per
 
 O projeto contém `manifest.webmanifest` e `sw.js`, podendo ser instalado como aplicativo em navegadores compatíveis.
 
-## Dados
+## Dados oficiais
 
-A interface inicial usa dados demonstrativos para validar experiência, cálculos e visualizações. O arquivo `supabase-schema.sql` contém a base de dados proposta para conectar dados reais de profissionais, casais, qualificações, vendas, VGV, metas e brindes.
+Base atualizada pela planilha oficial `Document.csv` até **11/09/2026**.
+
+- 167 casais
+- 115 Q
+- 51 NQ
+- 22 vendas registradas
+- R$ 2.440.900 em VGV geral
+- R$ 2.348.900 em VGV ativo após cancelamento
+- R$ 38.117,87 em custo de brindes
+
+A carga consolidada também foi atualizada no Supabase do projeto para manter histórico diário e mensal.
 
 ## Histórico anterior
 
-A versão anterior do repositório foi preservada na branch `backup-esteticagyr-2026-09-10`. O `main` passa a representar exclusivamente o SETEMBRO X.
+A versão anterior do repositório foi preservada na branch `backup-esteticagyr-2026-09-10`. O `main` representa exclusivamente o SETEMBRO X.
