@@ -3,6 +3,7 @@ const P=[{"n":"Ricardo","r":"Captador","e":1,"c":21,"s":1,"v":92000,"q":15,"nq":
 const PR={"prof":[["Empresário(a)",45,15.6],["Autônomo(a)",10,10.0],["Engenheiro (a)",7,14.3],["Engenheiro civil(a)",7,0],["Advogado (a)",6,33.3],["Comerciante(a)",6,0]],"age":[["30–39",80,12.5],["40–49",60,20.0],["Até 29",27,11.1],["50–59",25,12.0],["60+",5,0]],"inc":[["R$ 15 mil+",165,13.9],["R$ 10–15 mil",31,16.1],["Até R$ 7 mil",1,0]],"car":[["ONIX",10,10.0],["HB20",9,33.3],["ARGO",6,33.3],["COMPASS",6,0],["T-CROSS",6,0],["TORO",6,0],["COROLLA",5,60.0],["HR-V",5,60.0]]};
 
 const E=12,R=18,M=30;
+const metaCouples=400,metaSales=100,metaVgv=8500000;
 const money=x=>'R$ '+Intl.NumberFormat('pt-BR',{notation:x>=1e6?'compact':'standard',maximumFractionDigits:x>=1e6?2:0}).format(x||0);
 const moneyFull=x=>'R$ '+Intl.NumberFormat('pt-BR',{maximumFractionDigits:0}).format(x||0);
 const pct=x=>(x||0).toFixed(1).replace('.',',')+'%';
@@ -42,7 +43,6 @@ function radar(){
 }
 
 function cinema(){
-  const metaCouples=400,metaSales=100,metaVgv=8500000;
   const couplesPct=Math.min(100,S.couples/metaCouples*100);
   const salesPct=Math.min(100,S.sales/metaSales*100);
   const vgvPct=Math.min(100,S.vgv/metaVgv*100);
@@ -67,6 +67,42 @@ function cinema(){
   enter.onclick=()=>cin.classList.add('hide');
 }
 
+function renderArenaX(){
+  const arena=document.getElementById('arenaX');
+  if(!arena)return;
+
+  const missingCouples=Math.max(0,metaCouples-S.couples);
+  const missingSales=Math.max(0,metaSales-S.sales);
+  const missingVgv=Math.max(0,metaVgv-S.vgv);
+  const week=captainRank().slice(0,3);
+  const chase=couplesRank()[1];
+  const chaseGap=Math.max(0,race.c-chase.c);
+  const raceGap=Math.max(0,22-race.c);
+
+  arena.innerHTML=`
+    <div class="arena-head">
+      <div><span class="arena-kicker">⚡ ARENA X</span><h3>PRESSÃO DA META</h3></div>
+      <span class="arena-live"><i></i> OPERAÇÃO ATIVA</span>
+    </div>
+    <div class="arena-metrics">
+      <div class="arena-metric"><small>FALTAM PARA 400</small><b>${missingCouples}</b><span>casais</span></div>
+      <div class="arena-metric"><small>FALTAM PARA 100</small><b>${missingSales}</b><span>vendas</span></div>
+      <div class="arena-metric"><small>FALTAM PARA R$ 8,5 MI</small><b>${moneyFull(missingVgv)}</b><span>em VGV</span></div>
+    </div>
+    <div class="arena-lower">
+      <div class="arena-battle">
+        <div class="arena-title"><b>BATALHA DA SEMANA</b><span>casais</span></div>
+        ${week.map((p,i)=>`<div class="arena-row"><span class="arena-pos">${i+1}</span><strong>${p.n}</strong><div class="arena-line"><i style="width:${Math.max(12,p.w/Math.max(week[0].w,1)*100)}%"></i></div><b>${p.w}</b></div>`).join('')}
+      </div>
+      <div class="arena-alert">
+        <span class="arena-alert-label">ALERTA DE MOVIMENTO</span>
+        <strong>${raceGap===0?`${race.n} bateu 22!`:`${race.n} está a ${raceGap} casal${raceGap===1?'':'ais'} do Livre do Mês`}</strong>
+        <p>${chase.n} está a ${chaseGap} casal${chaseGap===1?'':'ais'} do Top 1 mensal.</p>
+        <em>Cada casal muda o ranking.</em>
+      </div>
+    </div>`;
+}
+
 function dash(){
   dk.innerHTML=[
     k('Casais',S.couples,'base oficial até 12/09'),
@@ -80,7 +116,7 @@ function dash(){
   ].join('');
 
   const sec=captainRank()[1];
-  cap.innerHTML=`<span class="badge a">CAPITÃO/Ã DA SEMANA • EM DISPUTA</span><div class="big"><b>${cap.n}</b><span class="a">${cap.w} casais</span></div><div class="muted">Semana 07–13/09 • segunda a domingo. Desempate por vendas da semana.</div><div class="prog"><i style="width:${Math.min(100,cap.w/Math.max(cap.w,1)*100)}%"></i></div><small class="muted">Vice: ${sec.n} • ${sec.w} casais.</small>`;
+  renderArenaX();
 
   free.innerHTML=`<span class="badge g">CORRIDA DOS 22 • LIVRE DO MÊS</span><div class="big"><b>${race.n}</b><span class="g">${race.c} / 22</span></div><div class="muted">O primeiro captador a 22 ganha liberdade de horário no mês, conforme alinhamento.</div><div class="prog"><i style="width:${Math.min(100,race.c/22*100)}%"></i></div><small class="muted">Falta ${Math.max(0,22-race.c)} casal.</small>`;
 
