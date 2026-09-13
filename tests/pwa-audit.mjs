@@ -19,7 +19,10 @@ const swLower = sw.toLowerCase();
 for (const marker of ['authorization', 'cookie', 'range', 'if-range', 'no-store', 'private', 'set-cookie', 'content-range', 'supabase', 'api', 'vary']) {
   assert.ok(swLower.includes(marker), `service worker cache policy must handle: ${marker}`);
 }
-assert.match(swLower, /setembrox-v\d+[-\w]*/, 'service worker cache must be versioned');
+const cacheMatch = sw.match(/const\s+CACHE\s*=\s*['"]([^'"]+)['"]/);
+assert.ok(cacheMatch, 'service worker cache must be versioned');
+const cacheVersion = cacheMatch[1];
+assert.match(cacheVersion, /setembrox-v\d+[-\w]*/, 'service worker cache must be versioned');
 assert.ok(swLower.includes('response.status === 206') || swLower.includes('response.status!==206') || swLower.includes('response.status != 206'), 'service worker must reject partial responses');
 assert.match(sw, /function\s+isPublicShellRequest\s*\(/, 'service worker must explicitly whitelist public shell requests');
 assert.match(sw, /fetch\(request,\s*\{[^}]*cache:\s*['"]no-store['"][^}]*\}/s, 'navigation must use network fetch with no-store');
@@ -33,6 +36,13 @@ assert.match(html, /rel=["']manifest["'][^>]*manifest\.webmanifest/i, 'index mus
 assert.match(html, /name=["']viewport["']/i, 'index needs viewport meta');
 assert.match(html, /theme-color/i, 'index needs theme-color meta');
 assert.match(html + '\n' + appJs, /serviceWorker\.register\([^)]*sw\.js/s, 'app must register the service worker');
+const swVersionMatch = appJs.match(/const\s+swVersion\s*=\s*['"]([^'"]+)['"]/);
+assert.ok(swVersionMatch, 'app must declare the registered service worker version');
+assert.equal(swVersionMatch[1], cacheVersion, 'service worker registration version must match the active cache version');
+assert.match(appJs, /serviceWorker\.register\(`\.\/sw\.js\?v=\$\{swVersion\}`/, 'service worker registration must use the declared version in its URL');
+assert.match(appJs, /updateViaCache\s*:\s*['"]none['"]/i, 'service worker registration must bypass HTTP cache for updates');
+assert.match(appJs, /location\.protocol\s*===\s*['"]https:['"]|localhost|127\.0\.0\.1/i, 'service worker registration must be limited to HTTPS or localhost');
+assert.match(appJs, /registration\.update\s*\(/, 'service worker registration should explicitly check for updates');
 
 assert.match(html, /entry-v2\.css/i, 'index must load the refined entry visual layer');
 assert.ok(fs.existsSync('entry-v2.css'), 'entry-v2.css must exist');
