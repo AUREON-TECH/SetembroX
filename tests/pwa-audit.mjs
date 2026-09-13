@@ -28,9 +28,18 @@ assert.ok(navigationMatch, 'navigation branch must be isolated from shell cachin
 assert.doesNotMatch(navigationMatch[1], /cache\.put\(/, 'navigation responses must not be written to cache');
 
 const html = fs.readFileSync('index.html', 'utf8');
+const appJs = fs.readFileSync('app.js', 'utf8');
 assert.match(html, /rel=["']manifest["'][^>]*manifest\.webmanifest/i, 'index must link manifest.webmanifest');
 assert.match(html, /name=["']viewport["']/i, 'index needs viewport meta');
 assert.match(html, /theme-color/i, 'index needs theme-color meta');
-assert.match(html, /serviceWorker\.register\([^)]*sw\.js/s, 'index must register the service worker');
+assert.match(html + '\n' + appJs, /serviceWorker\.register\([^)]*sw\.js/s, 'app must register the service worker');
+
+assert.match(html, /entry-v2\.css/i, 'index must load the refined entry visual layer');
+assert.ok(fs.existsSync('entry-v2.css'), 'entry-v2.css must exist');
+assert.match(html, /META OFICIAL DO MÊS/i, 'entry must show the official monthly target section');
+assert.match(html, />400<\/strong>\s*<b>CASAIS<\/b>/i, 'entry must show the 400-couple target');
+assert.match(html, />100<\/strong>\s*<b>VENDAS<\/b>/i, 'entry must show the 100-sales target');
+assert.match(html, /R\$ 8,5 MI/i, 'entry must show the R$ 8.5M VGV target');
+assert.match(html, /heroLeaderName/i, 'entry must keep the weekly/top-couples leader highlight');
 
 console.log('SETEMBRO X PWA audit passed');
