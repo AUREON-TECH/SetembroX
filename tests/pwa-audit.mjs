@@ -36,7 +36,10 @@ assert.match(html, /rel=["']manifest["'][^>]*manifest\.webmanifest/i, 'index mus
 assert.match(html, /name=["']viewport["']/i, 'index needs viewport meta');
 assert.match(html, /theme-color/i, 'index needs theme-color meta');
 assert.match(html + '\n' + appJs, /serviceWorker\.register\([^)]*sw\.js/s, 'app must register the service worker');
-assert.ok(appJs.includes(`./sw.js?v=${cacheVersion}`), 'service worker registration must match the active cache version');
+const swVersionMatch = appJs.match(/const\s+swVersion\s*=\s*['"]([^'"]+)['"]/);
+assert.ok(swVersionMatch, 'app must declare the registered service worker version');
+assert.equal(swVersionMatch[1], cacheVersion, 'service worker registration version must match the active cache version');
+assert.match(appJs, /serviceWorker\.register\(`\.\/sw\.js\?v=\$\{swVersion\}`/, 'service worker registration must use the declared version in its URL');
 assert.match(appJs, /updateViaCache\s*:\s*['"]none['"]/i, 'service worker registration must bypass HTTP cache for updates');
 assert.match(appJs, /location\.protocol\s*===\s*['"]https:['"]|localhost|127\.0\.0\.1/i, 'service worker registration must be limited to HTTPS or localhost');
 assert.match(appJs, /registration\.update\s*\(/, 'service worker registration should explicitly check for updates');
