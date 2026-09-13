@@ -1,22 +1,193 @@
 const S={couples:197,sales:28,vgv:3785100,q:140,nq:56,mq:0,gift:45185.10,gifts:569,activeVgv:3693100,canceled:1};
 const P=[{"n":"Ricardo","r":"Captador","e":1,"c":21,"s":1,"v":92000,"q":15,"nq":6,"g":3611.57,"d":6,"w":13,"ws":0,"wv":0,"p":53},{"n":"Renan","r":"Captador","e":1,"c":16,"s":4,"v":323600,"q":12,"nq":4,"g":3425.61,"d":7,"w":10,"ws":2,"wv":154400,"p":40},{"n":"Paulo","r":"Captador","e":1,"c":13,"s":1,"v":92000,"q":8,"nq":5,"g":2787.68,"d":9,"w":7,"ws":0,"wv":0,"p":33},{"n":"Manara","r":"Captador","e":1,"c":13,"s":1,"v":156000,"q":10,"nq":3,"g":2823.69,"d":8,"w":7,"ws":0,"wv":0,"p":33},{"n":"André","r":"Captador","e":1,"c":13,"s":1,"v":77200,"q":7,"nq":6,"g":2955.66,"d":5,"w":8,"ws":1,"wv":77200,"p":33},{"n":"Otávio","r":"Captador","e":1,"c":12,"s":2,"v":154400,"q":9,"nq":2,"g":2855.66,"d":6,"w":9,"ws":2,"wv":154400,"p":30},{"n":"Márcio","r":"Captador","e":1,"c":12,"s":1,"v":98000,"q":7,"nq":5,"g":2733.74,"d":7,"w":5,"ws":1,"wv":98000,"p":30},{"n":"Pedro","r":"Captador","e":1,"c":11,"s":3,"v":354000,"q":10,"nq":1,"g":3059.65,"d":5,"w":4,"ws":0,"wv":0,"p":28},{"n":"Clacion","r":"Captador","e":1,"c":11,"s":3,"v":275900,"q":7,"nq":4,"g":2785.71,"d":8,"w":5,"ws":1,"wv":92000,"p":28},{"n":"Larissa","r":"Captador","e":1,"c":10,"s":2,"v":1014600,"q":6,"nq":4,"g":1841.87,"d":5,"w":5,"ws":2,"wv":1014600,"p":25},{"n":"Ana Caroline","r":"Captador","e":1,"c":10,"s":2,"v":156200,"q":10,"nq":0,"g":2599.7,"d":6,"w":8,"ws":2,"wv":156200,"p":25},{"n":"Jéssica","r":"Captador","e":1,"c":9,"s":3,"v":265000,"q":5,"nq":4,"g":2283.74,"d":6,"w":5,"ws":0,"wv":0,"p":23},{"n":"Matheus Esley","r":"Captador","e":1,"c":8,"s":1,"v":92000,"q":6,"nq":2,"g":2003.79,"d":5,"w":4,"ws":1,"wv":92000,"p":20},{"n":"Tainá","r":"Captador","e":1,"c":8,"s":0,"v":0,"q":6,"nq":2,"g":1763.79,"d":5,"w":3,"ws":0,"wv":0,"p":20},{"n":"Josyene","r":"Captador","e":1,"c":6,"s":2,"v":171000,"q":4,"nq":2,"g":930.0,"d":5,"w":3,"ws":1,"wv":92000,"p":15},{"n":"Suene","r":"Captador","e":1,"c":6,"s":0,"v":0,"q":5,"nq":1,"g":1931.77,"d":6,"w":2,"ws":0,"wv":0,"p":15},{"n":"Cássio","r":"Captador","e":1,"c":5,"s":0,"v":0,"q":4,"nq":1,"g":1347.88,"d":2,"w":0,"ws":0,"wv":0,"p":13},{"n":"Weena","r":"Captador","e":1,"c":3,"s":1,"v":463200,"q":2,"nq":1,"g":671.92,"d":3,"w":2,"ws":1,"wv":463200,"p":8},{"n":"Adriano","r":"Captador","e":1,"c":3,"s":0,"v":0,"q":1,"nq":2,"g":503.94,"d":3,"w":2,"ws":0,"wv":0,"p":8},{"n":"Letícia","r":"Captador","e":1,"c":3,"s":0,"v":0,"q":3,"nq":0,"g":839.9,"d":3,"w":1,"ws":0,"wv":0,"p":8},{"n":"Barbara","r":"Captador","e":1,"c":2,"s":0,"v":0,"q":1,"nq":1,"g":671.92,"d":2,"w":2,"ws":0,"wv":0,"p":5},{"n":"Felipe","r":"Sub-líder","e":0,"c":1,"s":0,"v":0,"q":1,"nq":0,"g":503.94,"d":1,"w":1,"ws":0,"wv":0,"p":3},{"n":"Matheus Domingos","r":"Captador","e":1,"c":1,"s":0,"v":0,"q":1,"nq":0,"g":251.97,"d":1,"w":1,"ws":0,"wv":0,"p":3}];
 const PR={"prof":[["Empresário(a)",45,15.6],["Autônomo(a)",10,10.0],["Engenheiro (a)",7,14.3],["Engenheiro civil(a)",7,0],["Advogado (a)",6,33.3],["Comerciante(a)",6,0]],"age":[["30–39",80,12.5],["40–49",60,20.0],["Até 29",27,11.1],["50–59",25,12.0],["60+",5,0]],"inc":[["R$ 15 mil+",165,13.9],["R$ 10–15 mil",31,16.1],["Até R$ 7 mil",1,0]],"car":[["ONIX",10,10.0],["HB20",9,33.3],["ARGO",6,33.3],["COMPASS",6,0],["T-CROSS",6,0],["TORO",6,0],["COROLLA",5,60.0],["HR-V",5,60.0]]};
+
 const E=12,R=18,M=30;
-const money=x=>'R$ '+Intl.NumberFormat('pt-BR',{notation:x>=1e6?'compact':'standard',maximumFractionDigits:x>=1e6?2:0}).format(x||0),moneyFull=x=>'R$ '+Intl.NumberFormat('pt-BR',{maximumFractionDigits:0}).format(x||0),pct=x=>(x||0).toFixed(1).replace('.',',')+'%',cv=p=>p.c?p.s/p.c*100:0,co=p=>p.c?p.g/p.c:0,el=P.filter(p=>p.e);
-const captainRank=()=>[...el].sort((a,b)=>b.w-a.w||b.ws-a.ws||b.wv-a.wv),couplesRank=()=>[...el].sort((a,b)=>b.c-a.c||b.s-a.s),vgvRank=()=>[...el].sort((a,b)=>b.v-a.v||b.s-a.s),cap=captainRank()[0],race=couplesRank()[0],team=Math.round(S.couples/E*M);
-const $=id=>document.getElementById(id),k=(l,v,s,t='c')=>`<div class="card kpi"><small>${l}</small><b class="${t}">${v}</b><span class="muted">${s}</span></div>`,ins=(t,x)=>`<div class="in"><strong>${t}</strong><span class="muted">${x}</span></div>`;
-function bars(id,a,fmt=(v,x)=>v){const e=$(id),mx=Math.max(...a.map(x=>x[1]),1);e.innerHTML=a.map(([n,v,x])=>`<div class="br"><label>${n}</label><div class="bar"><i style="width:${v/mx*100}%"></i></div><b>${fmt(v,x)}</b></div>`).join('')}
-function fightRows(list,metric,format){const leader=metric(list[0]);return list.slice(0,5).map((p,i)=>{const value=metric(p),gap=Math.max(0,leader-value),gapText=i===0?'LÍDER':format==='money'?`${moneyFull(gap)} do líder`:`${gap} do líder`,score=format==='money'?moneyFull(value):`${value} casais`,sub=format==='week'?`${p.ws} venda${p.ws===1?'':'s'} na semana`:`${p.s} venda${p.s===1?'':'s'} no mês`;return `<div class="fight ${i===0?'lead':''}"><div class="place">${i===0?'★':i+1}</div><div class="who"><b>${p.n}</b><small>${sub}</small></div><div class="score">${score}<span class="gap">${gapText}</span></div></div>`}).join('')}
-function radar(){$('radarCaptain').innerHTML=fightRows(captainRank(),p=>p.w,'week');$('radarVgv').innerHTML=fightRows(vgvRank(),p=>p.v,'money');$('radarCouples').innerHTML=fightRows(couplesRank(),p=>p.c,'couples')}
-function cinema(){$('iCap').textContent=`${cap.n} • ${cap.w}`;$('i22').textContent=`${race.n} • ${race.c}/22`;$('iProj').textContent=team+' casais';$('missionText').innerHTML=`<b>${S.couples} casais</b>, <b>${S.sales} vendas</b> e <b>${money(S.vgv)}</b> em VGV. ${race.n} está a <b>${22-race.c} casal</b> do Livre do Mês.`;$('enter').onclick=()=>$('cin').classList.add('hide')}
-function dash(){$('dk').innerHTML=[k('Casais',S.couples,'base oficial até 12/09'),k('Vendas',S.sales,pct(S.sales/S.couples*100)+' conversão','g'),k('VGV',money(S.vgv),money(S.vgv/S.sales)+' ticket','v'),k('Q',S.q,pct(S.q/S.couples*100)+' qualificação'),k('NQ',S.nq,'não qualificados','a'),k('Cancelada',S.canceled,moneyFull(S.vgv-S.activeVgv)+' fora do VGV ativo','r'),k('Brindes',S.gifts,moneyFull(S.gift)+' investidos','v'),k('Custo/casal',moneyFull(S.gift/S.couples),'brindes ÷ casais','g')].join('');const sec=captainRank()[1];$('cap').innerHTML=`<span class="badge a">CAPITÃO/Ã DA SEMANA • EM DISPUTA</span><div class="big"><b>${cap.n}</b><span class="a">${cap.w} casais</span></div><div class="muted">Semana 07–13/09 • segunda a domingo. Desempate por vendas da semana.</div><div class="prog"><i style="width:100%"></i></div><small class="muted">Vice: ${sec.n} • ${sec.w} casais.</small>`;$('free').innerHTML=`<span class="badge g">CORRIDA DOS 22 • LIVRE DO MÊS</span><div class="big"><b>${race.n}</b><span class="g">${race.c} / 22</span></div><div class="muted">O primeiro captador a 22 ganha liberdade de horário no mês, conforme alinhamento.</div><div class="prog"><i style="width:${Math.min(100,race.c/22*100)}%"></i></div><small class="muted">Falta ${Math.max(0,22-race.c)} casal.</small>`;bars('top',couplesRank().slice(0,8).map(p=>[p.n,p.c]));$('di').innerHTML=ins('Projeção da equipe',`Ritmo atual: ${team} casais até 30/09.`)+ins('Capitão da semana',`${cap.n} lidera com ${cap.w} casais; ${sec.n} vem com ${sec.w}.`)+ins('Top VGV',`${vgvRank()[0].n} lidera com ${moneyFull(vgvRank()[0].v)}.`)+ins('Corrida dos 22',`${race.n} está com ${race.c} e precisa de ${Math.max(0,22-race.c)}.`)+ins('Custo real',`${moneyFull(S.gift/S.couples)} por casal.`)}
-function mv(p,m){if(m==='conversion')return cv(p);if(m==='cost')return-co(p);return{couples:p.c,weekly:p.w,sales:p.s,vgv:p.v,q:p.q,projection:p.p}[m]||0}
-function rank(){const m=$('rm').value,a=[...P].sort((x,y)=>m==='weekly'?(y.w-x.w||y.ws-x.ws||y.wv-x.wv):mv(y,m)-mv(x,m));$('rb').innerHTML=a.map((p,i)=>`<tr><td class="pos">${['🥇','🥈','🥉'][i]||'#'+(i+1)}</td><td><div class="person"><div class="av">${p.n[0]}</div><div><b>${p.n}</b><span class="mini">${p.r}</span></div></div></td><td><b>${p.c}</b></td><td>${p.w}</td><td>${p.s}</td><td>${moneyFull(p.v)}</td><td>${pct(cv(p))}</td><td>${p.q}</td><td>${moneyFull(co(p))}</td><td><b class="v">${p.p}</b></td><td>${p.e?`<span class="tag">${Math.max(0,22-p.c)} faltam</span>`:'<span class="mini">liderança</span>'}</td></tr>`).join('')}
-function get(id){return P.find(p=>p.n===$(id).value)||P[0]}
-function individual(){const p=get('sel'),avg=p.c/Math.max(p.d,1),n35=Math.max(0,(35-p.c)/R),n50=Math.max(0,(50-p.c)/R);$('ik').innerHTML=[k('Casais',p.c,avg.toFixed(1).replace('.',',')+'/dia'),k('Vendas',p.s,pct(cv(p))+' conversão','g'),k('VGV',moneyFull(p.v),moneyFull(p.v/Math.max(p.c,1))+'/casal','v'),k('Q',p.q,pct(p.q/Math.max(p.c,1)*100)),k('Semana',p.w,`${p.ws} venda(s) na semana`,'a'),k('Projeção',p.p,'casais em 30/09','v'),k('Custo/casal',moneyFull(co(p)),'brindes ÷ casais','a'),k('Dias trabalhados',p.d,'base atual')].join('');$('cc').innerHTML=`Você está com <b>${p.c} casais</b>. ${p.e?`Faltam <b>${Math.max(0,22-p.c)}</b> para 22 e a disputa do Livre do Mês.`:'Como Sub-líder, seu foco é elevar o ritmo da equipe.'} Sua projeção é <b>${p.p} casais</b>. Para 35, precisa de <b>${n35.toFixed(1).replace('.',',')}</b>/dia; para 50, <b>${n50.toFixed(1).replace('.',',')}</b>/dia.`;const strong=cv(p)>=20?'Conversão':p.q/Math.max(p.c,1)>=.7?'Qualificação':'Volume';$('cg').innerHTML=`<div><small>Ponto forte</small><b>${strong}</b></div><div><small>Meta de hoje</small><b>${Math.max(2,Math.ceil(n35))} casais</b></div><div><small>Ritmo p/ 50</small><b>${n50.toFixed(1).replace('.',',')}/dia</b></div><div><small>Semana</small><b>${p.w} casais</b></div>`}
-function profile(){bars('pb',PR.prof,(v,x)=>v+' • '+x+'%');bars('ab',PR.age,(v,x)=>v+' • '+x+'%');bars('ib',PR.inc,(v,x)=>v+' • '+x+'%');bars('cb',PR.car,(v,x)=>v+' • '+x+'%');$('pi').innerHTML=ins('Maior VGV por profissão','Empresário(a): R$ 978,6 mil.')+ins('Faixa etária','40–49: 20,0% de conversão em 60 casais.')+ins('Carros com força','HR-V e Corolla: 60% de conversão; HR-V gerou R$ 653,2 mil em VGV.')+ins('Ponto','196 dos 197 registros vieram do Parque Dreams.')}
-function projection(){const b=team;$('sc').innerHTML=`<div class="card pad sc"><div class="eye">CENÁRIO ATUAL</div><b class="c">${b}</b><span>casais projetados</span></div><div class="card pad sc"><div class="eye">+10% PERFORMANCE</div><b class="v">${Math.round(b*1.1)}</b><span>casais projetados</span></div><div class="card pad sc"><div class="eye">ALTA PERFORMANCE +25%</div><b class="g">${Math.round(b*1.25)}</b><span>casais projetados</span></div>`;const p=get('psel');$('tg').innerHTML=[22,35,50].map(t=>{const miss=Math.max(0,t-p.c),per=miss/R;return`<div class="card pad"><div class="eye">${t} CASAIS</div><b style="font-size:23px">${p.c} / ${t}</b><div class="prog"><i style="width:${Math.min(100,p.c/t*100)}%"></i></div><span class="muted">Faltam ${miss} • ${per.toFixed(1).replace('.',',')}/dia</span></div>`}).join('')}
-function costs(){const c=S.gift/S.couples;$('ck').innerHTML=[k('Total gasto',moneyFull(S.gift),'brindes efetivos','a'),k('Brindes',S.gifts,'quantidade total','v'),k('Médio/brinde',moneyFull(S.gift/S.gifts),'custo unitário'),k('Custo/casal',moneyFull(c),'principal eficiência','g'),k('Custo/venda',moneyFull(S.gift/S.sales),'brindes ÷ vendas','a'),k('Custo/Q',moneyFull(S.gift/S.q),'brindes ÷ Q'),k('VGV/casal',moneyFull(S.vgv/S.couples),'resultado por casal','v'),k('Ticket médio',moneyFull(S.vgv/S.sales),'por venda','g')].join('');const a=[...P].filter(p=>p.c).sort((x,y)=>co(x)-co(y)).slice(0,10);bars('cob',a.map(p=>[p.n,co(p)]),v=>moneyFull(v));$('ci').innerHTML=ins('Melhor eficiência',`${a[0].n}: ${moneyFull(co(a[0]))}/casal.`)+ins('Média da operação',`${moneyFull(c)}/casal.`)+ins('Controle','Valores calculados a partir dos brindes efetivos da base oficial.')}
-const META={dash:['CENTRAL DE MISSÃO','Performance da Captação','Onde estamos, onde podemos chegar e o que fazer hoje.'],rank:['COMPETITIVIDADE','Ranking de Performance','Resultado e projeção no mesmo lugar.'],ind:['PROFESSOR X','Performance Individual','Seu resultado transformado em ação.'],perfil:['INTELIGÊNCIA DE PERFIL','Perfil de Casais','Quem chega, quem compra e qual perfil gera resultado.'],proj:['FUTURO PROVÁVEL','Projeções','Ritmo atual, +10% e alta performance.'],custos:['EFICIÊNCIA FINANCEIRA','Custo de Brinde','Quanto cada casal, Q e venda estão custando.']};
-function go(id){document.querySelectorAll('.sec').forEach(x=>x.classList.toggle('on',x.id===id));document.querySelectorAll('[data-go]').forEach(x=>x.classList.toggle('active',x.dataset.go===id));const m=META[id];$('eye').textContent=m[0];$('pt').textContent=m[1];$('ps').textContent=m[2];scrollTo({top:0,behavior:'smooth'})}
-document.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>go(b.dataset.go));$('rm').onchange=rank;const opts=P.map(p=>`<option>${p.n}</option>`).join('');$('sel').innerHTML=opts;$('psel').innerHTML=opts;$('sel').onchange=individual;$('psel').onchange=projection;cinema();radar();dash();rank();individual();profile();projection();costs();if('serviceWorker'in navigator)navigator.serviceWorker.register('./sw.js').catch(()=>{});
+const money=x=>'R$ '+Intl.NumberFormat('pt-BR',{notation:x>=1e6?'compact':'standard',maximumFractionDigits:x>=1e6?2:0}).format(x||0);
+const moneyFull=x=>'R$ '+Intl.NumberFormat('pt-BR',{maximumFractionDigits:0}).format(x||0);
+const pct=x=>(x||0).toFixed(1).replace('.',',')+'%';
+const cv=p=>p.c?p.s/p.c*100:0;
+const co=p=>p.c?p.g/p.c:0;
+const el=P.filter(p=>p.e);
+const captainRank=()=>[...el].sort((a,b)=>b.w-a.w||b.ws-a.ws||b.wv-a.wv);
+const couplesRank=()=>[...el].sort((a,b)=>b.c-a.c||b.s-a.s);
+const vgvRank=()=>[...el].sort((a,b)=>b.v-a.v||b.s-a.s);
+const cap=captainRank()[0];
+const race=couplesRank()[0];
+const team=Math.round(S.couples/E*M);
+
+const k=(l,v,s,t='c')=>`<div class="card kpi"><small>${l}</small><b class="${t}">${v}</b><span class="muted">${s}</span></div>`;
+const ins=(t,x)=>`<div class="in"><strong>${t}</strong><span class="muted">${x}</span></div>`;
+
+function bars(id,a,fmt=(v,x)=>v){
+  const e=document.getElementById(id),mx=Math.max(...a.map(x=>x[1]),1);
+  e.innerHTML=a.map(([n,v,x])=>`<div class="br"><label>${n}</label><div class="bar"><i style="width:${v/mx*100}%"></i></div><b>${fmt(v,x)}</b></div>`).join('');
+}
+
+function fightRows(list,metric,format){
+  const leader=metric(list[0]);
+  return list.slice(0,5).map((p,i)=>{
+    const value=metric(p),gap=Math.max(0,leader-value);
+    const gapText=i===0?'LÍDER':(format==='money'?`${moneyFull(gap)} do líder`:`${gap} do líder`);
+    const score=format==='money'?moneyFull(value):`${value} casais`;
+    const sub=format==='week'?`${p.ws} venda${p.ws===1?'':'s'} na semana`:`${p.s} venda${p.s===1?'':'s'} no mês`;
+    return `<div class="fight ${i===0?'lead':''}"><div class="place">${i===0?'★':i+1}</div><div class="who"><b>${p.n}</b><small>${sub}</small></div><div class="score">${score}<span class="gap">${gapText}</span></div></div>`;
+  }).join('');
+}
+
+function radar(){
+  radarCaptain.innerHTML=fightRows(captainRank(),p=>p.w,'week');
+  radarVgv.innerHTML=fightRows(vgvRank(),p=>p.v,'money');
+  radarCouples.innerHTML=fightRows(couplesRank(),p=>p.c,'couples');
+}
+
+function cinema(){
+  const metaCouples=400,metaSales=100,metaVgv=8500000;
+  const couplesPct=Math.min(100,S.couples/metaCouples*100);
+  const salesPct=Math.min(100,S.sales/metaSales*100);
+  const vgvPct=Math.min(100,S.vgv/metaVgv*100);
+
+  iCap.textContent=`${cap.n} • ${cap.w}`;
+  i22.textContent=`${race.n} • ${race.c}/22`;
+  iProj.textContent=team+' casais';
+  missionText.innerHTML=`<b>${S.couples} casais</b>, <b>${S.sales} vendas</b> e <b>${money(S.vgv)}</b> em VGV. ${race.n} está a <b>${Math.max(0,22-race.c)} casal</b> do Livre do Mês.`;
+
+  heroLeaderName.textContent=cap.n;
+  heroLeaderSub.textContent=`CAPITÃO DA SEMANA • TOP 1 EM CASAIS • ${race.c}/22`;
+  goalCouplesText.textContent=`${S.couples} / ${metaCouples} • ${pct(couplesPct)}`;
+  goalSalesText.textContent=`${S.sales} / ${metaSales} • ${pct(salesPct)}`;
+  goalVgvText.textContent=`${money(S.vgv)} / R$ 8,5 mi • ${pct(vgvPct)}`;
+
+  requestAnimationFrame(()=>{
+    barCouples.style.width=couplesPct+'%';
+    barSales.style.width=salesPct+'%';
+    barVgv.style.width=vgvPct+'%';
+  });
+
+  enter.onclick=()=>cin.classList.add('hide');
+}
+
+function dash(){
+  dk.innerHTML=[
+    k('Casais',S.couples,'base oficial até 12/09'),
+    k('Vendas',S.sales,pct(S.sales/S.couples*100)+' conversão','g'),
+    k('VGV',money(S.vgv),money(S.vgv/S.sales)+' ticket','v'),
+    k('Q',S.q,pct(S.q/S.couples*100)+' qualificação'),
+    k('NQ',S.nq,'não qualificados','a'),
+    k('Cancelada',S.canceled,moneyFull(S.vgv-S.activeVgv)+' fora do VGV ativo','r'),
+    k('Brindes',S.gifts,moneyFull(S.gift)+' investidos','v'),
+    k('Custo/casal',moneyFull(S.gift/S.couples),'brindes ÷ casais','g')
+  ].join('');
+
+  const sec=captainRank()[1];
+  cap.innerHTML=`<span class="badge a">CAPITÃO/Ã DA SEMANA • EM DISPUTA</span><div class="big"><b>${cap.n}</b><span class="a">${cap.w} casais</span></div><div class="muted">Semana 07–13/09 • segunda a domingo. Desempate por vendas da semana.</div><div class="prog"><i style="width:${Math.min(100,cap.w/Math.max(cap.w,1)*100)}%"></i></div><small class="muted">Vice: ${sec.n} • ${sec.w} casais.</small>`;
+
+  free.innerHTML=`<span class="badge g">CORRIDA DOS 22 • LIVRE DO MÊS</span><div class="big"><b>${race.n}</b><span class="g">${race.c} / 22</span></div><div class="muted">O primeiro captador a 22 ganha liberdade de horário no mês, conforme alinhamento.</div><div class="prog"><i style="width:${Math.min(100,race.c/22*100)}%"></i></div><small class="muted">Falta ${Math.max(0,22-race.c)} casal.</small>`;
+
+  const month=couplesRank();
+  bars('top',month.slice(0,8).map(p=>[p.n,p.c]));
+  di.innerHTML=
+    ins('Projeção da equipe',`Ritmo atual: ${team} casais até 30/09.`)+
+    ins('Capitão da semana',`${cap.n} lidera com ${cap.w} casais; ${sec.n} vem com ${sec.w}.`)+
+    ins('Top VGV',`${vgvRank()[0].n} lidera com ${moneyFull(vgvRank()[0].v)}.`)+
+    ins('Corrida dos 22',`${race.n} está com ${race.c} e precisa de ${Math.max(0,22-race.c)}.`)+
+    ins('Custo real',`${moneyFull(S.gift/S.couples)} por casal.`);
+}
+
+function mv(p,m){
+  if(m==='conversion')return cv(p);
+  if(m==='cost')return-co(p);
+  return {couples:p.c,weekly:p.w,sales:p.s,vgv:p.v,q:p.q,projection:p.p}[m]||0;
+}
+
+function rank(){
+  const m=rm.value;
+  const a=[...P].sort((x,y)=>{
+    if(m==='weekly')return bsafe(y.w-x.w)||bsafe(y.ws-x.ws)||bsafe(y.wv-x.wv);
+    return mv(y,m)-mv(x,m);
+  });
+  rb.innerHTML=a.map((p,i)=>`<tr><td class="pos">${['🥇','🥈','🥉'][i]||'#'+(i+1)}</td><td><div class="person"><div class="av">${p.n[0]}</div><div><b>${p.n}</b><span class="mini">${p.r}</span></div></div></td><td><b>${p.c}</b></td><td>${p.w}</td><td>${p.s}</td><td>${moneyFull(p.v)}</td><td>${pct(cv(p))}</td><td>${p.q}</td><td>${moneyFull(co(p))}</td><td><b class="v">${p.p}</b></td><td>${p.e?`<span class="tag">${Math.max(0,22-p.c)} faltam</span>`:'<span class="mini">liderança</span>'}</td></tr>`).join('');
+}
+function bsafe(x){return Number.isFinite(x)?x:0}
+
+function get(id){return P.find(p=>p.n===document.getElementById(id).value)||P[0]}
+
+function individual(){
+  const p=get('sel'),avg=p.c/Math.max(p.d,1),n35=Math.max(0,(35-p.c)/R),n50=Math.max(0,(50-p.c)/R);
+  ik.innerHTML=[
+    k('Casais',p.c,avg.toFixed(1).replace('.',',')+'/dia'),
+    k('Vendas',p.s,pct(cv(p))+' conversão','g'),
+    k('VGV',moneyFull(p.v),moneyFull(p.v/Math.max(p.c,1))+'/casal','v'),
+    k('Q',p.q,pct(p.q/Math.max(p.c,1)*100)),
+    k('Semana',p.w,`${p.ws} venda(s) na semana`,'a'),
+    k('Projeção',p.p,'casais em 30/09','v'),
+    k('Custo/casal',moneyFull(co(p)),'brindes ÷ casais','a'),
+    k('Dias trabalhados',p.d,'base atual')
+  ].join('');
+  cc.innerHTML=`Você está com <b>${p.c} casais</b>. ${p.e?`Faltam <b>${Math.max(0,22-p.c)}</b> para 22 e a disputa do Livre do Mês.`:'Como Sub-líder, seu foco é elevar o ritmo da equipe.'} Sua projeção é <b>${p.p} casais</b>. Para 35, precisa de <b>${n35.toFixed(1).replace('.',',')}</b>/dia; para 50, <b>${n50.toFixed(1).replace('.',',')}</b>/dia.`;
+  const strong=cv(p)>=20?'Conversão':p.q/Math.max(p.c,1)>=.7?'Qualificação':'Volume';
+  cg.innerHTML=`<div><small>Ponto forte</small><b>${strong}</b></div><div><small>Meta de hoje</small><b>${Math.max(2,Math.ceil(n35))} casais</b></div><div><small>Ritmo p/ 50</small><b>${n50.toFixed(1).replace('.',',')}/dia</b></div><div><small>Semana</small><b>${p.w} casais</b></div>`;
+}
+
+function profile(){
+  bars('pb',PR.prof,(v,x)=>v+' • '+x+'%');
+  bars('ab',PR.age,(v,x)=>v+' • '+x+'%');
+  bars('ib',PR.inc,(v,x)=>v+' • '+x+'%');
+  bars('cb',PR.car,(v,x)=>v+' • '+x+'%');
+  pi.innerHTML=
+    ins('Maior VGV por profissão','Empresário(a): R$ 978,6 mil.')+
+    ins('Faixa etária','40–49: 20,0% de conversão em 60 casais.')+
+    ins('Carros com força','HR-V e Corolla: 60% de conversão; HR-V gerou R$ 653,2 mil em VGV.')+
+    ins('Ponto','196 dos 197 registros vieram do Parque Dreams.');
+}
+
+function projection(){
+  const b=team;
+  sc.innerHTML=`<div class="card pad sc"><div class="eye">CENÁRIO ATUAL</div><b class="c">${b}</b><span>casais projetados</span></div><div class="card pad sc"><div class="eye">+10% PERFORMANCE</div><b class="v">${Math.round(b*1.1)}</b><span>casais projetados</span></div><div class="card pad sc"><div class="eye">ALTA PERFORMANCE +25%</div><b class="g">${Math.round(b*1.25)}</b><span>casais projetados</span></div>`;
+  const p=get('psel');
+  tg.innerHTML=[22,35,50].map(t=>{
+    const miss=Math.max(0,t-p.c),per=miss/R;
+    return`<div class="card pad"><div class="eye">${t} CASAIS</div><b style="font-size:23px">${p.c} / ${t}</b><div class="prog"><i style="width:${Math.min(100,p.c/t*100)}%"></i></div><span class="muted">Faltam ${miss} • ${per.toFixed(1).replace('.',',')}/dia</span></div>`;
+  }).join('');
+}
+
+function costs(){
+  const c=S.gift/S.couples;
+  ck.innerHTML=[
+    k('Total gasto',moneyFull(S.gift),'brindes efetivos','a'),
+    k('Brindes',S.gifts,'quantidade total','v'),
+    k('Médio/brinde',moneyFull(S.gift/S.gifts),'custo unitário'),
+    k('Custo/casal',moneyFull(c),'principal eficiência','g'),
+    k('Custo/venda',moneyFull(S.gift/S.sales),'brindes ÷ vendas','a'),
+    k('Custo/Q',moneyFull(S.gift/S.q),'brindes ÷ Q'),
+    k('VGV/casal',moneyFull(S.vgv/S.couples),'resultado por casal','v'),
+    k('Ticket médio',moneyFull(S.vgv/S.sales),'por venda','g')
+  ].join('');
+  const a=[...P].filter(p=>p.c).sort((x,y)=>co(x)-co(y)).slice(0,10);
+  bars('cob',a.map(p=>[p.n,co(p)]),(v)=>moneyFull(v));
+  ci.innerHTML=ins('Melhor eficiência',`${a[0].n}: ${moneyFull(co(a[0]))}/casal.`)+ins('Média da operação',`${moneyFull(c)}/casal.`)+ins('Controle','Valores calculados a partir dos brindes efetivos da base oficial.');
+}
+
+const META={
+  dash:['CENTRAL DE MISSÃO','Performance da Captação','Onde estamos, onde podemos chegar e o que fazer hoje.'],
+  rank:['COMPETITIVIDADE','Ranking de Performance','Resultado e projeção no mesmo lugar.'],
+  ind:['PROFESSOR X','Performance Individual','Seu resultado transformado em ação.'],
+  perfil:['INTELIGÊNCIA DE PERFIL','Perfil de Casais','Quem chega, quem compra e qual perfil gera resultado.'],
+  proj:['FUTURO PROVÁVEL','Projeções','Ritmo atual, +10% e alta performance.'],
+  custos:['EFICIÊNCIA FINANCEIRA','Custo de Brinde','Quanto cada casal, Q e venda estão custando.']
+};
+
+function go(id){
+  document.querySelectorAll('.sec').forEach(x=>x.classList.toggle('on',x.id===id));
+  document.querySelectorAll('[data-go]').forEach(x=>x.classList.toggle('active',x.dataset.go===id));
+  const m=META[id];eye.textContent=m[0];pt.textContent=m[1];ps.textContent=m[2];
+  scrollTo({top:0,behavior:'smooth'});
+}
+
+document.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>go(b.dataset.go));
+rm.onchange=rank;
+const opts=P.map(p=>`<option>${p.n}</option>`).join('');
+sel.innerHTML=opts;psel.innerHTML=opts;
+sel.onchange=individual;psel.onchange=projection;
+cinema();radar();dash();rank();individual();profile();projection();costs();
+if('serviceWorker'in navigator)navigator.serviceWorker.register('./sw.js').catch(()=>{});
