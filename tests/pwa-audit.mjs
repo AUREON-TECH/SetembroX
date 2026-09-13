@@ -42,4 +42,10 @@ assert.match(html, />100<\/strong>\s*<b>VENDAS<\/b>/i, 'entry must show the 100-
 assert.match(html, /R\$ 8,5 MI/i, 'entry must show the R$ 8.5M VGV target');
 assert.match(html, /heroLeaderName/i, 'entry must keep the weekly/top-couples leader highlight');
 
+assert.match(html, /id=["']arenaX["']/i, 'dashboard must provide a dedicated ARENA X slot');
+assert.match(appJs, /function\s+renderArenaX\s*\(/, 'dashboard must render ARENA X dynamically');
+assert.match(appJs, /203\s*casais|metaCouples\s*-\s*S\.couples/i, 'ARENA X must expose the remaining couple target');
+assert.match(appJs, /72\s*vendas|metaSales\s*-\s*S\.sales/i, 'ARENA X must expose the remaining sales target');
+assert.doesNotMatch(appJs, /\bcap\.innerHTML\s*=/, 'captain data object must not be mistaken for a DOM element');
+
 console.log('SETEMBRO X PWA audit passed');
