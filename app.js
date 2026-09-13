@@ -226,4 +226,11 @@ const opts=P.map(p=>`<option>${p.n}</option>`).join('');
 sel.innerHTML=opts;psel.innerHTML=opts;
 sel.onchange=individual;psel.onchange=projection;
 cinema();radar();dash();rank();individual();profile();projection();costs();
-if('serviceWorker'in navigator)navigator.serviceWorker.register('./sw.js').catch(()=>{});
+
+const swVersion='setembrox-v9-shell-only';
+const canRegisterSw=location.protocol==='https:'||location.hostname==='localhost'||location.hostname==='127.0.0.1';
+if('serviceWorker'in navigator&&canRegisterSw){
+  navigator.serviceWorker.register(`./sw.js?v=${swVersion}`,{updateViaCache:'none'})
+    .then((registration)=>registration.update())
+    .catch(()=>{});
+}
