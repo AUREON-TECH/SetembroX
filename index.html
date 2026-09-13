@@ -10,18 +10,53 @@
 <link rel="stylesheet" href="./styles.css">
 </head>
 <body>
-<div class="cin" id="cin">
-  <div class="mission">
-    <div class="x">X</div>
+<div class="cin future-cin" id="cin">
+  <div class="future-grid" aria-hidden="true"></div>
+  <div class="future-stars" aria-hidden="true"></div>
+  <div class="future-horizon" aria-hidden="true"></div>
+  <div class="mission future-mission">
+    <div class="orbital-core" aria-hidden="true">
+      <span class="orbit orbit-a"></span>
+      <span class="orbit orbit-b"></span>
+      <span class="orbit orbit-c"></span>
+      <div class="x">X</div>
+    </div>
     <div class="over">AUREON • PERFORMANCE INTELLIGENCE</div>
     <h1>SETEMBRO X</h1>
     <h2>A OPERAÇÃO ESTÁ VIVA.</h2>
     <p id="missionText">Carregando sua missão...</p>
-    <div class="mgrid">
+
+    <div class="mission-label"><span></span><b>META OFICIAL DO MÊS</b><span></span></div>
+    <div class="goal-grid">
+      <article class="goal-card cyan-goal">
+        <div class="goal-icon">◎</div>
+        <div class="goal-copy"><strong>400</strong><b>CASAIS</b><small id="goalCouplesText">0 / 400</small></div>
+        <div class="goal-track"><i id="barCouples"></i></div>
+      </article>
+      <article class="goal-card purple-goal">
+        <div class="goal-icon">◇</div>
+        <div class="goal-copy"><strong>100</strong><b>VENDAS</b><small id="goalSalesText">0 / 100</small></div>
+        <div class="goal-track"><i id="barSales"></i></div>
+      </article>
+      <article class="goal-card violet-goal">
+        <div class="goal-icon">↗</div>
+        <div class="goal-copy"><strong>R$ 8,5 MI</strong><b>VGV</b><small id="goalVgvText">R$ 0 / R$ 8,5 mi</small></div>
+        <div class="goal-track"><i id="barVgv"></i></div>
+      </article>
+    </div>
+
+    <div class="hero-leader" id="heroLeader">
+      <div class="leader-crown">♛</div>
+      <div class="leader-copy"><strong id="heroLeaderName">—</strong><span id="heroLeaderSub">CAPITÃO DA SEMANA • TOP 1 EM CASAIS</span></div>
+      <div class="leader-live">AO VIVO</div>
+    </div>
+
+    <div class="mgrid live-grid">
       <div class="mc"><small>Capitão da semana</small><b id="iCap">—</b></div>
       <div class="mc"><small>Corrida dos 22</small><b id="i22">—</b></div>
       <div class="mc"><small>Projeção do mês</small><b id="iProj">—</b></div>
     </div>
+    <div class="future-mantra">FOCO TOTAL NA OPERAÇÃO • CLAREZA • RITMO • RESULTADO</div>
     <button class="enter" id="enter">ENTRAR NA OPERAÇÃO →</button>
   </div>
 </div>
