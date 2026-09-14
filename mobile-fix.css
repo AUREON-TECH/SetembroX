@@ -1,237 +1,60 @@
-/* SETEMBRO X — correção responsiva mobile
-   Mantém a interface desktop intacta e corrige largura, cards e textos em celulares. */
+/* SETEMBRO X — correção responsiva mobile v2 */
+html,body{width:100%;max-width:100%;overflow-x:hidden;-webkit-text-size-adjust:100%}
+.app,main,.sec,.grid,.card,.title,.top{min-width:0}
 
-html,body{
-  width:100%;
-  max-width:100%;
-  overflow-x:hidden;
-  -webkit-text-size-adjust:100%;
-}
+@media (max-width:900px){
+  .app{display:block!important;width:100%!important;max-width:100%!important;min-height:100dvh}
+  aside{display:none!important}
+  main{display:block!important;width:100%!important;max-width:100%!important;min-width:0!important;margin:0!important;padding:18px 14px calc(106px + env(safe-area-inset-bottom))!important}
+  .sec,.sec.on{width:100%!important;max-width:100%!important;min-width:0!important}
+  .top{width:100%!important;margin-bottom:18px}
+  .top>div:first-child{width:100%!important;min-width:0}
+  .top h2{margin-top:5px;font-size:clamp(24px,7vw,32px);line-height:1.08}
+  .muted{max-width:100%;font-size:13px}
 
-/* Proteção contra filhos de grid/flex forçando largura maior que a tela */
-.app,main,.sec,.grid,.card,.title,.top{
-  min-width:0;
-}
-
-@media (max-width:740px), (max-width:1200px) and (pointer:coarse){
-  .app{
-    display:block!important;
+  .kpis,#dk.kpis,#ik.kpis,#ck.kpis{
+    display:grid!important;
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
     width:100%!important;
-    max-width:none!important;
-    min-height:100dvh;
+    max-width:100%!important;
+    min-width:0!important;
+    gap:10px!important;
+    margin:0 0 12px!important;
   }
-
-  aside{
-    display:none!important;
-  }
-
-  main{
-    display:block!important;
+  .kpis>.card,.kpis>.kpi,#dk>.card,#ik>.card,#ck>.card{
     width:100%!important;
-    max-width:none!important;
+    max-width:100%!important;
     min-width:0!important;
     margin:0!important;
-    padding:18px 14px calc(104px + env(safe-area-inset-bottom))!important;
+    grid-column:auto!important;
   }
+  .kpi{min-height:124px!important;padding:15px 14px!important;overflow:hidden!important;border-radius:18px}
+  .kpi small{display:block;max-width:100%;font-size:9px!important;line-height:1.25;white-space:normal;overflow-wrap:anywhere}
+  .kpi b{display:block;max-width:100%;margin:7px 0 4px!important;font-size:clamp(21px,6vw,29px)!important;line-height:1.05!important;letter-spacing:-.035em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .kpi span{display:block;max-width:100%;font-size:12px!important;line-height:1.35;overflow-wrap:anywhere}
 
-  .sec,
-  .sec.on{
-    width:100%!important;
-    max-width:none!important;
-    min-width:0!important;
-  }
+  #ind>.title{display:grid!important;grid-template-columns:1fr!important;gap:10px!important;width:100%!important;align-items:stretch}
+  #ind>.title select,#sel{width:100%!important;min-width:0!important;max-width:100%!important;height:46px;padding:10px 36px 10px 12px;font-size:15px}
 
-  .top{
-    width:100%;
-    margin-bottom:18px;
-  }
+  .split,.command,.radar-grid{grid-template-columns:minmax(0,1fr)!important;width:100%!important}
+  .tri{grid-template-columns:repeat(2,minmax(0,1fr))!important;width:100%!important}
+  .cgrid{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+  .coach{width:100%!important;padding:17px!important}
+  .ccopy{font-size:14px;line-height:1.55}
+  .tw{width:100%;max-width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch}
 
-  .top>div:first-child{
-    min-width:0;
-    width:100%;
-  }
-
-  .top h2{
-    margin-top:5px;
-    font-size:clamp(24px,7vw,32px);
-    line-height:1.08;
-  }
-
-  .muted{
-    max-width:100%;
-    font-size:13px;
-  }
-
-  /* Cabeçalho da tela Individual */
-  #ind>.title{
-    display:grid!important;
-    grid-template-columns:minmax(0,1fr) minmax(150px,44%)!important;
-    gap:12px!important;
-    width:100%;
-    align-items:end;
-  }
-
-  #ind>.title>div{
-    min-width:0;
-  }
-
-  #ind>.title h3{
-    font-size:17px;
-    line-height:1.15;
-  }
-
-  #ind>.title select,
-  #sel{
-    width:100%!important;
-    min-width:0!important;
-    max-width:100%!important;
-    height:46px;
-    padding:10px 36px 10px 12px;
-    font-size:15px;
-  }
-
-  /* KPIs: 2 colunas reais ocupando toda a largura do celular */
-  .kpis,
-  #ik.kpis,
-  #dk.kpis,
-  #ck.kpis{
-    display:grid!important;
-    grid-template-columns:repeat(2,minmax(0,1fr))!important;
-    gap:10px!important;
-    width:100%!important;
-    max-width:none!important;
-    margin-bottom:12px;
-  }
-
-  .kpi{
-    width:100%!important;
-    min-width:0!important;
-    min-height:128px;
-    padding:15px 14px!important;
-    overflow:hidden;
-    border-radius:18px;
-  }
-
-  .kpi small{
-    display:block;
-    max-width:100%;
-    font-size:9px!important;
-    line-height:1.25;
-    white-space:normal;
-    overflow-wrap:anywhere;
-  }
-
-  .kpi b{
-    display:block;
-    max-width:100%;
-    margin:7px 0 4px!important;
-    font-size:clamp(22px,6.3vw,30px)!important;
-    line-height:1.05!important;
-    letter-spacing:-.035em;
-    white-space:nowrap;
-    overflow:hidden;
-    text-overflow:ellipsis;
-  }
-
-  .kpi .mini,
-  .kpi span,
-  .kpi p{
-    max-width:100%;
-    overflow-wrap:anywhere;
-  }
-
-  /* Demais blocos também usam 100% da tela */
-  .split,.command,.radar-grid{
-    grid-template-columns:minmax(0,1fr)!important;
-  }
-
-  .tri{
-    grid-template-columns:repeat(2,minmax(0,1fr))!important;
-  }
-
-  .cgrid{
-    grid-template-columns:repeat(2,minmax(0,1fr))!important;
-  }
-
-  .coach{
-    width:100%;
-    padding:17px!important;
-  }
-
-  .ccopy{
-    font-size:14px;
-    line-height:1.55;
-  }
-
-  .tw{
-    width:100%;
-    max-width:100%;
-    overflow-x:auto;
-    -webkit-overflow-scrolling:touch;
-  }
-
-  /* Barra inferior: ocupa a largura útil e não cobre o conteúdo */
-  .bottom{
-    display:grid!important;
-    grid-template-columns:repeat(6,minmax(0,1fr))!important;
-    left:8px!important;
-    right:8px!important;
-    bottom:max(8px,env(safe-area-inset-bottom))!important;
-    width:auto!important;
-    max-width:none!important;
-  }
-
-  .bottom button{
-    min-width:0;
-    overflow:hidden;
-    text-overflow:ellipsis;
-  }
+  .bottom{display:grid!important;grid-template-columns:repeat(6,minmax(0,1fr))!important;left:8px!important;right:8px!important;bottom:max(8px,env(safe-area-inset-bottom))!important;width:auto!important;max-width:none!important}
+  .bottom button{min-width:0;overflow:hidden;text-overflow:ellipsis}
 }
 
 @media (max-width:430px){
-  main{
-    padding-left:12px!important;
-    padding-right:12px!important;
-  }
-
-  #ind>.title{
-    grid-template-columns:1fr!important;
-    align-items:stretch;
-  }
-
-  #ind>.title select,
-  #sel{
-    width:100%!important;
-  }
-
-  .kpis,
-  #ik.kpis,
-  #dk.kpis,
-  #ck.kpis{
-    grid-template-columns:repeat(2,minmax(0,1fr))!important;
-    gap:9px!important;
-  }
-
-  .kpi{
-    min-height:122px;
-    padding:14px 12px!important;
-  }
-
-  .kpi b{
-    font-size:clamp(21px,7.1vw,28px)!important;
-  }
-
-  .tri,
-  .cgrid{
-    grid-template-columns:1fr!important;
-  }
+  main{padding-left:12px!important;padding-right:12px!important}
+  .kpis,#dk.kpis,#ik.kpis,#ck.kpis{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:9px!important}
+  .kpi{min-height:118px!important;padding:13px 11px!important}
+  .kpi b{font-size:clamp(20px,7vw,27px)!important}
+  .tri,.cgrid{grid-template-columns:1fr!important}
 }
 
-@media (max-width:350px){
-  .kpis,
-  #ik.kpis,
-  #dk.kpis,
-  #ck.kpis{
-    grid-template-columns:1fr!important;
-  }
+@media (max-width:320px){
+  .kpis,#dk.kpis,#ik.kpis,#ck.kpis{grid-template-columns:1fr!important}
 }
