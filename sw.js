@@ -1,4 +1,4 @@
-const CACHE = 'setembrox-v10-data-1309';
+const CACHE = 'setembrox-v11-data-1409';
 const CORE = ['./index.html', './styles.css', './entry-v2.css', './arena-x.css', './app.js', './manifest.webmanifest', './icon.svg', './icon-192.png', './icon-512.png', './icon-maskable-512.png'];
 const SENSITIVE_PARAMS = /(^|_)(token|access_token|refresh_token|password|senha|secret|session|auth|authorization|code|credential|credentials|api_key|apikey)(_|$)/i;
 const PRIVATE_PATHS = /\/(api|auth|login|logout|session|sessions|account|profile|admin)(\/|$)/i;
