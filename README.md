@@ -21,29 +21,35 @@ Interface dark premium com azul elétrico, ciano, violeta, magenta, verde de per
 
 ## PWA
 
-O projeto contém `manifest.webmanifest` e `sw.js`, podendo ser instalado como aplicativo em navegadores compatíveis. O shell do PWA inclui `index.html`, `styles.css` e `app.js` para manter a Central disponível no cache.
+O projeto contém `manifest.webmanifest` e `sw.js`, podendo ser instalado como aplicativo em navegadores compatíveis. O cache do PWA foi renovado para a carga oficial de 14/09.
 
 ## Dados oficiais
 
-Base atualizada pela planilha oficial `Document(1).csv` até **12/09/2026**.
+Base atualizada pela planilha oficial `Document(3).csv` até **14/09/2026**.
 
-- 197 casais
-- 140 Q
-- 56 NQ
-- 28 vendas registradas
+- 241 casais
+- 165 Q
+- 75 NQ
+- 37 vendas registradas
 - 1 venda cancelada
-- R$ 3.785.100 em VGV geral
-- R$ 3.693.100 em VGV ativo após cancelamento
-- R$ 45.185,10 em custo de brindes
-- R$ 229,37 de custo médio por casal
+- R$ 5.056.300 em VGV geral
+- R$ 4.964.300 em VGV ativo após cancelamento
+- R$ 54.672,13 em custo de brindes
+- R$ 226,86 de custo médio por casal
 
-A carga consolidada também foi atualizada no Supabase do projeto para manter histórico diário e mensal.
+O SETEMBRO X mantém a regra atual de vendas registradas por ficha com contrato. A venda cancelada permanece no histórico e o valor cancelado fica fora do VGV ativo.
+
+## Metas de Setembro
+
+- 370 casais
+- 101 vendas
+- R$ 8,5 milhões em VGV
 
 ## Radar da Disputa
 
 A Central exibe os cinco profissionais mais próximos da liderança em três frentes:
 
-- Capitão da Semana — semana de 07 a 13/09, com desempate por vendas da semana
+- Capitão da Semana — semana de 14 a 20/09, com desempate por vendas da semana e VGV
 - Top 1 VGV — acumulado do mês
 - Top 1 Casais — acumulado do mês
 
