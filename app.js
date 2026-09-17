@@ -3,7 +3,7 @@ const P=[{"n":"Ricardo","r":"Captador","e":1,"c":25,"s":1,"v":92000,"q":19,"nq":
 const PR={"prof":[["Empresário(a)",54,14.8],["Autônomo(a)",13,7.7],["Advogado (a)",8,37.5],["Engenheiro civil(a)",8,12.5],["Engenheiro (a)",7,14.3],["Comerciante(a)",6,0.0]],"age":[["30–39",102,14.7],["40–49",72,18.1],["Até 29",40,20.0],["50–59",31,9.7],["60+",6,0.0]],"inc":[["R$ 15 mil+",216,15.7],["R$ 10–15 mil",34,14.7],["Até R$ 7 mil",1,0.0]],"car":[["ONIX",14,7.1],["HB20",10,30.0],["COMPASS",9,11.1],["COROLLA",8,37.5],["ARGO",7,42.9],["T-CROSS",7,14.3],["TORO",7,0.0],["CIVIC",6,16.7]]};
 
 const E=16,R=16,M=30;
-const metaCouples=370,metaSales=101,metaVgv=8500000;
+const metaCouples=400,metaSales=100,metaVgv=8500000;
 const money=x=>'R$ '+Intl.NumberFormat('pt-BR',{notation:x>=1e6?'compact':'standard',maximumFractionDigits:x>=1e6?2:0}).format(x||0);
 const moneyFull=x=>'R$ '+Intl.NumberFormat('pt-BR',{maximumFractionDigits:0}).format(x||0);
 const pct=x=>(x||0).toFixed(1).replace('.',',')+'%';
@@ -85,8 +85,8 @@ function renderArenaX(){
       <span class="arena-live"><i></i> OPERAÇÃO ATIVA</span>
     </div>
     <div class="arena-metrics">
-      <div class="arena-metric"><small>FALTAM PARA 370</small><b>${missingCouples}</b><span>casais</span></div>
-      <div class="arena-metric"><small>FALTAM PARA 101</small><b>${missingSales}</b><span>vendas</span></div>
+      <div class="arena-metric"><small>FALTAM PARA 400</small><b>${missingCouples}</b><span>casais</span></div>
+      <div class="arena-metric"><small>FALTAM PARA 100</small><b>${missingSales}</b><span>vendas</span></div>
       <div class="arena-metric"><small>FALTAM PARA R$ 8,5 MI</small><b>${moneyFull(missingVgv)}</b><span>em VGV</span></div>
     </div>
     <div class="arena-lower">
