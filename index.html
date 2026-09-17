@@ -4,6 +4,10 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#050713">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="apple-touch-icon" href="./icon-192.png">
 <link rel="manifest" href="./manifest.webmanifest">
 <link rel="icon" href="./icon.svg">
 <title>SETEMBRO X — Performance da Captação</title>
@@ -33,12 +37,12 @@
     <div class="goal-grid">
       <article class="goal-card cyan-goal">
         <div class="goal-icon">◎</div>
-        <div class="goal-copy"><strong>400</strong><b>CASAIS</b><small id="goalCouplesText">0 / 400</small></div>
+        <div class="goal-copy"><strong>370</strong><b>CASAIS</b><small id="goalCouplesText">0 / 400</small></div>
         <div class="goal-track"><i id="barCouples"></i></div>
       </article>
       <article class="goal-card purple-goal">
         <div class="goal-icon">◇</div>
-        <div class="goal-copy"><strong>100</strong><b>VENDAS</b><small id="goalSalesText">0 / 100</small></div>
+        <div class="goal-copy"><strong>101</strong><b>VENDAS</b><small id="goalSalesText">0 / 100</small></div>
         <div class="goal-track"><i id="barSales"></i></div>
       </article>
       <article class="goal-card violet-goal">
@@ -75,7 +79,7 @@
     <button data-go="proj">↗ &nbsp;Projeções</button>
     <button data-go="custos">◈ &nbsp;Custo de Brinde</button>
   </nav>
-  <div class="foot"><span class="dot"></span>Base oficial até 12/09/2026<br>Raphael Bueno • Gestão</div>
+  <div class="foot"><span class="dot"></span>Base oficial até 16/09/2026<br>Raphael Bueno • Gestão</div>
 </aside>
 
 <main>
@@ -90,10 +94,10 @@
   <div class="radar-wrap" id="radar">
     <div class="radar-head">
       <div><div class="eye">RADAR DA DISPUTA</div><h3>Quem está brigando pela liderança agora</h3></div>
-      <span class="mini">Base oficial até 12/09 • atualização da planilha</span>
+      <span class="mini">Base oficial até 16/09 • atualização da planilha</span>
     </div>
     <div class="radar-grid">
-      <div class="battle captain"><div class="battle-title"><b>🏆 Capitão da Semana</b><span>07–13/09</span></div><div id="radarCaptain"></div></div>
+      <div class="battle captain"><div class="battle-title"><b>🏆 Capitão da Semana</b><span>14–20/09</span></div><div id="radarCaptain"></div></div>
       <div class="battle vgv"><div class="battle-title"><b>💰 Top 1 VGV</b><span>mês</span></div><div id="radarVgv"></div></div>
       <div class="battle couples"><div class="battle-title"><b>👫 Top 1 Casais</b><span>mês</span></div><div id="radarCouples"></div></div>
     </div>
@@ -109,7 +113,7 @@
 <section id="rank" class="sec">
   <div class="card pad">
     <div class="title">
-      <div><h3>Ranking completo</h3><span class="mini">Projeção já dentro do ranking • base até 12/09</span></div>
+      <div><h3>Ranking completo</h3><span class="mini">Projeção já dentro do ranking • base até 16/09</span></div>
       <select id="rm"><option value="couples">Casais</option><option value="weekly">Semana</option><option value="sales">Vendas</option><option value="vgv">VGV</option><option value="conversion">Conversão</option><option value="q">Q</option><option value="cost">Menor custo/casal</option><option value="projection">Projeção</option></select>
     </div>
     <div class="tw"><table><thead><tr><th>#</th><th>Profissional</th><th>Casais</th><th>Semana</th><th>Vendas</th><th>VGV</th><th>Conv.</th><th>Q</th><th>Custo/casal</th><th>Proj. 30/09</th><th>22 casais</th></tr></thead><tbody id="rb"></tbody></table></div>
@@ -155,5 +159,8 @@
 </nav>
 
 <script src="./app.js" defer></script>
+<script>
+if ("serviceWorker" in navigator) { window.addEventListener("load", () => navigator.serviceWorker.register("./sw.js", {scope:"./"}).catch(console.error)); }
+</script>
 </body>
 </html>
