@@ -1,23 +1,23 @@
-// Correção da contagem de vendas — base oficial até 14/09/2026.
+// Correção da contagem de vendas — base oficial até 16/09/2026.
 // Regra: cada ocorrência de ATIVO em Status do contrato conta como uma venda.
 (() => {
   const salesByPerson = {
     'Ricardo': 1,
-    'Renan': 5,
     'Paulo': 2,
-    'Manara': 9,
-    'André': 1,
+    'Renan': 5,
     'Otávio': 2,
-    'Márcio': 2,
+    'André': 1,
+    'Clacion': 4,
+    'Manara': 9,
     'Pedro': 3,
-    'Clacion': 3,
     'Larissa': 15,
-    'Ana Caroline': 2,
+    'Márcio': 2,
+    'Ana Caroline': 3,
     'Jéssica': 3,
     'Matheus Esley': 1,
-    'Tainá': 0,
     'Josyene': 2,
     'Suene': 1,
+    'Tainá': 0,
     'Cássio': 0,
     'Weena': 8,
     'Adriano': 0,
@@ -29,12 +29,14 @@
 
   const weekSalesByPerson = {
     'Paulo': 1,
+    'Clacion': 1,
     'Manara': 7,
     'Márcio': 1,
+    'Ana Caroline': 1,
     'Suene': 1
   };
 
-  if (typeof S !== 'undefined') S.sales = 60;
+  if (typeof S !== 'undefined') S.sales = 62;
 
   if (typeof P !== 'undefined') {
     P.forEach((person) => {
