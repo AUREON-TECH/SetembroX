@@ -1,0 +1,38 @@
+name: Corrigir metas oficiais
+on:
+  push:
+    paths:
+      - '.github/workflows/fix-official-goals.yml'
+permissions:
+  contents: write
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Aplicar metas oficiais
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('app.js')
+          s=p.read_text(encoding='utf-8')
+          s=s.replace('const metaCouples=370,metaSales=101,metaVgv=8500000;', 'const metaCouples=400,metaSales=100,metaVgv=8500000;')
+          s=s.replace('FALTAM PARA 370', 'FALTAM PARA 400')
+          s=s.replace('FALTAM PARA 101', 'FALTAM PARA 100')
+          p.write_text(s,encoding='utf-8')
+          p=Path('index.html')
+          s=p.read_text(encoding='utf-8')
+          s=s.replace('<strong>370</strong><b>CASAIS</b>', '<strong>400</strong><b>CASAIS</b>')
+          s=s.replace('<strong>101</strong><b>VENDAS</b>', '<strong>100</strong><b>VENDAS</b>')
+          p.write_text(s,encoding='utf-8')
+          p=Path('sw.js')
+          s=p.read_text(encoding='utf-8').replace("const CACHE = 'setembrox-v12-data-1609';", "const CACHE = 'setembrox-v13-metas-oficiais';").replace("const CACHE = 'setembrox-v11-data-1409';", "const CACHE = 'setembrox-v13-metas-oficiais';")
+          p.write_text(s,encoding='utf-8')
+          PY
+      - name: Commit
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add app.js index.html sw.js
+          git diff --cached --quiet || git commit -m 'Define metas oficiais: 400 casais, 100 vendas e R$ 8,5 mi'
+          git push
