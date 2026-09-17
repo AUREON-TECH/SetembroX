@@ -1,0 +1,64 @@
+name: Atualizar Setembro X ate 16-09
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/update-1609.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Atualizar dados e PWA
+        shell: python
+        run: |
+          import re
+          from pathlib import Path
+
+          app = Path("app.js")
+          s = app.read_text(encoding="utf-8")
+          s = re.sub(r'^const S=.*?;$', 'const S={"couples":251,"sales":39,"vgv":5217300,"q":172,"nq":77,"mq":2,"gift":56707.94,"gifts":729,"activeVgv":5125300,"canceled":1};', s, count=1, flags=re.M)
+          s = re.sub(r'^const P=.*?;$', 'const P=[{"n":"Ricardo","r":"Captador","e":1,"c":25,"s":1,"v":92000,"q":19,"nq":6,"g":4703.44,"d":7,"w":0,"ws":0,"wv":0,"p":47},{"n":"Paulo","r":"Captador","e":1,"c":22,"s":2,"v":171000,"q":14,"nq":8,"g":4519.5,"d":12,"w":5,"ws":1,"wv":79000,"p":41},{"n":"Renan","r":"Captador","e":1,"c":20,"s":5,"v":403600,"q":14,"nq":6,"g":4169.55,"d":9,"w":1,"ws":0,"wv":0,"p":38},{"n":"Otávio","r":"Captador","e":1,"c":18,"s":2,"v":154400,"q":12,"nq":5,"g":4079.55,"d":8,"w":3,"ws":0,"wv":0,"p":34},{"n":"André","r":"Captador","e":1,"c":17,"s":1,"v":77200,"q":9,"nq":8,"g":3627.58,"d":8,"w":2,"ws":0,"wv":0,"p":32},{"n":"Clacion","r":"Captador","e":1,"c":15,"s":4,"v":354900,"q":9,"nq":6,"g":3809.6,"d":10,"w":2,"ws":1,"wv":79000,"p":28},{"n":"Manara","r":"Captador","e":1,"c":15,"s":3,"v":711200,"q":12,"nq":3,"g":3427.63,"d":9,"w":2,"ws":2,"wv":555200,"p":28},{"n":"Pedro","r":"Captador","e":1,"c":14,"s":3,"v":354000,"q":12,"nq":2,"g":4151.52,"d":6,"w":3,"ws":0,"wv":0,"p":26},{"n":"Larissa","r":"Captador","e":1,"c":13,"s":3,"v":1246200,"q":8,"nq":5,"g":2241.87,"d":7,"w":1,"ws":0,"wv":0,"p":24},{"n":"Márcio","r":"Captador","e":1,"c":13,"s":2,"v":183000,"q":7,"nq":6,"g":2833.74,"d":8,"w":1,"ws":1,"wv":85000,"p":24},{"n":"Ana Caroline","r":"Captador","e":1,"c":11,"s":3,"v":238200,"q":10,"nq":1,"g":2767.68,"d":7,"w":1,"ws":1,"wv":82000,"p":21},{"n":"Jéssica","r":"Captador","e":1,"c":10,"s":3,"v":265000,"q":5,"nq":5,"g":2619.7,"d":7,"w":0,"ws":0,"wv":0,"p":19},{"n":"Matheus Esley","r":"Captador","e":1,"c":10,"s":1,"v":92000,"q":8,"nq":2,"g":2103.79,"d":6,"w":0,"ws":0,"wv":0,"p":19},{"n":"Josyene","r":"Captador","e":1,"c":9,"s":2,"v":171000,"q":7,"nq":2,"g":1469.95,"d":7,"w":2,"ws":0,"wv":0,"p":17},{"n":"Suene","r":"Captador","e":1,"c":8,"s":1,"v":78400,"q":6,"nq":2,"g":2603.69,"d":7,"w":2,"ws":1,"wv":78400,"p":15},{"n":"Tainá","r":"Captador","e":1,"c":8,"s":0,"v":0,"q":6,"nq":2,"g":1763.79,"d":5,"w":0,"ws":0,"wv":0,"p":15},{"n":"Cássio","r":"Captador","e":1,"c":7,"s":0,"v":0,"q":5,"nq":1,"g":1783.84,"d":3,"w":2,"ws":0,"wv":0,"p":13},{"n":"Weena","r":"Captador","e":1,"c":6,"s":3,"v":625200,"q":2,"nq":4,"g":1259.85,"d":4,"w":0,"ws":0,"wv":0,"p":11},{"n":"Adriano","r":"Captador","e":1,"c":3,"s":0,"v":0,"q":1,"nq":2,"g":503.94,"d":3,"w":0,"ws":0,"wv":0,"p":6},{"n":"Letícia","r":"Captador","e":1,"c":3,"s":0,"v":0,"q":3,"nq":0,"g":839.9,"d":3,"w":0,"ws":0,"wv":0,"p":6},{"n":"Barbara","r":"Captador","e":1,"c":2,"s":0,"v":0,"q":1,"nq":1,"g":671.92,"d":2,"w":0,"ws":0,"wv":0,"p":4},{"n":"Felipe","r":"Sub-líder","e":0,"c":1,"s":0,"v":0,"q":1,"nq":0,"g":503.94,"d":1,"w":0,"ws":0,"wv":0,"p":2},{"n":"Matheus Domingos","r":"Captador","e":1,"c":1,"s":0,"v":0,"q":1,"nq":0,"g":251.97,"d":1,"w":0,"ws":0,"wv":0,"p":2}];', s, count=1, flags=re.M)
+          s = re.sub(r'^const PR=.*?;$', 'const PR={"prof":[["Empresário(a)",54,14.8],["Autônomo(a)",13,7.7],["Advogado (a)",8,37.5],["Engenheiro civil(a)",8,12.5],["Engenheiro (a)",7,14.3],["Comerciante(a)",6,0.0]],"age":[["30–39",102,14.7],["40–49",72,18.1],["Até 29",40,20.0],["50–59",31,9.7],["60+",6,0.0]],"inc":[["R$ 15 mil+",216,15.7],["R$ 10–15 mil",34,14.7],["Até R$ 7 mil",1,0.0]],"car":[["ONIX",14,7.1],["HB20",10,30.0],["COMPASS",9,11.1],["COROLLA",8,37.5],["ARGO",7,42.9],["T-CROSS",7,14.3],["TORO",7,0.0],["CIVIC",6,16.7]]};', s, count=1, flags=re.M)
+          s = re.sub(r'^const E=\d+,R=\d+,M=30;$', 'const E=16,R=16,M=30;', s, count=1, flags=re.M)
+          s = s.replace('base oficial até 14/09', 'base oficial até 16/09')
+          s = s.replace('Base oficial até 14/09', 'Base oficial até 16/09')
+          app.write_text(s, encoding="utf-8")
+
+          idx = Path("index.html")
+          h = idx.read_text(encoding="utf-8")
+          h = h.replace('Base oficial até 12/09/2026', 'Base oficial até 16/09/2026')
+          h = h.replace('Base oficial até 12/09', 'Base oficial até 16/09')
+          h = h.replace('base até 12/09', 'base até 16/09')
+          h = h.replace('07–13/09', '14–20/09')
+          h = h.replace('<div class="goal-copy"><strong>400</strong><b>CASAIS</b>', '<div class="goal-copy"><strong>370</strong><b>CASAIS</b>')
+          h = h.replace('<div class="goal-copy"><strong>100</strong><b>VENDAS</b>', '<div class="goal-copy"><strong>101</strong><b>VENDAS</b>')
+          if 'apple-mobile-web-app-capable' not in h:
+              h = h.replace('<meta name="theme-color" content="#050713">', '<meta name="theme-color" content="#050713">\n<meta name="mobile-web-app-capable" content="yes">\n<meta name="apple-mobile-web-app-capable" content="yes">\n<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">\n<link rel="apple-touch-icon" href="./icon-192.png">')
+          if "serviceWorker.register" not in h:
+              h = h.replace('<script src="./app.js" defer></script>', '<script src="./app.js" defer></script>\n<script>\nif ("serviceWorker" in navigator) { window.addEventListener("load", () => navigator.serviceWorker.register("./sw.js", {scope:"./"}).catch(console.error)); }\n</script>')
+          idx.write_text(h, encoding="utf-8")
+
+          sw = Path("sw.js")
+          w = sw.read_text(encoding="utf-8")
+          w = re.sub(r"const CACHE = '[^']+';", "const CACHE = 'setembrox-v12-data-1609';", w, count=1)
+          sw.write_text(w, encoding="utf-8")
+
+          manifest = Path("manifest.webmanifest")
+          m = manifest.read_text(encoding="utf-8")
+          m = m.replace('"display_override": ["window-controls-overlay", "standalone", "minimal-ui"]', '"display_override": ["standalone"]')
+          manifest.write_text(m, encoding="utf-8")
+      - name: Commit
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add app.js index.html sw.js manifest.webmanifest
+          git diff --cached --quiet || git commit -m "Atualiza resultados ate 16/09 e corrige PWA"
+          git push
