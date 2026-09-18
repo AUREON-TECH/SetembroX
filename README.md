@@ -25,24 +25,25 @@ O projeto contém `manifest.webmanifest` e `sw.js`, podendo ser instalado como a
 
 ## Dados oficiais
 
-Base atualizada pela planilha oficial `Document(3).csv` até **14/09/2026**.
+Base atualizada pela planilha oficial `Document(5).csv` até **17/09/2026**.
 
-- 241 casais
-- 165 Q
-- 75 NQ
-- 37 vendas registradas
-- 1 venda cancelada
-- R$ 5.056.300 em VGV geral
-- R$ 4.964.300 em VGV ativo após cancelamento
-- R$ 54.672,13 em custo de brindes
-- R$ 226,86 de custo médio por casal
+- 269 casais
+- 182 Q
+- 85 NQ
+- 2 MQ
+- 61 vendas ativas
+- 3 cancelamentos de contrato
+- R$ 5.309.300 em VGV geral
+- R$ 5.033.300 em VGV ativo após cancelamentos
+- R$ 60.271,53 em custo de brindes
+- R$ 224,06 de custo médio por casal
 
-O SETEMBRO X mantém a regra atual de vendas registradas por ficha com contrato. A venda cancelada permanece no histórico e o valor cancelado fica fora do VGV ativo.
+O SETEMBRO X conta cada ocorrência de `ATIVO` como uma venda. Cancelamentos permanecem no histórico e seus valores ficam fora do VGV ativo.
 
 ## Metas de Setembro
 
-- 370 casais
-- 101 vendas
+- 400 casais
+- 100 vendas
 - R$ 8,5 milhões em VGV
 
 ## Radar da Disputa
