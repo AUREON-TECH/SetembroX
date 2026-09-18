@@ -21,7 +21,7 @@ Interface dark premium com azul elétrico, ciano, violeta, magenta, verde de per
 
 ## PWA
 
-O projeto contém `manifest.webmanifest` e `sw.js`, podendo ser instalado como aplicativo em navegadores compatíveis. O cache do PWA foi renovado para a carga oficial de 14/09.
+O projeto contém `manifest.webmanifest` e `sw.js`, podendo ser instalado como aplicativo em navegadores compatíveis. O cache do PWA foi renovado para a carga oficial de 17/09.
 
 ## Dados oficiais
 
