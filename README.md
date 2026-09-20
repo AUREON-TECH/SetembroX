@@ -21,22 +21,22 @@ Interface dark premium com azul elétrico, ciano, violeta, magenta, verde de per
 
 ## PWA
 
-O projeto contém `manifest.webmanifest` e `sw.js`, podendo ser instalado como aplicativo em navegadores compatíveis. O cache do PWA foi renovado para a carga oficial de 19/09.
+O projeto contém `manifest.webmanifest` e `sw.js`, podendo ser instalado como aplicativo em navegadores compatíveis. O cache do PWA foi renovado para a carga oficial de 20/09.
 
 ## Dados oficiais
 
-Base atualizada pela planilha oficial `Document(7).csv` até **19/09/2026**.
+Base atualizada pela planilha oficial `Document(8).csv` até **20/09/2026**.
 
-- 308 casais
-- 204 Q
-- 101 NQ
+- 328 casais
+- 217 Q
+- 108 NQ
 - 3 MQ
-- 67 vendas ativas
+- 76 vendas ativas
 - 3 cancelamentos de contrato
-- R$ 5.815.500 em VGV geral
-- R$ 5.539.500 em VGV ativo após cancelamentos
-- R$ 68.756,64 em custo de brindes
-- R$ 223,24 de custo médio por casal
+- R$ 6.726.650 em VGV geral
+- R$ 6.450.650 em VGV ativo após cancelamentos
+- R$ 73.460,13 em custo de brindes
+- R$ 223,96 de custo médio por casal
 
 O SETEMBRO X conta cada ocorrência de `ATIVO` como uma venda. Cancelamentos permanecem no histórico e seus valores ficam fora do VGV ativo.
 
