@@ -15,4 +15,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Validate PWA security and installability
-        run: node tests/pwa-audit.mjs
+        run: |
+          node tests/pwa-audit.mjs
+          node tests/ops-dashboard.mjs
