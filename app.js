@@ -1,6 +1,7 @@
 const S={"couples":338,"sales":77,"vgv":6803850,"q":223,"nq":112,"mq":3,"gift":75423.92,"gifts":980,"activeVgv":6527850,"canceled":3};
 const P=[{"n":"Paulo","r":"Captador","e":1,"c":30,"s":4,"v":343000,"q":19,"nq":11,"g":6283.29,"d":17,"w":1,"ws":0,"wv":0,"p":43},{"n":"Ricardo","r":"Captador","e":1,"c":30,"s":2,"v":184000,"q":22,"nq":8,"g":5999.3,"d":9,"w":0,"ws":0,"wv":0,"p":43},{"n":"Renan","r":"Captador","e":1,"c":27,"s":5,"v":403600,"q":18,"nq":9,"g":5429.4,"d":13,"w":0,"ws":0,"wv":0,"p":39},{"n":"André","r":"Captador","e":1,"c":24,"s":1,"v":77200,"q":11,"nq":13,"g":5121.42,"d":11,"w":0,"ws":0,"wv":0,"p":34},{"n":"Otávio","r":"Captador","e":1,"c":24,"s":2,"v":154400,"q":14,"nq":9,"g":5087.43,"d":12,"w":2,"ws":0,"wv":0,"p":34},{"n":"Clacion","r":"Captador","e":1,"c":21,"s":7,"v":607300,"q":12,"nq":9,"g":5405.41,"d":13,"w":0,"ws":0,"wv":0,"p":30},{"n":"Manara","r":"Captador","e":1,"c":21,"s":9,"v":711200,"q":17,"nq":4,"g":4639.5,"d":12,"w":0,"ws":0,"wv":0,"p":30},{"n":"Pedro","r":"Captador","e":1,"c":19,"s":3,"v":525000,"q":16,"nq":3,"g":5411.37,"d":10,"w":0,"ws":0,"wv":0,"p":27},{"n":"Márcio","r":"Captador","e":1,"c":16,"s":3,"v":260200,"q":8,"nq":7,"g":3101.72,"d":11,"w":1,"ws":0,"wv":0,"p":23},{"n":"Ana Caroline","r":"Captador","e":1,"c":15,"s":6,"v":548200,"q":12,"nq":3,"g":3959.55,"d":10,"w":0,"ws":0,"wv":0,"p":21},{"n":"Larissa","r":"Captador","e":1,"c":15,"s":17,"v":1502950,"q":10,"nq":5,"g":2491.87,"d":9,"w":0,"ws":0,"wv":0,"p":21},{"n":"Matheus Esley","r":"Captador","e":1,"c":14,"s":1,"v":92000,"q":11,"nq":3,"g":3195.66,"d":9,"w":1,"ws":0,"wv":0,"p":20},{"n":"Jéssica","r":"Captador","e":1,"c":13,"s":3,"v":265000,"q":6,"nq":7,"g":3291.62,"d":10,"w":0,"ws":0,"wv":0,"p":19},{"n":"Josyene","r":"Captador","e":1,"c":12,"s":3,"v":251000,"q":9,"nq":3,"g":1907.93,"d":9,"w":0,"ws":0,"wv":0,"p":17},{"n":"Tainá","r":"Captador","e":1,"c":11,"s":0,"v":0,"q":7,"nq":4,"g":2451.72,"d":7,"w":2,"ws":0,"wv":0,"p":16},{"n":"Suene","r":"Captador","e":1,"c":10,"s":2,"v":176400,"q":7,"nq":3,"g":2843.69,"d":9,"w":0,"ws":0,"wv":0,"p":14},{"n":"Adriano","r":"Captador","e":1,"c":8,"s":1,"v":77200,"q":4,"nq":4,"g":1577.83,"d":7,"w":2,"ws":1,"wv":77200,"p":11},{"n":"Cássio","r":"Captador","e":1,"c":7,"s":0,"v":0,"q":5,"nq":1,"g":1783.84,"d":3,"w":0,"ws":0,"wv":0,"p":10},{"n":"Weena","r":"Captador","e":1,"c":7,"s":8,"v":625200,"q":3,"nq":4,"g":1427.83,"d":5,"w":0,"ws":0,"wv":0,"p":10},{"n":"Letícia","r":"Captador","e":1,"c":6,"s":0,"v":0,"q":5,"nq":1,"g":1661.82,"d":6,"w":1,"ws":0,"wv":0,"p":9},{"n":"Matheus Domingos","r":"Captador","e":1,"c":4,"s":0,"v":0,"q":4,"nq":0,"g":839.9,"d":4,"w":0,"ws":0,"wv":0,"p":6},{"n":"Barbara","r":"Captador","e":1,"c":3,"s":0,"v":0,"q":2,"nq":1,"g":1007.88,"d":3,"w":0,"ws":0,"wv":0,"p":4},{"n":"Felipe","r":"Sub-líder","e":0,"c":1,"s":0,"v":0,"q":1,"nq":0,"g":503.94,"d":1,"w":0,"ws":0,"wv":0,"p":1}];
 const PR={"prof":[["Empresário(a)",70,17.1],["Autônomo(a)",21,4.8],["Advogado (a)",12,16.7],["Engenheiro (a)",11,18.2],["Engenheiro civil(a)",9,11.1],["Comerciante(a)",9,0.0]],"age":[["30–39",133,14.3],["40–49",98,17.3],["Até 29",54,14.8],["50–59",41,9.8],["60+",11,9.1]],"inc":[["R$ 15 mil+",292,14.7],["R$ 10–15 mil",44,13.6],["Até R$ 7 mil",2,50.0]],"car":[["ONIX",18,16.7],["HB20",13,30.8],["COROLLA",12,8.3],["COMPASS",10,10.0],["HR-V",9,44.4],["TIGGO",9,22.2],["CIVIC",9,11.1],["ARGO",8,37.5]]};
+const DAILY=[["1",4,0,0,3,1,753.94],["2",11,1,367000,4,7,2619.7],["3",11,2,173900,6,5,2247.78],["4",22,3,234000,16,6,4595.51],["5",25,6,537200,18,7,6209.3],["6",17,1,79000,9,8,3757.63],["7",19,2,171000,15,3,5265.41],["8",10,1,77200,7,3,2719.7],["9",14,1,92000,13,1,3191.62],["10",14,1,92000,8,6,2539.75],["11",20,8,617600,16,4,4217.53],["12",30,16,1344200,25,5,7067.23],["13",27,6,473600,15,12,5207.48],["14",17,10,797600,10,7,4279.55],["15",0,0,0,0,0,0],["16",10,2,161000,7,2,2035.81],["17",18,1,92000,10,8,3563.59],["18",13,3,236200,8,4,2301.77],["19",26,3,270000,14,12,6183.34],["20",20,9,911150,13,7,4703.49],["21",10,1,77200,6,4,1963.79]];
 
 const E=21,R=9,M=30;
 const metaCouples=400,metaSales=100,metaVgv=8500000;
@@ -34,6 +35,73 @@ function fightRows(list,metric,format){
     const sub=format==='week'?`${p.ws} venda${p.ws===1?'':'s'} na semana`:`${p.s} venda${p.s===1?'':'s'} no mês`;
     return `<div class="fight ${i===0?'lead':''}"><div class="place">${i===0?'★':i+1}</div><div class="who"><b>${p.n}</b><small>${sub}</small></div><div class="score">${score}<span class="gap">${gapText}</span></div></div>`;
   }).join('');
+}
+
+
+function renderTodayOps(){
+  const [day,couples,sales,vgv,q,nq,gift]=DAILY[DAILY.length-1];
+  const leader=captainRank()[0];
+  todayOps.innerHTML=\`
+    <div class="ops-pad">
+      <div class="ops-head"><div><span class="ops-kicker">HOJE • \${day}/09</span><h3>Pulso da operação</h3></div><span class="ops-live"><i></i> FECHAMENTO</span></div>
+      <div class="today-hero"><b>\${couples}</b><span>CASAIS HOJE</span></div>
+      <div class="today-strip">
+        <div class="today-stat"><small>Vendas</small><b class="g">\${sales}</b></div>
+        <div class="today-stat"><small>VGV</small><b class="v">\${moneyFull(vgv)}</b></div>
+        <div class="today-stat"><small>Qualificação</small><b>\${q} Q • \${nq} NQ</b></div>
+      </div>
+      <div class="today-highlight"><div><small>Destaque do dia</small><div class="muted" style="font-size:9px">Brindes: \${moneyFull(gift)}</div></div><strong>\${leader.n} • \${leader.w} casais • \${leader.ws} venda</strong></div>
+    </div>\`;
+}
+
+function renderMetaPace(){
+  const mc=Math.max(0,metaCouples-S.couples),ms=Math.max(0,metaSales-S.sales),mv=Math.max(0,metaVgv-S.vgv);
+  const days=Math.max(1,R);
+  const pc=Math.min(100,S.couples/metaCouples*100),ps=Math.min(100,S.sales/metaSales*100),pv=Math.min(100,S.vgv/metaVgv*100);
+  metaPace.innerHTML=\`
+    <div class="ops-pad">
+      <div class="ops-head"><div><span class="ops-kicker">RITMO DA META</span><h3>O que falta para fechar setembro</h3></div><span class="ops-live"><i></i> \${R} DIAS</span></div>
+      <div class="pace-summary">
+        <div class="pace-box"><small>Faltam casais</small><b class="c">\${mc}</b><span>\${(mc/days).toFixed(1).replace('.',',')} por dia</span></div>
+        <div class="pace-box"><small>Faltam vendas</small><b class="g">\${ms}</b><span>\${(ms/days).toFixed(1).replace('.',',')} por dia</span></div>
+        <div class="pace-box"><small>Falta VGV</small><b class="v">\${moneyFull(mv)}</b><span>\${moneyFull(mv/days)} por dia</span></div>
+      </div>
+      <div class="pace-needed">
+        <div class="pace-row"><label>Casais</label><div class="pace-track"><i style="width:\${pc}%"></i></div><b>\${pct(pc)}</b></div>
+        <div class="pace-row"><label>Vendas</label><div class="pace-track"><i style="width:\${ps}%"></i></div><b>\${pct(ps)}</b></div>
+        <div class="pace-row"><label>VGV</label><div class="pace-track"><i style="width:\${pv}%"></i></div><b>\${pct(pv)}</b></div>
+      </div>
+      <div class="pace-foot">Ritmo necessário calculado sobre os \${R} dias restantes após a base de 21/09.</div>
+    </div>\`;
+}
+
+function renderDailyEvolution(){
+  let cc=0,ss=0,vv=0;
+  const cum=DAILY.map(([d,c,s,v])=>{cc+=c;ss+=s;vv+=v;return[d,cc,ss,vv]});
+  const W=920,H=230,L=42,T=18,RGT=18,B=28;
+  const x=i=>L+(W-L-RGT)*(i/Math.max(1,cum.length-1));
+  const y=p=>T+(H-T-B)*(1-Math.min(108,p)/108);
+  const pts=(idx,meta)=>cum.map((r,i)=>\`\${x(i).toFixed(1)},\${y(r[idx]/meta*100).toFixed(1)}\`).join(' ');
+  const grid=[0,25,50,75,100].map(v=>\`<line class="\${v===100?'evo-goal':'evo-axis'}" x1="\${L}" y1="\${y(v)}" x2="\${W-RGT}" y2="\${y(v)}"/><text class="\${v===100?'evo-goal-label':'evo-label'}" x="3" y="\${y(v)+3}">\${v}%</text>\`).join('');
+  const labels=cum.map((r,i)=>i%4===0||i===cum.length-1?\`<text class="evo-label" x="\${x(i)-4}" y="\${H-7}">\${r[0]}</text>\`:'').join('');
+  const cp=S.couples/metaCouples*100,sp=S.sales/metaSales*100,vp=S.vgv/metaVgv*100;
+  dailyEvolution.innerHTML=\`
+    <div class="ops-pad">
+      <div class="evo-top">
+        <div class="evo-title"><span class="ops-kicker">EVOLUÇÃO DIÁRIA</span><h3>Trajetória contra a meta</h3><p>Casais, vendas e VGV na mesma escala: percentual da meta oficial.</p></div>
+        <div class="evo-legend">
+          <span class="evo-pill couples"><i></i>Casais <b>\${pct(cp)}</b></span>
+          <span class="evo-pill sales"><i></i>Vendas <b>\${pct(sp)}</b></span>
+          <span class="evo-pill vgv"><i></i>VGV <b>\${pct(vp)}</b></span>
+        </div>
+      </div>
+      <div class="evo-shell"><svg class="evo-chart" viewBox="0 0 \${W} \${H}" role="img" aria-label="Evolução diária de casais vendas e VGV">\${grid}<polyline class="evo-couples" points="\${pts(1,metaCouples)}"/><polyline class="evo-sales" points="\${pts(2,metaSales)}"/><polyline class="evo-vgv" points="\${pts(3,metaVgv)}"/>\${labels}</svg></div>
+      <div class="evo-insight">
+        <div><small>Melhor dia em casais</small><b>12/09 • 30 casais</b></div>
+        <div><small>Melhor dia em vendas</small><b>12/09 • 16 vendas</b></div>
+        <div><small>Maior VGV diário</small><b>12/09 • R$ 1,34 mi</b></div>
+      </div>
+    </div>\`;
 }
 
 function radar(){
@@ -225,9 +293,9 @@ rm.onchange=rank;
 const opts=P.map(p=>`<option>${p.n}</option>`).join('');
 sel.innerHTML=opts;psel.innerHTML=opts;
 sel.onchange=individual;psel.onchange=projection;
-cinema();radar();dash();rank();individual();profile();projection();costs();
+cinema();radar();dash();renderTodayOps();renderMetaPace();renderDailyEvolution();rank();individual();profile();projection();costs();
 
-const swVersion='setembrox-v18-data-2109';
+const swVersion='setembrox-v19-ops-dashboard';
 const canRegisterSw=location.protocol==='https:'||location.hostname==='localhost'||location.hostname==='127.0.0.1';
 if('serviceWorker'in navigator&&canRegisterSw){
   navigator.serviceWorker.register(`./sw.js?v=${swVersion}`,{updateViaCache:'none'})
