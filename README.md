@@ -7,6 +7,7 @@ O SETEMBRO X transforma dados da captação em leitura de performance e ação p
 ## Módulos
 
 - Dashboard executivo
+- Central operacional: Hoje, ritmo necessário para a meta e evolução diária
 - Radar da Disputa com Top 5 do Capitão da Semana, VGV e Casais
 - Perfil de Casais e Perfil Ideal do Mês
 - Ranking por casais, vendas, VGV, conversão, Q, MQ e custo
