@@ -4,6 +4,7 @@ import fs from 'node:fs';
 const html=fs.readFileSync('index.html','utf8');
 const app=fs.readFileSync('app.js','utf8');
 const css=fs.readFileSync('ops-dashboard.css','utf8');
+assert.doesNotThrow(()=>new Function(app),'app.js must remain valid JavaScript');
 
 assert.match(html,/id=["']todayOps["']/i,'dashboard must have a Hoje operational panel');
 assert.match(html,/id=["']metaPace["']/i,'dashboard must have a meta pace panel');
