@@ -41,38 +41,38 @@ function fightRows(list,metric,format){
 function renderTodayOps(){
   const [day,couples,sales,vgv,q,nq,gift]=DAILY[DAILY.length-1];
   const leader=captainRank()[0];
-  todayOps.innerHTML=\`
+  todayOps.innerHTML=`
     <div class="ops-pad">
-      <div class="ops-head"><div><span class="ops-kicker">HOJE • \${day}/09</span><h3>Pulso da operação</h3></div><span class="ops-live"><i></i> FECHAMENTO</span></div>
-      <div class="today-hero"><b>\${couples}</b><span>CASAIS HOJE</span></div>
+      <div class="ops-head"><div><span class="ops-kicker">HOJE • ${day}/09</span><h3>Pulso da operação</h3></div><span class="ops-live"><i></i> FECHAMENTO</span></div>
+      <div class="today-hero"><b>${couples}</b><span>CASAIS HOJE</span></div>
       <div class="today-strip">
-        <div class="today-stat"><small>Vendas</small><b class="g">\${sales}</b></div>
-        <div class="today-stat"><small>VGV</small><b class="v">\${moneyFull(vgv)}</b></div>
-        <div class="today-stat"><small>Qualificação</small><b>\${q} Q • \${nq} NQ</b></div>
+        <div class="today-stat"><small>Vendas</small><b class="g">${sales}</b></div>
+        <div class="today-stat"><small>VGV</small><b class="v">${moneyFull(vgv)}</b></div>
+        <div class="today-stat"><small>Qualificação</small><b>${q} Q • ${nq} NQ</b></div>
       </div>
-      <div class="today-highlight"><div><small>Destaque do dia</small><div class="muted" style="font-size:9px">Brindes: \${moneyFull(gift)}</div></div><strong>\${leader.n} • \${leader.w} casais • \${leader.ws} venda</strong></div>
-    </div>\`;
+      <div class="today-highlight"><div><small>Destaque do dia</small><div class="muted" style="font-size:9px">Brindes: ${moneyFull(gift)}</div></div><strong>${leader.n} • ${leader.w} casais • ${leader.ws} venda</strong></div>
+    </div>`;
 }
 
 function renderMetaPace(){
   const mc=Math.max(0,metaCouples-S.couples),ms=Math.max(0,metaSales-S.sales),mv=Math.max(0,metaVgv-S.vgv);
   const days=Math.max(1,R);
   const pc=Math.min(100,S.couples/metaCouples*100),ps=Math.min(100,S.sales/metaSales*100),pv=Math.min(100,S.vgv/metaVgv*100);
-  metaPace.innerHTML=\`
+  metaPace.innerHTML=`
     <div class="ops-pad">
-      <div class="ops-head"><div><span class="ops-kicker">RITMO DA META</span><h3>O que falta para fechar setembro</h3></div><span class="ops-live"><i></i> \${R} DIAS</span></div>
+      <div class="ops-head"><div><span class="ops-kicker">RITMO DA META</span><h3>O que falta para fechar setembro</h3></div><span class="ops-live"><i></i> ${R} DIAS</span></div>
       <div class="pace-summary">
-        <div class="pace-box"><small>Faltam casais</small><b class="c">\${mc}</b><span>\${(mc/days).toFixed(1).replace('.',',')} por dia</span></div>
-        <div class="pace-box"><small>Faltam vendas</small><b class="g">\${ms}</b><span>\${(ms/days).toFixed(1).replace('.',',')} por dia</span></div>
-        <div class="pace-box"><small>Falta VGV</small><b class="v">\${moneyFull(mv)}</b><span>\${moneyFull(mv/days)} por dia</span></div>
+        <div class="pace-box"><small>Faltam casais</small><b class="c">${mc}</b><span>${(mc/days).toFixed(1).replace('.',',')} por dia</span></div>
+        <div class="pace-box"><small>Faltam vendas</small><b class="g">${ms}</b><span>${(ms/days).toFixed(1).replace('.',',')} por dia</span></div>
+        <div class="pace-box"><small>Falta VGV</small><b class="v">${moneyFull(mv)}</b><span>${moneyFull(mv/days)} por dia</span></div>
       </div>
       <div class="pace-needed">
-        <div class="pace-row"><label>Casais</label><div class="pace-track"><i style="width:\${pc}%"></i></div><b>\${pct(pc)}</b></div>
-        <div class="pace-row"><label>Vendas</label><div class="pace-track"><i style="width:\${ps}%"></i></div><b>\${pct(ps)}</b></div>
-        <div class="pace-row"><label>VGV</label><div class="pace-track"><i style="width:\${pv}%"></i></div><b>\${pct(pv)}</b></div>
+        <div class="pace-row"><label>Casais</label><div class="pace-track"><i style="width:${pc}%"></i></div><b>${pct(pc)}</b></div>
+        <div class="pace-row"><label>Vendas</label><div class="pace-track"><i style="width:${ps}%"></i></div><b>${pct(ps)}</b></div>
+        <div class="pace-row"><label>VGV</label><div class="pace-track"><i style="width:${pv}%"></i></div><b>${pct(pv)}</b></div>
       </div>
-      <div class="pace-foot">Ritmo necessário calculado sobre os \${R} dias restantes após a base de 21/09.</div>
-    </div>\`;
+      <div class="pace-foot">Ritmo necessário calculado sobre os ${R} dias restantes após a base de 21/09.</div>
+    </div>`;
 }
 
 function renderDailyEvolution(){
@@ -81,27 +81,27 @@ function renderDailyEvolution(){
   const W=920,H=230,L=42,T=18,RGT=18,B=28;
   const x=i=>L+(W-L-RGT)*(i/Math.max(1,cum.length-1));
   const y=p=>T+(H-T-B)*(1-Math.min(108,p)/108);
-  const pts=(idx,meta)=>cum.map((r,i)=>\`\${x(i).toFixed(1)},\${y(r[idx]/meta*100).toFixed(1)}\`).join(' ');
-  const grid=[0,25,50,75,100].map(v=>\`<line class="\${v===100?'evo-goal':'evo-axis'}" x1="\${L}" y1="\${y(v)}" x2="\${W-RGT}" y2="\${y(v)}"/><text class="\${v===100?'evo-goal-label':'evo-label'}" x="3" y="\${y(v)+3}">\${v}%</text>\`).join('');
-  const labels=cum.map((r,i)=>i%4===0||i===cum.length-1?\`<text class="evo-label" x="\${x(i)-4}" y="\${H-7}">\${r[0]}</text>\`:'').join('');
+  const pts=(idx,meta)=>cum.map((r,i)=>`${x(i).toFixed(1)},${y(r[idx]/meta*100).toFixed(1)}`).join(' ');
+  const grid=[0,25,50,75,100].map(v=>`<line class="${v===100?'evo-goal':'evo-axis'}" x1="${L}" y1="${y(v)}" x2="${W-RGT}" y2="${y(v)}"/><text class="${v===100?'evo-goal-label':'evo-label'}" x="3" y="${y(v)+3}">${v}%</text>`).join('');
+  const labels=cum.map((r,i)=>i%4===0||i===cum.length-1?`<text class="evo-label" x="${x(i)-4}" y="${H-7}">${r[0]}</text>`:'').join('');
   const cp=S.couples/metaCouples*100,sp=S.sales/metaSales*100,vp=S.vgv/metaVgv*100;
-  dailyEvolution.innerHTML=\`
+  dailyEvolution.innerHTML=`
     <div class="ops-pad">
       <div class="evo-top">
         <div class="evo-title"><span class="ops-kicker">EVOLUÇÃO DIÁRIA</span><h3>Trajetória contra a meta</h3><p>Casais, vendas e VGV na mesma escala: percentual da meta oficial.</p></div>
         <div class="evo-legend">
-          <span class="evo-pill couples"><i></i>Casais <b>\${pct(cp)}</b></span>
-          <span class="evo-pill sales"><i></i>Vendas <b>\${pct(sp)}</b></span>
-          <span class="evo-pill vgv"><i></i>VGV <b>\${pct(vp)}</b></span>
+          <span class="evo-pill couples"><i></i>Casais <b>${pct(cp)}</b></span>
+          <span class="evo-pill sales"><i></i>Vendas <b>${pct(sp)}</b></span>
+          <span class="evo-pill vgv"><i></i>VGV <b>${pct(vp)}</b></span>
         </div>
       </div>
-      <div class="evo-shell"><svg class="evo-chart" viewBox="0 0 \${W} \${H}" role="img" aria-label="Evolução diária de casais vendas e VGV">\${grid}<polyline class="evo-couples" points="\${pts(1,metaCouples)}"/><polyline class="evo-sales" points="\${pts(2,metaSales)}"/><polyline class="evo-vgv" points="\${pts(3,metaVgv)}"/>\${labels}</svg></div>
+      <div class="evo-shell"><svg class="evo-chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="Evolução diária de casais vendas e VGV">${grid}<polyline class="evo-couples" points="${pts(1,metaCouples)}"/><polyline class="evo-sales" points="${pts(2,metaSales)}"/><polyline class="evo-vgv" points="${pts(3,metaVgv)}"/>${labels}</svg></div>
       <div class="evo-insight">
         <div><small>Melhor dia em casais</small><b>12/09 • 30 casais</b></div>
         <div><small>Melhor dia em vendas</small><b>12/09 • 16 vendas</b></div>
         <div><small>Maior VGV diário</small><b>12/09 • R$ 1,34 mi</b></div>
       </div>
-    </div>\`;
+    </div>`;
 }
 
 function radar(){
