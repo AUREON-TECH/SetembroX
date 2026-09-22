@@ -21,22 +21,22 @@ Interface dark premium com azul elétrico, ciano, violeta, magenta, verde de per
 
 ## PWA
 
-O projeto contém `manifest.webmanifest` e `sw.js`, podendo ser instalado como aplicativo em navegadores compatíveis. O cache do PWA foi renovado para a carga oficial de 20/09.
+O projeto contém `manifest.webmanifest` e `sw.js`, podendo ser instalado como aplicativo em navegadores compatíveis. O cache do PWA foi renovado para a carga oficial de 21/09.
 
 ## Dados oficiais
 
-Base atualizada pela planilha oficial `Document(8).csv` até **20/09/2026**.
+Base atualizada pela planilha oficial `Document(9).csv` até **21/09/2026**.
 
-- 328 casais
-- 217 Q
-- 108 NQ
+- 338 casais
+- 223 Q
+- 112 NQ
 - 3 MQ
-- 76 vendas ativas
+- 77 vendas ativas
 - 3 cancelamentos de contrato
-- R$ 6.726.650 em VGV geral
-- R$ 6.450.650 em VGV ativo após cancelamentos
-- R$ 73.460,13 em custo de brindes
-- R$ 223,96 de custo médio por casal
+- R$ 6.803.850 em VGV geral
+- R$ 6.527.850 em VGV ativo após cancelamentos
+- R$ 75.423,92 em custo de brindes
+- R$ 223,15 de custo médio por casal
 
 O SETEMBRO X conta cada ocorrência de `ATIVO` como uma venda. Cancelamentos permanecem no histórico e seus valores ficam fora do VGV ativo.
 
@@ -50,7 +50,7 @@ O SETEMBRO X conta cada ocorrência de `ATIVO` como uma venda. Cancelamentos per
 
 A Central exibe os cinco profissionais mais próximos da liderança em três frentes:
 
-- Capitão da Semana — semana de 14 a 20/09, com desempate por vendas da semana e VGV
+- Capitão da Semana — semana de 21 a 27/09, com desempate por vendas da semana e VGV
 - Top 1 VGV — acumulado do mês
 - Top 1 Casais — acumulado do mês
 
