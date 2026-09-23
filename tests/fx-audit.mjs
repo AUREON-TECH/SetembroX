@@ -17,7 +17,7 @@ assert.match(html,/id=["']fxConclusion["']/i,'FX must have a final performance c
 
 assert.match(data,/const\s+FX_DAILY\s*=/,'FX daily data must exist');
 assert.match(data,/"Paulo":\[\[2,0,0,2,0\]/,'Paulo day 1 must be represented');
-assert.match(data,/\[3,0,0,3,0\]\]\};/,'FX data must include the 22nd day');
+assert.match(data,/"Paulo":\[[^\n]*\[3,0,0,3,0\]\]/,'Paulo 22nd day must be represented');
 
 assert.match(app,/function\s+renderFX\s*\(/,'app must render FX');
 assert.match(app,/function\s+fxClassifyDay\s*\(/,'app must classify daily performance');
