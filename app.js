@@ -16,6 +16,7 @@ const couplesRank=()=>[...el].sort((a,b)=>b.c-a.c||b.s-a.s);
 const vgvRank=()=>[...el].sort((a,b)=>b.v-a.v||b.s-a.s);
 const cap=captainRank()[0];
 const race=couplesRank()[0];
+const raceWinner=P.find(p=>p.n==='Ricardo')||race;
 const team=Math.round(S.couples/E*M);
 
 const k=(l,v,s,t='c')=>`<div class="card kpi"><small>${l}</small><b class="${t}">${v}</b><span class="muted">${s}</span></div>`;
@@ -116,12 +117,12 @@ function cinema(){
   const vgvPct=Math.min(100,S.vgv/metaVgv*100);
 
   iCap.textContent=`${cap.n} • ${cap.w}`;
-  i22.textContent=`${race.n} • ${race.c}/22`;
+  i22.textContent=`${raceWinner.n} • VENCEDOR`;
   iProj.textContent=team+' casais';
-  missionText.innerHTML=`<b>${S.couples} casais</b>, <b>${S.sales} vendas</b> e <b>${money(S.vgv)}</b> em VGV. ${race.n} está a <b>${Math.max(0,22-race.c)} casal</b> do Livre do Mês.`;
+  missionText.innerHTML=`<b>${S.couples} casais</b>, <b>${S.sales} vendas</b> e <b>${money(S.vgv)}</b> em VGV. <b>${raceWinner.n}</b> venceu a Corrida dos 22; ${race.n} lidera o volume mensal com <b>${race.c} casais</b>.`;
 
   heroLeaderName.textContent=cap.n;
-  heroLeaderSub.textContent=`CAPITÃO DA SEMANA • TOP 1 EM CASAIS • ${race.c}/22`;
+  heroLeaderSub.textContent=`CAPITÃO DA SEMANA • ${cap.w} CASAIS NA SEMANA`;
   goalCouplesText.textContent=`${S.couples} / ${metaCouples} • ${pct(couplesPct)}`;
   goalSalesText.textContent=`${S.sales} / ${metaSales} • ${pct(salesPct)}`;
   goalVgvText.textContent=`${money(S.vgv)} / R$ 8,5 mi • ${pct(vgvPct)}`;
@@ -164,8 +165,8 @@ function renderArenaX(){
       </div>
       <div class="arena-alert">
         <span class="arena-alert-label">ALERTA DE MOVIMENTO</span>
-        <strong>${raceGap===0?`${race.n} bateu 22!`:`${race.n} está a ${raceGap} casal${raceGap===1?'':'ais'} do Livre do Mês`}</strong>
-        <p>${chase.n} está a ${chaseGap} casal${chaseGap===1?'':'ais'} do Top 1 mensal.</p>
+        <strong>Ricardo venceu a Corrida dos 22!</strong>
+        <p>${race.n} lidera o volume mensal com ${race.c} casais; ${raceWinner.n} foi o primeiro a atingir 22.</p>
         <em>Cada casal muda o ranking.</em>
       </div>
     </div>`;
@@ -186,7 +187,7 @@ function dash(){
   const sec=captainRank()[1];
   renderArenaX();
 
-  free.innerHTML=`<span class="badge g">CORRIDA DOS 22 • LIVRE DO MÊS</span><div class="big"><b>${race.n}</b><span class="g">${race.c} / 22</span></div><div class="muted">O primeiro captador a 22 ganha liberdade de horário no mês, conforme alinhamento.</div><div class="prog"><i style="width:${Math.min(100,race.c/22*100)}%"></i></div><small class="muted">Falta ${Math.max(0,22-race.c)} casal.</small>`;
+  free.innerHTML=`<span class="badge g">CORRIDA DOS 22 • LIVRE DO MÊS</span><div class="big"><b>${raceWinner.n}</b><span class="g">VENCEDOR</span></div><div class="muted">${raceWinner.n} foi o primeiro captador a atingir 22 casais e conquistou a liberdade de horário no mês.</div><div class="prog"><i style="width:100%"></i></div><small class="muted">🏆 Conquista confirmada • ${race.n} é o líder atual de volume com ${race.c} casais.</small>`;
 
   const month=couplesRank();
   bars('top',month.slice(0,8).map(p=>[p.n,p.c]));
@@ -194,7 +195,7 @@ function dash(){
     ins('Projeção da equipe',`Ritmo atual: ${team} casais até 30/09.`)+
     ins('Capitão da semana',`${cap.n} lidera com ${cap.w} casais; ${sec.n} vem com ${sec.w}.`)+
     ins('Top VGV',`${vgvRank()[0].n} lidera com ${moneyFull(vgvRank()[0].v)}.`)+
-    ins('Corrida dos 22',`${race.n} está com ${race.c} e precisa de ${Math.max(0,22-race.c)}.`)+
+    ins('Corrida dos 22',`${raceWinner.n} venceu a disputa; ${race.n} lidera o volume atual com ${race.c} casais.`)+
     ins('Custo real',`${moneyFull(S.gift/S.couples)} por casal.`);
 }
 
@@ -231,6 +232,78 @@ function individual(){
   cc.innerHTML=`Você está com <b>${p.c} casais</b>. ${p.e?`Faltam <b>${Math.max(0,22-p.c)}</b> para 22 e a disputa do Livre do Mês.`:'Como Sub-líder, seu foco é elevar o ritmo da equipe.'} Sua projeção é <b>${p.p} casais</b>. Para 35, precisa de <b>${n35.toFixed(1).replace('.',',')}</b>/dia; para 50, <b>${n50.toFixed(1).replace('.',',')}</b>/dia.`;
   const strong=cv(p)>=20?'Conversão':p.q/Math.max(p.c,1)>=.7?'Qualificação':'Volume';
   cg.innerHTML=`<div><small>Ponto forte</small><b>${strong}</b></div><div><small>Meta de hoje</small><b>${Math.max(2,Math.ceil(n35))} casais</b></div><div><small>Ritmo p/ 50</small><b>${n50.toFixed(1).replace('.',',')}/dia</b></div><div><small>Semana</small><b>${p.w} casais</b></div>`;
+}
+
+
+function diagnosticMetrics(p){
+  const totalDays=el.reduce((a,x)=>a+x.d,0)||1;
+  const totalC=el.reduce((a,x)=>a+x.c,0)||1;
+  const totalS=el.reduce((a,x)=>a+x.s,0);
+  const totalQ=el.reduce((a,x)=>a+x.q,0);
+  const totalV=el.reduce((a,x)=>a+x.v,0);
+  const totalG=el.reduce((a,x)=>a+x.g,0);
+  const avgPace=totalC/totalDays;
+  const avgConv=totalS/totalC*100;
+  const avgQual=totalQ/totalC*100;
+  const avgVgv=totalV/totalC;
+  const avgCost=totalG/totalC;
+  const pace=p.c/Math.max(p.d,1);
+  const conv=cv(p);
+  const qual=p.q/Math.max(p.c,1)*100;
+  const vgv=p.v/Math.max(p.c,1);
+  const cost=co(p);
+  return[
+    {n:'Volume/dia',score:avgPace?pace/avgPace:1,show:'Você: '+pace.toFixed(1).replace('.',',')+' • operação: '+avgPace.toFixed(1).replace('.',',')+' casal/dia'},
+    {n:'Conversão',score:avgConv?conv/avgConv:1,show:'Você: '+pct(conv)+' • operação: '+pct(avgConv)},
+    {n:'Qualificação',score:avgQual?qual/avgQual:1,show:'Você: '+pct(qual)+' • operação: '+pct(avgQual)},
+    {n:'VGV/casal',score:avgVgv?vgv/avgVgv:1,show:'Você: '+moneyFull(vgv)+' • operação: '+moneyFull(avgVgv)},
+    {n:'Custo/casal',score:cost?avgCost/cost:1,show:'Você: '+moneyFull(cost)+' • operação: '+moneyFull(avgCost)}
+  ];
+}
+
+function diagnosticItem(m){
+  const delta=Math.round((m.score-1)*100);
+  const label=(delta>=0?'+':'')+delta+'% vs média';
+  return '<div class="diag-item"><div class="diag-item-top"><b>'+m.n+'</b><span class="diag-score">'+label+'</span></div><p>'+m.show+'</p></div>';
+}
+
+function renderDiagnosis(){
+  if(!document.getElementById('dsel'))return;
+  if(!dsel.options.length)dsel.innerHTML=el.map(p=>'<option>'+p.n+'</option>').join('');
+  const p=el.find(x=>x.n===dsel.value)||el[0];
+  const metrics=diagnosticMetrics(p);
+  const strong=[...metrics].sort((a,b)=>b.score-a.score).slice(0,3);
+  const weak=[...metrics].sort((a,b)=>a.score-b.score).slice(0,3);
+  const weakest=weak[0];
+
+  const actions={
+    'Volume/dia':'Aumentar o número de abordagens e pesquisas por turno. Definir uma meta curta por bloco de horário e acompanhar o ritmo durante o dia.',
+    'Conversão':'Revisar abordagem, convite e transição. Ouvir objeções recorrentes e treinar uma resposta objetiva antes do próximo turno.',
+    'Qualificação':'Reforçar a pesquisa antes da entrada em sala, priorizando renda, perfil e critérios que aumentam a qualidade das fichas.',
+    'VGV/casal':'Buscar perfis com maior potencial de compra e melhorar a leitura do casal antes da entrega para sala.',
+    'Custo/casal':'Revisar o uso de brindes e priorizar os incentivos que geram mais entrada em sala com menor custo.'
+  };
+
+  const coupleProgress=S.couples/metaCouples*100;
+  const salesProgress=S.sales/metaSales*100;
+  const vgvProgress=S.vgv/metaVgv*100;
+  const qRate=S.q/S.couples*100;
+
+  diagName.textContent=p.n;
+  diagTag.textContent='Base até 22/09 • comparação com a média da operação';
+  diagOps.innerHTML=
+    '<div class="diag-op"><small>Meta mais avançada</small><b class="c">Casais '+pct(coupleProgress)+'</b><span>'+S.couples+' de '+metaCouples+'</span></div>'+
+    '<div class="diag-op"><small>Maior atenção na meta</small><b class="a">Vendas '+pct(salesProgress)+'</b><span>'+S.sales+' de '+metaSales+'</span></div>'+
+    '<div class="diag-op"><small>VGV realizado</small><b class="v">'+pct(vgvProgress)+'</b><span>'+moneyFull(S.vgv)+' de R$ 8,5 mi</span></div>'+
+    '<div class="diag-op"><small>Qualificação da operação</small><b class="g">'+pct(qRate)+'</b><span>'+S.q+' Q em '+S.couples+' casais</span></div>';
+
+  diagStrength.innerHTML=strong.map(diagnosticItem).join('');
+  diagWeak.innerHTML=weak.map(diagnosticItem).join('');
+
+  const avgDay=p.c/Math.max(p.d,1);
+  diagAction.innerHTML=
+    '<div class="diag-action-grid"><div><small>PRÓXIMA AÇÃO • '+p.n+'</small><h3>Prioridade: '+weakest.n+'</h3><p>'+actions[weakest.n]+'</p></div>'+
+    '<div class="diag-action-kpis"><div><span>Casais</span><b>'+p.c+'</b></div><div><span>Vendas</span><b>'+p.s+'</b></div><div><span>Ritmo diário</span><b>'+avgDay.toFixed(1).replace('.',',')+'</b></div><div><span>Projeção</span><b>'+p.p+' casais</b></div></div></div>';
 }
 
 function profile(){
@@ -276,6 +349,7 @@ const META={
   dash:['CENTRAL DE MISSÃO','Performance da Captação','Onde estamos, onde podemos chegar e o que fazer hoje.'],
   rank:['COMPETITIVIDADE','Ranking de Performance','Resultado e projeção no mesmo lugar.'],
   ind:['PROFESSOR X','Performance Individual','Seu resultado transformado em ação.'],
+  diag:['DIAGNÓSTICO X','Pontos Fortes & Fracos','Leitura comparativa para feedback, desenvolvimento e ação.'],
   perfil:['INTELIGÊNCIA DE PERFIL','Perfil de Casais','Quem chega, quem compra e qual perfil gera resultado.'],
   proj:['FUTURO PROVÁVEL','Projeções','Ritmo atual, +10% e alta performance.'],
   custos:['EFICIÊNCIA FINANCEIRA','Custo de Brinde','Quanto cada casal, Q e venda estão custando.']
@@ -292,10 +366,10 @@ document.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>go(b.dataset.go)
 rm.onchange=rank;
 const opts=P.map(p=>`<option>${p.n}</option>`).join('');
 sel.innerHTML=opts;psel.innerHTML=opts;
-sel.onchange=individual;psel.onchange=projection;
-cinema();radar();dash();renderTodayOps();renderMetaPace();renderDailyEvolution();rank();individual();profile();projection();costs();
+sel.onchange=individual;psel.onchange=projection;dsel.onchange=renderDiagnosis;
+cinema();radar();dash();renderTodayOps();renderMetaPace();renderDailyEvolution();rank();individual();renderDiagnosis();profile();projection();costs();
 
-const swVersion='setembrox-v20-data-2209';
+const swVersion='setembrox-v21-diagnostic';
 const canRegisterSw=location.protocol==='https:'||location.hostname==='localhost'||location.hostname==='127.0.0.1';
 if('serviceWorker'in navigator&&canRegisterSw){
   navigator.serviceWorker.register(`./sw.js?v=${swVersion}`,{updateViaCache:'none'})
