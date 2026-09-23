@@ -138,7 +138,7 @@
 <section id="fx" class="sec">
   <div class="fx-hero">
     <div class="fx-head">
-      <div><div class="eye">FX • FEEDBACK EXPERIENCE</div><h3>Raio-X de Performance — <span id="fxName">—</span></h3><p>Abra o mês inteiro, encontre padrões e conduza um feedback com evidência, contexto e direção.</p></div>
+      <div><div class="eye">FX • FEEDBACK EXPERIENCE</div><h3>Raio-X de Performance — <span id="fxName">—</span></h3><span id="fxValidation" class="fx-validate">VALIDANDO DADOS...</span><p>Abra o mês inteiro, encontre padrões e conduza um feedback com evidência, contexto e direção.</p></div>
       <div class="fx-select"><small>Profissional</small><select id="fxSel"></select></div>
     </div>
     <div class="fx-stagebar">
@@ -228,7 +228,9 @@
   <button class="active" data-go="dash">⌁<br>Início</button><button data-go="rank">◆<br>Ranking</button><button data-go="ind">◎<br>Individual</button><button data-go="fx">FX<br>FX</button><button data-go="diag">✦<br>Diagnóstico</button><button data-go="perfil">◉<br>Perfil</button><button data-go="proj">↗<br>Projeção</button><button data-go="custos">◈<br>Custos</button>
 </nav>
 
-<script src="./fx-data.js" defer></script>\n<script src="./app.js" defer></script>
+<script src="./fx-data.js" defer></script>
+<script src="./app.js" defer></script>
+<script src="./fx-engine.js" defer></script>
 <script src="./sales-count-fix.js" defer></script>
 <script>
 if ("serviceWorker" in navigator) { window.addEventListener("load", () => navigator.serviceWorker.register("./sw.js", {scope:"./"}).catch(console.error)); }
