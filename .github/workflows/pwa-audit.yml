@@ -18,3 +18,4 @@ jobs:
         run: |
           node tests/pwa-audit.mjs
           node tests/ops-dashboard.mjs
+          node tests/fx-audit.mjs
