@@ -1,0 +1,25 @@
+/* SETEMBRO X — Diagnóstico de performance */
+.diag-hero{position:relative;overflow:hidden;padding:22px;border-color:rgba(24,231,255,.3);background:radial-gradient(circle at 90% 0%,rgba(139,92,255,.16),transparent 35%),radial-gradient(circle at 10% 0%,rgba(24,231,255,.11),transparent 30%),linear-gradient(145deg,#0c1734,#0b0d25)}
+.diag-hero:after{content:"";position:absolute;left:0;right:0;bottom:0;height:1px;background:linear-gradient(90deg,transparent,#18e7ff,#8b5cff,transparent)}
+.diag-hero-top{display:flex;justify-content:space-between;align-items:flex-start;gap:16px}
+.diag-hero h3{margin:5px 0 4px;font-size:24px}.diag-hero p{margin:0;color:#91a0c5}
+.diag-select-wrap{min-width:230px}.diag-select-wrap small{display:block;margin-bottom:6px;color:#7f91b8;font-size:9px;text-transform:uppercase;letter-spacing:.1em}.diag-select-wrap select{width:100%}
+.diag-ops{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:12px 0}
+.diag-op{padding:14px;border:1px solid rgba(255,255,255,.07);border-radius:15px;background:rgba(255,255,255,.03)}
+.diag-op small{display:block;color:#8493b8;font-size:9px;text-transform:uppercase;letter-spacing:.08em}.diag-op b{display:block;margin:6px 0 2px;font-size:21px}.diag-op span{font-size:9px;color:#9cacca}
+.diag-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}
+.diag-panel{padding:18px;border:1px solid rgba(255,255,255,.08);border-radius:19px;background:linear-gradient(145deg,rgba(14,22,48,.95),rgba(8,12,28,.95));box-shadow:0 20px 55px rgba(0,0,0,.25)}
+.diag-panel.strong{border-color:rgba(56,240,166,.28);background:radial-gradient(circle at 90% 0%,rgba(56,240,166,.08),transparent 34%),linear-gradient(145deg,#0c1d26,#090e20)}
+.diag-panel.weak{border-color:rgba(255,189,74,.27);background:radial-gradient(circle at 90% 0%,rgba(255,189,74,.08),transparent 34%),linear-gradient(145deg,#211a1a,#0b0e20)}
+.diag-panel-head{display:flex;justify-content:space-between;gap:10px;align-items:center;margin-bottom:12px}.diag-panel-head h3{margin:0;font-size:16px}.diag-panel-head span{font-size:9px;color:#8593b6}
+.diag-list{display:grid;gap:9px}.diag-item{padding:12px 13px;border:1px solid rgba(255,255,255,.065);border-radius:14px;background:rgba(255,255,255,.025)}
+.diag-item-top{display:flex;justify-content:space-between;align-items:center;gap:10px}.diag-item b{font-size:12px}.diag-score{font-size:10px;font-weight:900;padding:4px 7px;border-radius:99px}
+.strong .diag-score{color:#63f4b8;background:rgba(56,240,166,.09);border:1px solid rgba(56,240,166,.2)}.weak .diag-score{color:#ffd477;background:rgba(255,189,74,.09);border:1px solid rgba(255,189,74,.2)}
+.diag-item p{margin:6px 0 0;color:#92a0c1;font-size:10px;line-height:1.5}
+.diag-action{margin-top:12px;padding:18px;border:1px solid rgba(139,92,255,.3);border-radius:19px;background:radial-gradient(circle at 85% 15%,rgba(139,92,255,.12),transparent 32%),linear-gradient(145deg,#12142f,#090d21)}
+.diag-action-grid{display:grid;grid-template-columns:1.2fr .8fr;gap:15px;align-items:center}.diag-action small{color:#b895ff;font-size:9px;font-weight:900;letter-spacing:.13em;text-transform:uppercase}.diag-action h3{margin:5px 0 4px;font-size:19px}.diag-action p{margin:0;color:#9aa8ca;font-size:11px;line-height:1.55}
+.diag-action-kpis{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}.diag-action-kpis div{padding:10px;border:1px solid rgba(255,255,255,.07);border-radius:12px;background:rgba(255,255,255,.025)}.diag-action-kpis span{display:block;font-size:8px;color:#8190b2;text-transform:uppercase}.diag-action-kpis b{display:block;margin-top:3px;font-size:14px}
+.diag-name{color:#fff}.diag-tag{display:inline-flex;margin-top:9px;padding:4px 7px;border-radius:99px;border:1px solid rgba(24,231,255,.2);background:rgba(24,231,255,.06);color:#75eaff;font-size:9px;font-weight:900;letter-spacing:.08em}
+@media(max-width:1000px){.diag-ops{grid-template-columns:repeat(2,1fr)}.diag-action-grid{grid-template-columns:1fr}}
+@media(max-width:740px){.diag-hero-top{flex-direction:column}.diag-select-wrap{width:100%;min-width:0}.diag-grid{grid-template-columns:1fr}.bottom{grid-template-columns:repeat(7,1fr)!important}.bottom button{font-size:8px!important}}
+@media(max-width:480px){.diag-ops{grid-template-columns:1fr}.diag-hero{padding:17px}.diag-action-kpis{grid-template-columns:1fr}}
