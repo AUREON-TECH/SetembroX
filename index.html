@@ -16,7 +16,7 @@
 <link rel="stylesheet" href="./arena-x.css">
 <link rel="stylesheet" href="./ops-dashboard.css?v=1">
 <link rel="stylesheet" href="./mobile-fix.css?v=1">
-<link rel="stylesheet" href="./diagnostic.css?v=1">
+<link rel="stylesheet" href="./diagnostic.css?v=1">\n<link rel="stylesheet" href="./fx.css?v=1">
 </head>
 <body>
 <div class="cin future-cin" id="cin">
@@ -76,7 +76,7 @@
   <nav class="nav">
     <button class="active" data-go="dash">⌁ &nbsp;Central</button>
     <button data-go="rank">◆ &nbsp;Ranking</button>
-    <button data-go="ind">◎ &nbsp;Individual</button>
+    <button data-go="ind">◎ &nbsp;Individual</button>\n    <button data-go="fx">FX &nbsp;Feedback Experience</button>
     <button data-go="diag">✦ &nbsp;Pontos Fortes & Fracos</button>
     <button data-go="perfil">◉ &nbsp;Perfil de Casais</button>
     <button data-go="proj">↗ &nbsp;Projeções</button>
@@ -135,6 +135,52 @@
   <div class="card coach"><div class="chead"><div class="px">PX</div><div><div class="eye">PROFESSOR X</div><h3 style="margin:2px 0">Seu treinador de performance</h3></div></div><div class="ccopy" id="cc"></div><div class="cgrid" id="cg"></div></div>
 </section>
 
+<section id="fx" class="sec">
+  <div class="fx-hero">
+    <div class="fx-head">
+      <div><div class="eye">FX • FEEDBACK EXPERIENCE</div><h3>Raio-X de Performance — <span id="fxName">—</span></h3><p>Abra o mês inteiro, encontre padrões e conduza um feedback com evidência, contexto e direção.</p></div>
+      <div class="fx-select"><small>Profissional</small><select id="fxSel"></select></div>
+    </div>
+    <div class="fx-stagebar">
+      <div class="fx-stage"><small>ETAPA 1</small><b>Constância + resultado</b></div>
+      <div class="fx-stage"><small>ETAPA 2</small><b>Diagnóstico + impulsionador</b></div>
+      <div class="fx-stage"><small>ETAPA 3</small><b>Conclusão para conversa</b></div>
+    </div>
+  </div>
+
+  <div class="fx-grid">
+    <div class="fx-card">
+      <div class="fx-title"><h3>Etapa 1 • O mês em movimento</h3><span>linha = casais • pontos verdes = vendas</span></div>
+      <div class="fx-kpis" id="fxKpis"></div>
+      <div class="fx-chartbox" id="fxChart"></div>
+    </div>
+    <div class="fx-card">
+      <div class="fx-title"><h3>Etapa 2 • Impulsionador</h3><span>o que mais move o resultado</span></div>
+      <div class="fx-driver" id="fxDriver"></div>
+      <div class="fx-list" id="fxPositive"></div>
+    </div>
+  </div>
+
+  <div class="fx-grid">
+    <div class="fx-card">
+      <div class="fx-title"><h3>Pontos positivos</h3><span>o que deve ser repetido</span></div>
+      <div class="fx-list" id="fxPositiveMirror"></div>
+      <div class="fx-list" id="fxNegative"></div>
+    </div>
+    <div class="fx-card">
+      <div class="fx-title"><h3>Pontos incógnitos</h3><span>perguntas antes de concluir</span></div>
+      <div class="fx-list" id="fxUnknown"></div>
+    </div>
+  </div>
+
+  <div class="fx-card fx-daily-wrap">
+    <div class="fx-title"><h3>Calendário de evidências • 01 a 22/09</h3><span>Captação • Sala/Conversão • Equilibrado</span></div>
+    <div class="fx-daily" id="fxDaily"></div>
+  </div>
+
+  <div class="fx-conclusion" id="fxConclusion"></div>
+</section>
+
 <section id="diag" class="sec">
   <div class="card diag-hero">
     <div class="diag-hero-top">
@@ -179,10 +225,10 @@
 </div>
 
 <nav class="bottom">
-  <button class="active" data-go="dash">⌁<br>Início</button><button data-go="rank">◆<br>Ranking</button><button data-go="ind">◎<br>Individual</button><button data-go="diag">✦<br>Diagnóstico</button><button data-go="perfil">◉<br>Perfil</button><button data-go="proj">↗<br>Projeção</button><button data-go="custos">◈<br>Custos</button>
+  <button class="active" data-go="dash">⌁<br>Início</button><button data-go="rank">◆<br>Ranking</button><button data-go="ind">◎<br>Individual</button><button data-go="fx">FX<br>FX</button><button data-go="diag">✦<br>Diagnóstico</button><button data-go="perfil">◉<br>Perfil</button><button data-go="proj">↗<br>Projeção</button><button data-go="custos">◈<br>Custos</button>
 </nav>
 
-<script src="./app.js" defer></script>
+<script src="./fx-data.js" defer></script>\n<script src="./app.js" defer></script>
 <script src="./sales-count-fix.js" defer></script>
 <script>
 if ("serviceWorker" in navigator) { window.addEventListener("load", () => navigator.serviceWorker.register("./sw.js", {scope:"./"}).catch(console.error)); }
