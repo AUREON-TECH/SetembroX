@@ -11,7 +11,7 @@ O SETEMBRO X transforma dados da captação em leitura de performance e ação p
 - Radar da Disputa com Top 5 do Capitão da Semana, VGV e Casais
 - Perfil de Casais e Perfil Ideal do Mês
 - Ranking por casais, vendas, VGV, conversão, Q, MQ e custo
-- Performance Individual
+- Performance Individual\n- FX — Feedback Experience: constância diária, gráfico, conversão, impulsionador, sinais Captação/Sala/Equilibrado e conclusão de performance
 - Pontos Fortes & Fracos — diagnóstico comparativo por profissional com ação recomendada
 - Professor X — treinador de performance baseado nos indicadores
 - Projeções: cenário atual, +10% e alta performance +25%
