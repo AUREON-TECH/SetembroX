@@ -236,123 +236,6 @@ function individual(){
 
 
 
-function fxClassifyDay(c,s){
-  if(c===0)return{kind:'capture',label:'CAPTAÇÃO',title:'Sem casal',desc:'Sinal de captação: não houve geração de casal no dia. Confirmar escala/folga antes de atribuir responsabilidade.'};
-  if(c===1){
-    if(s>0)return{kind:'capture',label:'CAPTAÇÃO',title:'Converteu, mas com pouco volume',desc:'Houve venda, porém o volume ficou em apenas 1 casal. O resultado salvou o dia, mas a oportunidade gerada foi baixa.'};
-    return{kind:'capture',label:'CAPTAÇÃO',title:'Baixo volume',desc:'1 casal e nenhuma venda: sinal de baixa geração de oportunidade pelo captador.'};
-  }
-  if(c>=2&&s===0){
-    return{kind:'room',label:'SALA/CONVERSÃO',title:c>=3?'Volume forte sem venda':'Volume sem transformação',desc:(c>=3?'Indício forte':'Indício')+' para revisar qualidade do perfil, transição e desempenho da sala. O dado isolado não prova culpa da sala.'};
-  }
-  return{kind:'ok',label:'EQUILIBRADO',title:c>=3?'Volume + resultado':'Resultado convertido',desc:'Volume e venda apareceram juntos. Sinal de que captação, transição e conversão funcionaram no mesmo dia.'};
-}
-
-function fxTotals(rows){
-  return rows.reduce((a,r)=>{
-    a.c+=r[0];a.s+=r[1];a.v+=r[2];a.q+=r[3];a.nq+=r[4];
-    if(r[0]>0)a.active++;
-    if(r[0]===0)a.zero++;
-    if(r[1]>0)a.result++;
-    if(r[0]>0&&r[1]===0)a.activeNoSale++;
-    const k=fxClassifyDay(r[0],r[1]).kind;a[k]++;
-    return a;
-  },{c:0,s:0,v:0,q:0,nq:0,active:0,zero:0,result:0,activeNoSale:0,capture:0,room:0,ok:0});
-}
-
-function fxChartSvg(rows){
-  const W=880,H=220,L=34,Rt=14,T=20,B=30,mx=Math.max(4,...rows.map(r=>r[0]));
-  const x=i=>L+(W-L-Rt)*(i/(rows.length-1));
-  const y=v=>T+(H-T-B)*(1-v/mx);
-  const pts=rows.map((r,i)=>x(i).toFixed(1)+','+y(r[0]).toFixed(1)).join(' ');
-  const grid=[0,1,2,3,4].filter(v=>v<=mx).map(v=>'<line class="fx-axis" x1="'+L+'" y1="'+y(v)+'" x2="'+(W-Rt)+'" y2="'+y(v)+'"/><text class="fx-label" x="4" y="'+(y(v)+3)+'">'+v+'</text>').join('');
-  const labels=rows.map((r,i)=>(i%3===0||i===rows.length-1)?'<text class="fx-label" x="'+(x(i)-5)+'" y="'+(H-8)+'">'+(i+1)+'</text>':'').join('');
-  const sales=rows.map((r,i)=>r[1]>0?'<circle class="fx-sale-dot" cx="'+x(i)+'" cy="'+Math.max(T+5,y(r[0])-10)+'" r="'+Math.min(8,4+r[1])+'"><title>Dia '+(i+1)+': '+r[1]+' venda(s)</title></circle>':'').join('');
-  return '<svg class="fx-chart" viewBox="0 0 '+W+' '+H+'" role="img" aria-label="Gráfico de constância e vendas">'+grid+'<polyline class="fx-line" points="'+pts+'"/>'+sales+labels+'</svg>';
-}
-
-function fxInsight(title,text,type){
-  return '<div class="fx-insight fx-'+type+'"><b>'+title+'</b><p>'+text+'</p></div>';
-}
-
-function renderFX(){
-  const sel=document.getElementById('fxSel');
-  if(!sel||typeof FX_DAILY==='undefined')return;
-  if(!sel.options.length)sel.innerHTML=Object.keys(FX_DAILY).filter(n=>n!=='Felipe').map(n=>'<option>'+n+'</option>').join('');
-  const name=sel.value||'Paulo';
-  const rows=FX_DAILY[name]||[];
-  const t=fxTotals(rows);
-  const period=rows.length||1;
-  const consistency=t.active/period*100;
-  const conversion=t.c?t.s/t.c*100:0;
-  const qRate=t.c?t.q/t.c*100:0;
-  const avgActive=t.active?t.c/t.active:0;
-  const avgTicket=t.s?t.v/t.s:0;
-  const bestCouples=Math.max(...rows.map(r=>r[0]),0);
-  const bestDays=rows.map((r,i)=>r[0]===bestCouples?i+1:null).filter(Boolean);
-  const resultDays=rows.map((r,i)=>r[1]>0?i+1:null).filter(Boolean);
-  const zeroDays=rows.map((r,i)=>r[0]===0?i+1:null).filter(Boolean);
-  const highNoSale=rows.map((r,i)=>r[0]>=3&&r[1]===0?i+1:null).filter(Boolean);
-
-  const opConv=S.sales/S.couples*100;
-  const opQ=S.q/S.couples*100;
-  let driver='Constância';
-  let driverText='O maior impulsionador atual é manter presença produtiva e repetir os dias em que o volume apareceu.';
-  if(conversion>=opConv&&t.s>0){driver='Conversão';driverText='A conversão está no nível ou acima da operação. O próximo salto vem de aumentar volume sem perder qualidade.'}
-  else if(qRate>=opQ){driver='Qualificação';driverText='A qualidade dos casais é uma força. O ganho agora depende de transformar esse perfil em mais resultado.'}
-  else if(consistency<60){driver='Ritmo';driverText='O principal impulsionador precisa ser constância: mais dias com geração de casal antes de cobrar conversão.'}
-
-  const positives=[];
-  positives.push(['Constância',t.active+' de '+period+' dias com casal ('+pct(consistency)+').']);
-  if(qRate>=60)positives.push(['Qualificação',t.q+' Q em '+t.c+' casais ('+pct(qRate)+').']);
-  if(t.s>0)positives.push(['Dias que converteram',resultDays.length+' dias com venda: '+resultDays.map(d=>String(d).padStart(2,'0')+'/09').join(', ')+'.']);
-  if(bestCouples>0)positives.push(['Pico de volume','Melhor marca diária: '+bestCouples+' casais nos dias '+bestDays.join(', ')+'.']);
-
-  const negatives=[];
-  negatives.push(['Dias zerados',t.zero+' dias sem casal: '+(zeroDays.length?zeroDays.join(', '):'nenhum')+'. Confirmar escala/folga antes da leitura.']);
-  negatives.push(['Dias ativos sem venda',t.activeNoSale+' dias tiveram casal, mas nenhuma venda.']);
-  if(conversion<opConv)negatives.push(['Conversão abaixo da operação',pct(conversion)+' no profissional contra '+pct(opConv)+' na operação.']);
-  if(highNoSale.length)negatives.push(['Volume forte sem resultado','3+ casais e zero venda nos dias '+highNoSale.join(', ')+'.']);
-
-  const unknowns=[];
-  if(highNoSale.length)unknowns.push(['Onde a cadeia quebrou?','Nos dias de alto volume sem venda, investigar perfil real do casal, transição, liner/closer e contexto da sala.']);
-  if(resultDays.length)unknowns.push(['O que funcionou nos dias de venda?','Comparar abordagem, ponto, horário, perfil do casal e sala nos dias '+resultDays.join(', ')+' para identificar padrão replicável.']);
-  if(zeroDays.length)unknowns.push(['Zero foi falha ou escala?','A planilha mostra zero produção, mas não informa sozinha se houve folga, ausência, ponto fechado ou falta de execução.']);
-
-  let profile='Performance em desenvolvimento';
-  if(consistency>=70&&conversion<15)profile='Constante, porém com baixa transformação';
-  else if(consistency<50)profile='Baixa constância operacional';
-  else if(consistency>=60&&conversion>=20)profile='Boa transformação com base para escalar';
-
-  let priority='Equilibrar volume e transformação';
-  if(t.capture>t.room+2)priority='Aumentar volume e constância de captação';
-  else if(t.room>t.capture)priority='Revisar transformação após a entrada em sala';
-
-  const fxName=document.getElementById('fxName');
-  if(fxName)fxName.textContent=name;
-  document.getElementById('fxKpis').innerHTML=
-    '<div class="fx-kpi"><small>Casais</small><b>'+t.c+'</b><span>'+avgActive.toFixed(1).replace('.',',')+' por dia ativo</span></div>'+
-    '<div class="fx-kpi"><small>Vendas</small><b>'+t.s+'</b><span>'+pct(conversion)+' conversão</span></div>'+
-    '<div class="fx-kpi"><small>VGV</small><b>'+moneyFull(t.v)+'</b><span>'+moneyFull(avgTicket)+' ticket/venda</span></div>'+
-    '<div class="fx-kpi"><small>Constância</small><b>'+pct(consistency)+'</b><span>'+t.active+' dias com casal • '+t.zero+' zerados</span></div>';
-  document.getElementById('fxChart').innerHTML=fxChartSvg(rows);
-  document.getElementById('fxDriver').innerHTML='<small>IMPULSIONADOR</small><h3>'+driver+'</h3><p>'+driverText+'</p>';
-  document.getElementById('fxPositive').innerHTML=positives.slice(0,4).map(x=>fxInsight(x[0],x[1],'positive')).join('');
-  document.getElementById('fxNegative').innerHTML=negatives.slice(0,4).map(x=>fxInsight(x[0],x[1],'negative')).join('');
-  document.getElementById('fxUnknown').innerHTML=unknowns.map(x=>fxInsight(x[0],x[1],'unknown')).join('');
-
-  document.getElementById('fxDaily').innerHTML=rows.map((r,i)=>{
-    const c=fxClassifyDay(r[0],r[1]);
-    return '<div class="fx-day"><div class="fx-day-top"><b>'+String(i+1).padStart(2,'0')+'/09</b><span class="fx-signal '+c.kind+'">'+c.label+'</span></div>'+
-      '<div class="fx-day-metrics"><div><small>Casais</small><b>'+r[0]+'</b></div><div><small>Vendas</small><b>'+r[1]+'</b></div><div><small>VGV</small><b>'+moneyFull(r[2])+'</b></div></div>'+
-      '<p><b>'+c.title+'.</b> '+c.desc+'</p></div>';
-  }).join('');
-
-  document.getElementById('fxConclusion').innerHTML=
-    '<div class="fx-conclusion-grid"><div><small>ETAPA 3 • CONCLUSÃO FX</small><h3>'+profile+'</h3><p><b>Prioridade da conversa:</b> '+priority+'. O diagnóstico usa sinais do mês para orientar perguntas, metas e acompanhamento — não para provar culpa de um setor ou de uma pessoa.</p><p class="human">A FX não toma decisão automática de promoção, advertência ou desligamento. A decisão permanece humana e deve considerar contexto, escala, comportamento observado e conversa com o profissional.</p></div>'+
-    '<div class="fx-scoregrid"><div><span>Captação</span><b>'+t.capture+' dias</b></div><div><span>Sala/Conversão</span><b>'+t.room+' dias</b></div><div><span>Equilibrado</span><b>'+t.ok+' dias</b></div><div><span>Q</span><b>'+pct(qRate)+'</b></div></div></div>';
-}
-
 function diagnosticMetrics(p){
   const totalDays=el.reduce((a,x)=>a+x.d,0)||1;
   const totalC=el.reduce((a,x)=>a+x.c,0)||1;
@@ -485,10 +368,10 @@ document.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>go(b.dataset.go)
 rm.onchange=rank;
 const opts=P.map(p=>`<option>${p.n}</option>`).join('');
 sel.innerHTML=opts;psel.innerHTML=opts;
-sel.onchange=individual;psel.onchange=projection;dsel.onchange=renderDiagnosis;document.getElementById('fxSel').onchange=renderFX;
-cinema();radar();dash();renderTodayOps();renderMetaPace();renderDailyEvolution();rank();individual();renderFX();renderDiagnosis();profile();projection();costs();
+sel.onchange=individual;psel.onchange=projection;dsel.onchange=renderDiagnosis;
+cinema();radar();dash();renderTodayOps();renderMetaPace();renderDailyEvolution();rank();individual();renderDiagnosis();profile();projection();costs();
 
-const swVersion='setembrox-v22-fx';
+const swVersion='setembrox-v23-fx-stable';
 const canRegisterSw=location.protocol==='https:'||location.hostname==='localhost'||location.hostname==='127.0.0.1';
 if('serviceWorker'in navigator&&canRegisterSw){
   navigator.serviceWorker.register(`./sw.js?v=${swVersion}`,{updateViaCache:'none'})
