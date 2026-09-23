@@ -45,7 +45,7 @@
   if (typeof renderDailyEvolution === 'function') renderDailyEvolution();
   if (typeof rank === 'function') rank();
   if (typeof individual === 'function') individual();
-  if (typeof renderDiagnosis === 'function') renderDiagnosis();
+  if (typeof renderDiagnosis === 'function') renderDiagnosis();\n  if (typeof renderFX === 'function') renderFX();
   if (typeof profile === 'function') profile();
   if (typeof projection === 'function') projection();
   if (typeof costs === 'function') costs();
