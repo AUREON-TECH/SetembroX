@@ -14,7 +14,7 @@ assert.match(app,/const\s+DAILY\s*=/,'app must carry daily evolution data');
 assert.match(app,/function\s+renderTodayOps\s*\(/,'app must render the Hoje panel');
 assert.match(app,/function\s+renderMetaPace\s*\(/,'app must render the target pace panel');
 assert.match(app,/function\s+renderDailyEvolution\s*\(/,'app must render the daily evolution panel');
-assert.match(app,/\["21",10,1,77200/,'latest daily data must represent 21/09');
+assert.match(app,/\["22",13,1,92000/,'latest daily data must represent 22/09');
 assert.match(app,/metaCouples\s*-\s*S\.couples/,'pace panel must use remaining couples');
 assert.match(app,/metaSales\s*-\s*S\.sales/,'pace panel must use remaining sales');
 assert.match(app,/metaVgv\s*-\s*S\.vgv/,'pace panel must use remaining VGV');
