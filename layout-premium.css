@@ -1,0 +1,212 @@
+/* SETEMBRO X — Layout Premium Sequencial
+   Mantém a entrada aprovada intacta. Atua somente na operação após "Entrar na operação". */
+
+:root{
+  --layout-gap:14px;
+  --layout-radius:18px;
+  --layout-line:rgba(135,154,255,.18);
+  --layout-panel:linear-gradient(145deg,rgba(14,21,48,.94),rgba(7,11,27,.96));
+}
+
+/* Estrutura geral */
+.app{grid-template-columns:248px minmax(0,1fr);align-items:start}
+main{width:100%;max-width:1680px;margin:0 auto;padding:22px 26px 96px;min-width:0}
+.sec.on{display:grid;gap:var(--layout-gap);align-content:start}
+.sec>*{min-width:0}
+.card{min-width:0;border-radius:var(--layout-radius);box-shadow:0 18px 48px rgba(0,0,0,.28)}
+.grid{gap:var(--layout-gap);align-items:stretch}
+.grid>.card{height:100%}
+.pad,.kpi{padding:16px}
+
+/* Cabeçalho operacional */
+.top{
+  position:sticky;top:10px;z-index:60;
+  display:flex;align-items:center;justify-content:space-between;gap:16px;
+  margin:0 0 16px;padding:14px 16px;
+  border:1px solid var(--layout-line);border-radius:18px;
+  background:linear-gradient(120deg,rgba(5,10,27,.92),rgba(14,15,42,.9));
+  backdrop-filter:blur(20px);
+  box-shadow:0 16px 42px rgba(0,0,0,.26);
+}
+.top>div:first-child{min-width:0}
+.top h2{margin:3px 0 1px;font-size:24px;line-height:1.1}
+.top .muted{font-size:11px}
+.flow-badge{
+  display:inline-flex;align-items:center;gap:7px;
+  margin-top:7px;padding:5px 8px;border-radius:999px;
+  border:1px solid rgba(24,231,255,.22);
+  background:rgba(24,231,255,.06);color:#86efff;
+  font-size:8px;font-weight:900;letter-spacing:.12em;text-transform:uppercase
+}
+.flow-badge:before{content:"";width:6px;height:6px;border-radius:50%;background:#38f0a6;box-shadow:0 0 10px #38f0a6}
+
+/* Navegação lateral em sequência */
+aside{width:248px;padding:18px 14px;background:linear-gradient(180deg,rgba(3,6,17,.97),rgba(5,8,22,.96));box-shadow:18px 0 60px rgba(0,0,0,.22)}
+.brand{padding:5px 7px 14px}
+.nav-label{margin:8px 8px 9px;color:#64749d;font-size:8px;font-weight:900;letter-spacing:.16em;text-transform:uppercase}
+.nav{gap:6px}
+.nav button{
+  position:relative;display:flex;align-items:center;gap:10px;
+  width:100%;min-height:42px;padding:10px 11px;
+  border-radius:12px;color:#8f9dc2;
+  font-size:11px;font-weight:700;letter-spacing:.01em
+}
+.nav button::first-letter{color:#18e7ff}
+.nav button.active{
+  color:#fff;border-color:rgba(24,231,255,.26);
+  background:linear-gradient(90deg,rgba(24,231,255,.12),rgba(139,92,255,.10));
+  box-shadow:inset 3px 0 #18e7ff,0 8px 24px rgba(0,0,0,.18)
+}
+.nav button.active:after{
+  content:"";position:absolute;right:10px;width:6px;height:6px;border-radius:50%;
+  background:#38f0a6;box-shadow:0 0 10px #38f0a6
+}
+.foot{bottom:14px;font-size:9px}
+
+/* Cards e densidade visual */
+.kpis{grid-template-columns:repeat(4,minmax(0,1fr));margin-bottom:0}
+.kpi{display:flex;flex-direction:column;justify-content:center;min-height:112px}
+.kpi b{font-size:24px}
+.ops-grid{grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr)!important;gap:var(--layout-gap)!important;margin:0!important;align-items:stretch}
+.ops-grid>.ops-card{height:100%;min-height:100%}
+.evo-card{margin:0!important}
+.radar-wrap{margin:0}
+.radar-head{margin:0 0 8px}
+.radar-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--layout-gap)}
+.battle{height:100%;padding:15px}
+.command{grid-template-columns:1fr 1fr;margin:0}
+.command>.card{height:100%}
+.free{display:flex;flex-direction:column;justify-content:center}
+.split{grid-template-columns:1fr 1fr}
+.tri{grid-template-columns:repeat(3,minmax(0,1fr))}
+.title{min-height:36px;margin-bottom:9px}
+.title h3{font-size:15px}
+
+/* Rankings e tabelas */
+#rank>.card{overflow:hidden}
+#rank .tw{border-top:1px solid rgba(255,255,255,.045);margin:0 -17px -17px;padding:0 17px}
+table{min-width:980px}
+th{position:sticky;top:0;background:#0b1024;z-index:2}
+td,th{padding:9px 10px}
+
+/* Individual */
+#ind>.title{
+  margin:0;padding:14px 16px;border:1px solid var(--layout-line);border-radius:16px;
+  background:var(--layout-panel)
+}
+#ind>.title select{min-width:220px}
+#ind .coach{margin:0;min-height:0}
+#ind .cgrid{grid-template-columns:repeat(4,minmax(0,1fr));gap:9px}
+
+/* FX — fechar espaços e seguir etapas */
+#fx{gap:12px}
+.fx-hero{padding:18px}
+.fx-head{align-items:center}
+.fx-stagebar{gap:8px;margin-top:13px}
+.fx-stage{min-height:58px;display:flex;flex-direction:column;justify-content:center}
+.fx-grid{grid-template-columns:minmax(0,1.15fr) minmax(340px,.85fr);align-items:stretch;gap:12px;margin:0}
+.fx-grid>.fx-card{height:100%;min-height:0}
+.fx-card{padding:16px}
+.fx-kpis{grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.fx-chart{min-height:205px}
+.fx-driver{height:100%;display:flex;flex-direction:column;justify-content:center}
+.fx-list{margin-top:8px}
+.fx-daily-wrap{margin:0}
+.fx-daily{grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.fx-day{height:100%;min-height:138px}
+.fx-conclusion{margin:0}
+
+/* Diagnóstico */
+#diag{gap:12px}
+.diag-hero{padding:18px}
+.diag-ops{grid-template-columns:repeat(4,minmax(0,1fr));gap:9px;margin:0}
+.diag-op{height:100%}
+.diag-grid{grid-template-columns:1fr 1fr;align-items:stretch;gap:12px;margin:0}
+.diag-panel{height:100%}
+.diag-action{margin:0}
+.diag-list{gap:8px}
+
+/* Perfil */
+#perfil .hero{margin:0}
+#perfil>.tri{margin-top:0!important}
+#perfil>.split{margin-top:0!important}
+#perfil .pad{height:100%}
+#perfil .bars{gap:8px}
+
+/* Projeção */
+#proj>.tri{margin:0}
+#proj>.card{margin-top:0!important}
+#proj>.card>.title{
+  margin:0 0 12px;padding-bottom:10px;border-bottom:1px solid rgba(255,255,255,.06)
+}
+#proj #tg{grid-template-columns:repeat(3,minmax(0,1fr))}
+
+/* Custos */
+#custos .kpis{margin:0}
+#custos>.split{margin:0}
+#custos .pad{height:100%}
+
+/* Consistência visual em todos os módulos */
+.card,.ops-card,.fx-card,.diag-panel,.diag-action{
+  transition:border-color .18s ease,transform .18s ease,box-shadow .18s ease
+}
+.card:hover,.ops-card:hover,.fx-card:hover,.diag-panel:hover{
+  border-color:rgba(24,231,255,.24);
+  box-shadow:0 20px 52px rgba(0,0,0,.33)
+}
+select{min-height:38px;padding:8px 34px 8px 10px}
+.in{min-height:0}
+.br{grid-template-columns:minmax(105px,145px) minmax(80px,1fr) 84px}
+
+/* Tablet */
+@media(max-width:1180px){
+  .app{grid-template-columns:210px minmax(0,1fr)}
+  aside{width:210px}
+  main{padding:18px 18px 94px}
+  .kpis{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .radar-grid{grid-template-columns:1fr 1fr}
+  .battle.couples{grid-column:1/-1}
+  .fx-grid{grid-template-columns:1fr}
+  .fx-daily{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .diag-ops{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+
+/* Mobile: leitura vertical limpa, sem cards espremidos */
+@media(max-width:740px){
+  main{max-width:none;padding:12px 10px 88px}
+  .top{position:relative;top:auto;margin-bottom:10px;padding:12px}
+  .top h2{font-size:21px}
+  .leaders{display:none}
+  .sec.on{gap:10px}
+  .kpis,.tri,.split,.command,.ops-grid,.radar-grid,.diag-grid,.fx-grid,#proj #tg{grid-template-columns:1fr!important}
+  .kpis{gap:8px}
+  .kpi{min-height:88px;padding:13px}
+  .kpi b{font-size:22px}
+  .radar-grid{gap:9px}
+  .battle.couples{grid-column:auto}
+  .fx-head,.diag-hero-top{align-items:stretch}
+  .fx-select,.diag-select-wrap{width:100%;min-width:0}
+  .fx-kpis,.diag-ops{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .fx-daily{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .fx-day{min-height:0}
+  #ind .cgrid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .bottom{
+    display:flex!important;overflow-x:auto;gap:4px;
+    grid-template-columns:none!important;
+    padding:5px 6px;scrollbar-width:none
+  }
+  .bottom::-webkit-scrollbar{display:none}
+  .bottom button{
+    flex:0 0 auto;min-width:58px;padding:7px 6px!important;
+    font-size:8px!important;white-space:nowrap
+  }
+}
+
+/* Celular estreito */
+@media(max-width:470px){
+  .fx-kpis,.diag-ops{grid-template-columns:1fr}
+  .fx-daily{grid-template-columns:1fr}
+  #ind .cgrid{grid-template-columns:1fr}
+  .br{grid-template-columns:92px 1fr 68px}
+  .fx-hero,.diag-hero,.fx-card,.diag-panel,.diag-action{padding:14px}
+}
