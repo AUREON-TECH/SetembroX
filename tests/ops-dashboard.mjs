@@ -4,6 +4,7 @@ import fs from 'node:fs';
 const html=fs.readFileSync('index.html','utf8');
 const app=fs.readFileSync('app.js','utf8');
 const css=fs.readFileSync('ops-dashboard.css','utf8');
+const diagnosticCss=fs.readFileSync('diagnostic.css','utf8');
 assert.doesNotThrow(()=>new Function(app),'app.js must remain valid JavaScript');
 
 assert.match(html,/id=["']todayOps["']/i,'dashboard must have a Hoje operational panel');
@@ -23,5 +24,15 @@ assert.match(css,/\.ops-grid\s*\{/,'new management panels need dedicated layout 
 assert.match(css,/\.evo-chart\s*\{/,'daily evolution chart needs dedicated styles');
 
 assert.doesNotMatch(html+app,/Batalha por Equipes|Clacion\s*[×xX]\s*Felipe/i,'team battle must not be added');
+
+assert.match(app,/raceWinner\s*=\s*P\.find\([^\n]*Ricardo/i,'Ricardo must be the official winner of the 22 race');
+assert.match(app,/Ricardo venceu a Corrida dos 22|Ricardo.*vencedor/i,'dashboard must identify Ricardo as the winner of the 22 race');
+
+assert.match(html,/data-go=["']diag["']/i,'navigation must expose the strengths and weaknesses tab');
+assert.match(html,/id=["']diag["']/i,'app must have a diagnostic section');
+assert.match(html,/id=["']dsel["']/i,'diagnostic tab must allow selecting a professional');
+assert.match(app,/function\s+renderDiagnosis\s*\(/,'app must render strengths and weaknesses dynamically');
+assert.match(app,/Volume\/dia|Conversão|Qualificação|VGV\/casal|Custo\/casal/i,'diagnostic must compare performance dimensions');
+assert.match(diagnosticCss,/\.diag-grid\s*\{/,'diagnostic tab needs a dedicated premium layout');
 
 console.log('SETEMBRO X operations dashboard audit passed');
