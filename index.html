@@ -16,6 +16,7 @@
 <link rel="stylesheet" href="./arena-x.css">
 <link rel="stylesheet" href="./ops-dashboard.css?v=1">
 <link rel="stylesheet" href="./mobile-fix.css?v=1">
+<link rel="stylesheet" href="./diagnostic.css?v=1">
 </head>
 <body>
 <div class="cin future-cin" id="cin">
@@ -76,6 +77,7 @@
     <button class="active" data-go="dash">⌁ &nbsp;Central</button>
     <button data-go="rank">◆ &nbsp;Ranking</button>
     <button data-go="ind">◎ &nbsp;Individual</button>
+    <button data-go="diag">✦ &nbsp;Pontos Fortes & Fracos</button>
     <button data-go="perfil">◉ &nbsp;Perfil de Casais</button>
     <button data-go="proj">↗ &nbsp;Projeções</button>
     <button data-go="custos">◈ &nbsp;Custo de Brinde</button>
@@ -133,6 +135,21 @@
   <div class="card coach"><div class="chead"><div class="px">PX</div><div><div class="eye">PROFESSOR X</div><h3 style="margin:2px 0">Seu treinador de performance</h3></div></div><div class="ccopy" id="cc"></div><div class="cgrid" id="cg"></div></div>
 </section>
 
+<section id="diag" class="sec">
+  <div class="card diag-hero">
+    <div class="diag-hero-top">
+      <div><div class="eye">DIAGNÓSTICO X</div><h3>Pontos Fortes & Fracos</h3><p>Compare cada profissional com a média da operação e transforme o diagnóstico em ação.</p><span class="diag-tag" id="diagTag"></span></div>
+      <div class="diag-select-wrap"><small>Escolha o profissional</small><select id="dsel"></select></div>
+    </div>
+  </div>
+  <div class="diag-ops" id="diagOps"></div>
+  <div class="diag-grid">
+    <div class="diag-panel strong"><div class="diag-panel-head"><h3>✓ Pontos fortes — <span class="diag-name" id="diagName">—</span></h3><span>acima da média</span></div><div class="diag-list" id="diagStrength"></div></div>
+    <div class="diag-panel weak"><div class="diag-panel-head"><h3>△ Pontos de atenção</h3><span>onde evoluir</span></div><div class="diag-list" id="diagWeak"></div></div>
+  </div>
+  <div class="diag-action" id="diagAction"></div>
+</section>
+
 <section id="perfil" class="sec">
   <div class="card hero"><div class="eye">PERFIL IDEAL DO MÊS</div><h3>Empresários de 40–49 anos com renda de R$ 15 mil+</h3><p>Na base atual, esse segmento tem <b>20 casais</b>, <b>4 vendas</b> e <b class="g">20,0% de conversão</b>. A leitura só usa grupos com amostra mínima de 3 casais.</p></div>
   <div class="grid tri" style="margin-top:12px">
@@ -162,7 +179,7 @@
 </div>
 
 <nav class="bottom">
-  <button class="active" data-go="dash">⌁<br>Início</button><button data-go="rank">◆<br>Ranking</button><button data-go="ind">◎<br>Individual</button><button data-go="perfil">◉<br>Perfil</button><button data-go="proj">↗<br>Projeção</button><button data-go="custos">◈<br>Custos</button>
+  <button class="active" data-go="dash">⌁<br>Início</button><button data-go="rank">◆<br>Ranking</button><button data-go="ind">◎<br>Individual</button><button data-go="diag">✦<br>Diagnóstico</button><button data-go="perfil">◉<br>Perfil</button><button data-go="proj">↗<br>Projeção</button><button data-go="custos">◈<br>Custos</button>
 </nav>
 
 <script src="./app.js" defer></script>
