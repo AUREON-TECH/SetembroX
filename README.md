@@ -12,6 +12,7 @@ O SETEMBRO X transforma dados da captação em leitura de performance e ação p
 - Perfil de Casais e Perfil Ideal do Mês
 - Ranking por casais, vendas, VGV, conversão, Q, MQ e custo
 - Performance Individual
+- Pontos Fortes & Fracos — diagnóstico comparativo por profissional com ação recomendada
 - Professor X — treinador de performance baseado nos indicadores
 - Projeções: cenário atual, +10% e alta performance +25%
 - Custo de Brinde e eficiência de aquisição
@@ -56,6 +57,8 @@ A Central exibe os cinco profissionais mais próximos da liderança em três fre
 - Top 1 Casais — acumulado do mês
 
 O líder aparece destacado e cada concorrente mostra a distância até o primeiro colocado.
+
+Na Corrida dos 22, **Ricardo foi o primeiro profissional a atingir 22 casais** e permanece registrado como vencedor oficial, independentemente do líder atual de volume mensal.
 
 ## Histórico anterior
 
