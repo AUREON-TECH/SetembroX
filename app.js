@@ -485,7 +485,7 @@ document.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>go(b.dataset.go)
 rm.onchange=rank;
 const opts=P.map(p=>`<option>${p.n}</option>`).join('');
 sel.innerHTML=opts;psel.innerHTML=opts;
-sel.onchange=individual;psel.onchange=projection;dsel.onchange=renderDiagnosis;fxSel.onchange=renderFX;
+sel.onchange=individual;psel.onchange=projection;dsel.onchange=renderDiagnosis;document.getElementById('fxSel').onchange=renderFX;
 cinema();radar();dash();renderTodayOps();renderMetaPace();renderDailyEvolution();rank();individual();renderFX();renderDiagnosis();profile();projection();costs();
 
 const swVersion='setembrox-v22-fx';
