@@ -19,3 +19,4 @@ jobs:
           node tests/pwa-audit.mjs
           node tests/ops-dashboard.mjs
           node tests/fx-audit.mjs
+          node tests/layout-premium-audit.mjs
