@@ -346,6 +346,9 @@ function costs(){
   ci.innerHTML=ins('Melhor eficiência',`${a[0].n}: ${moneyFull(co(a[0]))}/casal.`)+ins('Média da operação',`${moneyFull(c)}/casal.`)+ins('Controle','Valores calculados a partir dos brindes efetivos da base oficial.');
 }
 
+const FLOW_ORDER=['dash','rank','ind','fx','diag','perfil','proj','custos'];
+const FLOW_LABEL={dash:'CENTRAL',rank:'RANKING',ind:'INDIVIDUAL',fx:'FX',diag:'DIAGNÓSTICO',perfil:'PERFIL',proj:'PROJEÇÕES',custos:'CUSTOS'};
+
 const META={
   dash:['CENTRAL DE MISSÃO','Performance da Captação','Onde estamos, onde podemos chegar e o que fazer hoje.'],
   rank:['COMPETITIVIDADE','Ranking de Performance','Resultado e projeção no mesmo lugar.'],
@@ -361,6 +364,9 @@ function go(id){
   document.querySelectorAll('.sec').forEach(x=>x.classList.toggle('on',x.id===id));
   document.querySelectorAll('[data-go]').forEach(x=>x.classList.toggle('active',x.dataset.go===id));
   const m=META[id];eye.textContent=m[0];pt.textContent=m[1];ps.textContent=m[2];
+  const step=FLOW_ORDER.indexOf(id)+1;
+  const fb=document.getElementById('flowBadge');
+  if(fb)fb.textContent='ETAPA '+String(step).padStart(2,'0')+' DE '+String(FLOW_ORDER.length).padStart(2,'0')+' • '+FLOW_LABEL[id];
   scrollTo({top:0,behavior:'smooth'});
 }
 
@@ -371,7 +377,7 @@ sel.innerHTML=opts;psel.innerHTML=opts;
 sel.onchange=individual;psel.onchange=projection;dsel.onchange=renderDiagnosis;
 cinema();radar();dash();renderTodayOps();renderMetaPace();renderDailyEvolution();rank();individual();renderDiagnosis();profile();projection();costs();
 
-const swVersion='setembrox-v23-fx-stable';
+const swVersion='setembrox-v24-premium-layout';
 const canRegisterSw=location.protocol==='https:'||location.hostname==='localhost'||location.hostname==='127.0.0.1';
 if('serviceWorker'in navigator&&canRegisterSw){
   navigator.serviceWorker.register(`./sw.js?v=${swVersion}`,{updateViaCache:'none'})
