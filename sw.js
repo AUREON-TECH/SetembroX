@@ -1,6 +1,6 @@
 // Dados oficiais atualizados até 22/09/2026; alteração deste arquivo força atualização do shell.
-const CACHE = 'setembrox-v20-data-2209';
-const CORE = ['./index.html', './styles.css', './entry-v2.css', './arena-x.css', './ops-dashboard.css', './app.js', './sales-count-fix.js', './manifest.webmanifest', './icon.svg', './icon-192.png', './icon-512.png', './icon-maskable-512.png'];
+const CACHE = 'setembrox-v21-diagnostic';
+const CORE = ['./index.html', './styles.css', './entry-v2.css', './arena-x.css', './ops-dashboard.css', './diagnostic.css', './app.js', './sales-count-fix.js', './manifest.webmanifest', './icon.svg', './icon-192.png', './icon-512.png', './icon-maskable-512.png'];
 const SENSITIVE_PARAMS = /(^|_)(token|access_token|refresh_token|password|senha|secret|session|auth|authorization|code|credential|credentials|api_key|apikey)(_|$)/i;
 const PRIVATE_PATHS = /\/(api|auth|login|logout|session|sessions|account|profile|admin)(\/|$)/i;
 
