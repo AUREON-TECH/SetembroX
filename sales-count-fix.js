@@ -1,19 +1,19 @@
-// Contagem oficial de vendas — base até 22/09/2026.
+// Contagem oficial de vendas — base até 24/09/2026.
 // Regra: cada ocorrência de ATIVO em Status do contrato conta como uma venda.
 (() => {
   const salesByPerson = {
-  "Paulo": 4,
+  "Paulo": 5,
   "Ricardo": 2,
-  "Renan": 5,
-  "Otávio": 2,
+  "Renan": 4,
+  "Otávio": 3,
   "André": 1,
   "Manara": 9,
   "Clacion": 7,
-  "Pedro": 3,
+  "Pedro": 2,
   "Márcio": 4,
-  "Jéssica": 3,
+  "Jéssica": 5,
   "Larissa": 17,
-  "Ana Caroline": 6,
+  "Ana Caroline": 7,
   "Matheus Esley": 1,
   "Josyene": 3,
   "Tainá": 0,
@@ -27,10 +27,14 @@
   "Felipe": 0
 };
   const weekSalesByPerson = {
+  "Paulo": 1,
+  "Otávio": 1,
   "Márcio": 1,
+  "Jéssica": 2,
+  "Ana Caroline": 1,
   "Adriano": 1
 };
-  if (typeof S !== 'undefined') S.sales = 78;
+  if (typeof S !== 'undefined') S.sales = 81;
   if (typeof P !== 'undefined') {
     P.forEach((person) => {
       if (Object.prototype.hasOwnProperty.call(salesByPerson, person.n)) person.s = salesByPerson[person.n];
