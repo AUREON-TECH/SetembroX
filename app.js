@@ -1,9 +1,9 @@
-const S={"couples":351,"sales":78,"vgv":6895850,"q":231,"nq":117,"mq":3,"gift":78091.65,"gifts":1011,"activeVgv":6619850,"canceled":3};
-const P=[{"n":"Paulo","r":"Captador","e":1,"c":33,"s":4,"v":343000,"q":22,"nq":11,"g":6871.22,"d":18,"w":4,"ws":0,"wv":0,"p":45},{"n":"Ricardo","r":"Captador","e":1,"c":30,"s":2,"v":184000,"q":22,"nq":8,"g":5999.3,"d":9,"w":0,"ws":0,"wv":0,"p":41},{"n":"Renan","r":"Captador","e":1,"c":28,"s":5,"v":403600,"q":19,"nq":9,"g":5597.38,"d":14,"w":1,"ws":0,"wv":0,"p":38},{"n":"Otávio","r":"Captador","e":1,"c":24,"s":2,"v":154400,"q":14,"nq":9,"g":5087.43,"d":12,"w":2,"ws":0,"wv":0,"p":33},{"n":"André","r":"Captador","e":1,"c":24,"s":1,"v":77200,"q":11,"nq":13,"g":5121.42,"d":11,"w":0,"ws":0,"wv":0,"p":33},{"n":"Manara","r":"Captador","e":1,"c":23,"s":9,"v":711200,"q":17,"nq":6,"g":4975.46,"d":13,"w":2,"ws":0,"wv":0,"p":31},{"n":"Clacion","r":"Captador","e":1,"c":21,"s":7,"v":607300,"q":12,"nq":9,"g":5405.41,"d":13,"w":0,"ws":0,"wv":0,"p":29},{"n":"Pedro","r":"Captador","e":1,"c":19,"s":3,"v":525000,"q":16,"nq":3,"g":5411.37,"d":10,"w":0,"ws":0,"wv":0,"p":26},{"n":"Márcio","r":"Captador","e":1,"c":17,"s":4,"v":352200,"q":9,"nq":7,"g":3351.72,"d":12,"w":2,"ws":1,"wv":92000,"p":23},{"n":"Jéssica","r":"Captador","e":1,"c":16,"s":3,"v":265000,"q":7,"nq":9,"g":4113.54,"d":11,"w":3,"ws":0,"wv":0,"p":22},{"n":"Larissa","r":"Captador","e":1,"c":15,"s":17,"v":1502950,"q":10,"nq":5,"g":2491.87,"d":9,"w":0,"ws":0,"wv":0,"p":20},{"n":"Ana Caroline","r":"Captador","e":1,"c":15,"s":6,"v":548200,"q":12,"nq":3,"g":3959.55,"d":10,"w":0,"ws":0,"wv":0,"p":20},{"n":"Matheus Esley","r":"Captador","e":1,"c":14,"s":1,"v":92000,"q":11,"nq":3,"g":3195.66,"d":9,"w":1,"ws":0,"wv":0,"p":19},{"n":"Josyene","r":"Captador","e":1,"c":13,"s":3,"v":251000,"q":9,"nq":4,"g":2075.91,"d":10,"w":1,"ws":0,"wv":0,"p":18},{"n":"Tainá","r":"Captador","e":1,"c":12,"s":0,"v":0,"q":8,"nq":4,"g":2619.7,"d":8,"w":3,"ws":0,"wv":0,"p":16},{"n":"Suene","r":"Captador","e":1,"c":10,"s":2,"v":176400,"q":7,"nq":3,"g":2843.69,"d":9,"w":0,"ws":0,"wv":0,"p":14},{"n":"Adriano","r":"Captador","e":1,"c":8,"s":1,"v":77200,"q":4,"nq":4,"g":1577.83,"d":7,"w":2,"ws":1,"wv":77200,"p":11},{"n":"Weena","r":"Captador","e":1,"c":7,"s":8,"v":625200,"q":3,"nq":4,"g":1427.83,"d":5,"w":0,"ws":0,"wv":0,"p":10},{"n":"Cássio","r":"Captador","e":1,"c":7,"s":0,"v":0,"q":5,"nq":1,"g":1783.84,"d":3,"w":0,"ws":0,"wv":0,"p":10},{"n":"Letícia","r":"Captador","e":1,"c":7,"s":0,"v":0,"q":6,"nq":1,"g":1829.8,"d":7,"w":2,"ws":0,"wv":0,"p":10},{"n":"Matheus Domingos","r":"Captador","e":1,"c":4,"s":0,"v":0,"q":4,"nq":0,"g":839.9,"d":4,"w":0,"ws":0,"wv":0,"p":5},{"n":"Barbara","r":"Captador","e":1,"c":3,"s":0,"v":0,"q":2,"nq":1,"g":1007.88,"d":3,"w":0,"ws":0,"wv":0,"p":4},{"n":"Felipe","r":"Sub-líder","e":0,"c":1,"s":0,"v":0,"q":1,"nq":0,"g":503.94,"d":1,"w":0,"ws":0,"wv":0,"p":1}];
-const PR={"prof":[["Empresário(a)",70,17.1],["Autônomo(a)",22,4.5],["Advogado (a)",12,16.7],["Engenheiro (a)",11,18.2],["Comerciante(a)",10,0.0],["Engenheiro civil(a)",9,11.1]],"age":[["30–39",137,13.9],["40–49",100,18.0],["Até 29",59,13.6],["50–59",42,9.5],["60+",12,8.3]],"inc":[["R$ 15 mil+",303,14.5],["R$ 10–15 mil",46,13.0],["Até R$ 7 mil",2,50.0]],"car":[["ONIX",19,15.8],["HB20",14,28.6],["COROLLA",13,7.7],["CIVIC",10,10.0],["COMPASS",10,10.0],["ARGO",9,33.3],["HR-V",9,44.4],["T-CROSS",9,11.1]]};
-const DAILY=[["1",4,0,0,3,1,753.94],["2",11,1,367000,4,7,2619.7],["3",11,2,173900,6,5,2247.78],["4",22,3,234000,16,6,4595.51],["5",25,6,537200,18,7,6209.3],["6",17,1,79000,9,8,3757.63],["7",19,2,171000,15,3,5265.41],["8",10,1,77200,7,3,2719.7],["9",14,1,92000,13,1,3191.62],["10",14,1,92000,8,6,2539.75],["11",20,8,617600,16,4,4217.53],["12",30,16,1344200,25,5,7067.23],["13",27,6,473600,15,12,5207.48],["14",17,10,797600,10,7,4279.55],["15",0,0,0,0,0,0],["16",10,2,161000,7,2,2035.81],["17",18,1,92000,10,8,3563.59],["18",13,3,236200,8,4,2301.77],["19",26,3,270000,14,12,6183.34],["20",20,9,911150,13,7,4703.49],["21",10,1,77200,6,4,1963.79],["22",13,1,92000,8,5,2667.73]];
+const S={"couples":374,"sales":81,"vgv":7437450,"q":245,"nq":126,"mq":3,"gift":83723.07,"gifts":1085,"activeVgv":6893450,"canceled":6};
+const P=[{"n":"Paulo","r":"Captador","e":1,"c":37,"s":5,"v":434900,"q":25,"nq":12,"g":7535.16,"d":20,"w":8,"ws":1,"wv":91900,"p":46},{"n":"Ricardo","r":"Captador","e":1,"c":31,"s":2,"v":184000,"q":23,"nq":8,"g":6335.26,"d":10,"w":1,"ws":0,"wv":0,"p":39},{"n":"Renan","r":"Captador","e":1,"c":29,"s":4,"v":403600,"q":20,"nq":9,"g":5697.38,"d":15,"w":2,"ws":0,"wv":0,"p":36},{"n":"Otávio","r":"Captador","e":1,"c":25,"s":3,"v":234400,"q":15,"nq":9,"g":5339.4,"d":13,"w":3,"ws":1,"wv":80000,"p":31},{"n":"André","r":"Captador","e":1,"c":24,"s":1,"v":77200,"q":11,"nq":13,"g":5121.42,"d":11,"w":0,"ws":0,"wv":0,"p":30},{"n":"Manara","r":"Captador","e":1,"c":23,"s":9,"v":711200,"q":17,"nq":6,"g":4975.46,"d":13,"w":2,"ws":0,"wv":0,"p":29},{"n":"Clacion","r":"Captador","e":1,"c":24,"s":7,"v":705300,"q":14,"nq":10,"g":6479.3,"d":15,"w":3,"ws":0,"wv":0,"p":30},{"n":"Pedro","r":"Captador","e":1,"c":20,"s":2,"v":525000,"q":17,"nq":3,"g":5663.34,"d":11,"w":1,"ws":0,"wv":0,"p":25},{"n":"Márcio","r":"Captador","e":1,"c":18,"s":4,"v":352200,"q":10,"nq":7,"g":3551.72,"d":13,"w":3,"ws":1,"wv":92000,"p":22},{"n":"Jéssica","r":"Captador","e":1,"c":19,"s":5,"v":444800,"q":8,"nq":11,"g":4935.46,"d":13,"w":6,"ws":2,"wv":179800,"p":24},{"n":"Larissa","r":"Captador","e":1,"c":15,"s":17,"v":1502950,"q":10,"nq":5,"g":2491.87,"d":9,"w":0,"ws":0,"wv":0,"p":19},{"n":"Ana Caroline","r":"Captador","e":1,"c":16,"s":7,"v":640100,"q":12,"nq":4,"g":4211.52,"d":11,"w":1,"ws":1,"wv":91900,"p":20},{"n":"Matheus Esley","r":"Captador","e":1,"c":14,"s":1,"v":92000,"q":11,"nq":3,"g":3195.66,"d":9,"w":1,"ws":0,"wv":0,"p":18},{"n":"Josyene","r":"Captador","e":1,"c":13,"s":3,"v":251000,"q":9,"nq":4,"g":2075.91,"d":10,"w":1,"ws":0,"wv":0,"p":16},{"n":"Tainá","r":"Captador","e":1,"c":12,"s":0,"v":0,"q":8,"nq":4,"g":2619.7,"d":8,"w":3,"ws":0,"wv":0,"p":15},{"n":"Suene","r":"Captador","e":1,"c":12,"s":2,"v":176400,"q":7,"nq":5,"g":3515.61,"d":10,"w":2,"ws":0,"wv":0,"p":15},{"n":"Adriano","r":"Captador","e":1,"c":11,"s":1,"v":77200,"q":6,"nq":5,"g":2165.76,"d":8,"w":5,"ws":1,"wv":77200,"p":14},{"n":"Weena","r":"Captador","e":1,"c":8,"s":8,"v":625200,"q":4,"nq":4,"g":1679.8,"d":6,"w":1,"ws":0,"wv":0,"p":10},{"n":"Cássio","r":"Captador","e":1,"c":7,"s":0,"v":0,"q":5,"nq":1,"g":1783.84,"d":3,"w":0,"ws":0,"wv":0,"p":9},{"n":"Letícia","r":"Captador","e":1,"c":8,"s":0,"v":0,"q":6,"nq":2,"g":1997.78,"d":8,"w":3,"ws":0,"wv":0,"p":10},{"n":"Matheus Domingos","r":"Captador","e":1,"c":4,"s":0,"v":0,"q":4,"nq":0,"g":839.9,"d":4,"w":0,"ws":0,"wv":0,"p":5},{"n":"Barbara","r":"Captador","e":1,"c":3,"s":0,"v":0,"q":2,"nq":1,"g":1007.88,"d":3,"w":0,"ws":0,"wv":0,"p":4},{"n":"Felipe","r":"Sub-líder","e":0,"c":1,"s":0,"v":0,"q":1,"nq":0,"g":503.94,"d":1,"w":0,"ws":0,"wv":0,"p":1}];
+const PR={"prof":[["Empresário(a)",71,16.9],["Autônomo(a)",26,7.7],["Advogado (a)",13,23.1],["Engenheiro (a)",12,16.7],["Comerciante(a)",10,0],["Engenheiro civil(a)",9,11.1]],"age":[["30–39",145,13.8],["40–49",107,18.7],["Até 29",64,12.5],["50–59",44,6.8],["60+",13,7.7]],"inc":[["R$ 15 mil+",320,14.4],["R$ 10–15 mil",52,11.5],["Até R$ 7 mil",2,50]],"car":[["ONIX",20,15],["HB20",17,17.6],["COROLLA",13,7.7],["ARGO",10,30],["COMPASS",10,10],["HR-V",10,40],["CIVIC",10,10],["T-CROSS",9,11.1]]};
+const DAILY=[["1",4,0,0,3,1,753.94],["2",11,1,367000,4,7,2619.7],["3",11,2,173900,6,5,2247.78],["4",22,2,234000,16,6,4595.51],["5",25,5,537200,18,7,6209.3],["6",17,1,79000,9,8,3757.63],["7",19,2,171000,15,3,5265.41],["8",10,1,77200,7,3,2719.7],["9",14,1,92000,13,1,3191.62],["10",14,1,92000,8,6,2539.75],["11",20,8,617600,16,4,4217.53],["12",30,16,1344200,25,5,7067.23],["13",27,6,473600,15,12,5207.48],["14",17,10,797600,10,7,4279.55],["15",0,0,0,0,0,0],["16",10,2,161000,7,2,2035.81],["17",18,1,92000,10,8,3563.59],["18",13,3,236200,8,4,2301.77],["19",26,3,270000,14,12,6183.34],["20",20,9,911150,13,7,4703.49],["21",10,1,77200,6,4,1963.79],["22",13,1,92000,8,5,2667.73],["23",14,2,179800,9,5,3743.59],["24",9,3,361800,5,4,1887.83]];
 
-const E=22,R=8,M=30;
+const E=24,R=6,M=30;
 const metaCouples=400,metaSales=100,metaVgv=8500000;
 const money=x=>'R$ '+Intl.NumberFormat('pt-BR',{notation:x>=1e6?'compact':'standard',maximumFractionDigits:x>=1e6?2:0}).format(x||0);
 const moneyFull=x=>'R$ '+Intl.NumberFormat('pt-BR',{maximumFractionDigits:0}).format(x||0);
@@ -41,7 +41,9 @@ function fightRows(list,metric,format){
 
 function renderTodayOps(){
   const [day,couples,sales,vgv,q,nq,gift]=DAILY[DAILY.length-1];
-  const leader={n:'Paulo e Jéssica',w:3,ws:0};
+  const idx=Math.max(0,Number(day)-1);
+  const dailyLeaders=(typeof FX_DAILY!=='undefined'?P.map(p=>({n:p.n,c:FX_DAILY[p.n]?.[idx]?.[0]||0,s:FX_DAILY[p.n]?.[idx]?.[1]||0})).sort((a,b)=>b.c-a.c||b.s-a.s):[]);
+  const leader=dailyLeaders[0]||{n:'—',c:0,s:0};
   todayOps.innerHTML=`
     <div class="ops-pad">
       <div class="ops-head"><div><span class="ops-kicker">HOJE • ${day}/09</span><h3>Pulso da operação</h3></div><span class="ops-live"><i></i> FECHAMENTO</span></div>
@@ -51,7 +53,7 @@ function renderTodayOps(){
         <div class="today-stat"><small>VGV</small><b class="v">${moneyFull(vgv)}</b></div>
         <div class="today-stat"><small>Qualificação</small><b>${q} Q • ${nq} NQ</b></div>
       </div>
-      <div class="today-highlight"><div><small>Destaque do dia</small><div class="muted" style="font-size:9px">Brindes: ${moneyFull(gift)}</div></div><strong>${leader.n} • ${leader.w} casais • ${leader.ws} venda</strong></div>
+      <div class="today-highlight"><div><small>Destaque do dia</small><div class="muted" style="font-size:9px">Brindes: ${moneyFull(gift)}</div></div><strong>${leader.n} • ${leader.c} casais • ${leader.s} venda</strong></div>
     </div>`;
 }
 
@@ -72,7 +74,7 @@ function renderMetaPace(){
         <div class="pace-row"><label>Vendas</label><div class="pace-track"><i style="width:${ps}%"></i></div><b>${pct(ps)}</b></div>
         <div class="pace-row"><label>VGV</label><div class="pace-track"><i style="width:${pv}%"></i></div><b>${pct(pv)}</b></div>
       </div>
-      <div class="pace-foot">Ritmo necessário calculado sobre os ${R} dias restantes após a base de 22/09.</div>
+      <div class="pace-foot">Ritmo necessário calculado sobre os ${R} dias restantes após a base de 24/09.</div>
     </div>`;
 }
 
@@ -174,7 +176,7 @@ function renderArenaX(){
 
 function dash(){
   dk.innerHTML=[
-    k('Casais',S.couples,'base oficial até 22/09'),
+    k('Casais',S.couples,'base oficial até 24/09'),
     k('Vendas',S.sales,pct(S.sales/S.couples*100)+' conversão','g'),
     k('VGV',money(S.vgv),money(S.vgv/S.sales)+' ticket','v'),
     k('Q',S.q,pct(S.q/S.couples*100)+' qualificação'),
@@ -291,7 +293,7 @@ function renderDiagnosis(){
   const qRate=S.q/S.couples*100;
 
   diagName.textContent=p.n;
-  diagTag.textContent='Base até 22/09 • comparação com a média da operação';
+  diagTag.textContent='Base até 24/09 • comparação com a média da operação';
   diagOps.innerHTML=
     '<div class="diag-op"><small>Meta mais avançada</small><b class="c">Casais '+pct(coupleProgress)+'</b><span>'+S.couples+' de '+metaCouples+'</span></div>'+
     '<div class="diag-op"><small>Maior atenção na meta</small><b class="a">Vendas '+pct(salesProgress)+'</b><span>'+S.sales+' de '+metaSales+'</span></div>'+
@@ -314,9 +316,9 @@ function profile(){
   bars('cb',PR.car,(v,x)=>v+' • '+x+'%');
   pi.innerHTML=
     ins('Maior VGV por profissão','Empresário(a): R$ 1,76 mi em VGV geral.')+
-    ins('Faixa etária','40–49: 18,0% de conversão em 100 casais; 30–39: 13,9% em 137 casais.')+
-    ins('Carros com força','HR-V: 44,4% de conversão; Argo: 33,3%; HB20: 28,6%.')+
-    ins('Ponto','347 dos 351 registros vieram do Parque Dreams.');
+    ins('Faixa etária','40–49: 18,7% de conversão em 107 casais; 30–39: 13,8% em 145 casais.')+
+    ins('Carros com força','HR-V: 40,0% de conversão; Argo: 30,0%; HB20: 17,6%.')+
+    ins('Ponto','370 dos 374 registros vieram do Parque Dreams.');
 }
 
 function projection(){
@@ -377,7 +379,7 @@ sel.innerHTML=opts;psel.innerHTML=opts;
 sel.onchange=individual;psel.onchange=projection;dsel.onchange=renderDiagnosis;
 cinema();radar();dash();renderTodayOps();renderMetaPace();renderDailyEvolution();rank();individual();renderDiagnosis();profile();projection();costs();
 
-const swVersion='setembrox-v24-premium-layout';
+const swVersion='setembrox-v25-data-2409';
 const canRegisterSw=location.protocol==='https:'||location.hostname==='localhost'||location.hostname==='127.0.0.1';
 if('serviceWorker'in navigator&&canRegisterSw){
   navigator.serviceWorker.register(`./sw.js?v=${swVersion}`,{updateViaCache:'none'})
