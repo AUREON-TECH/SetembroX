@@ -11,7 +11,8 @@ O SETEMBRO X transforma dados da captação em leitura de performance e ação p
 - Radar da Disputa com Top 5 do Capitão da Semana, VGV e Casais
 - Perfil de Casais e Perfil Ideal do Mês
 - Ranking por casais, vendas, VGV, conversão, Q, MQ e custo
-- Performance Individual\n- FX — Feedback Experience: constância diária, gráfico, conversão, impulsionador, sinais Captação/Sala/Equilibrado e conclusão de performance
+- Performance Individual
+- FX — Feedback Experience: constância diária, gráfico, conversão, impulsionador, sinais Captação/Sala/Equilibrado e conclusão de performance
 - Pontos Fortes & Fracos — diagnóstico comparativo por profissional com ação recomendada
 - Professor X — treinador de performance baseado nos indicadores
 - Projeções: cenário atual, +10% e alta performance +25%
@@ -23,22 +24,22 @@ Interface dark premium com azul elétrico, ciano, violeta, magenta, verde de per
 
 ## PWA
 
-O projeto contém `manifest.webmanifest` e `sw.js`, podendo ser instalado como aplicativo em navegadores compatíveis. O cache do PWA foi renovado para a carga oficial de 22/09.
+O projeto contém `manifest.webmanifest` e `sw.js`, podendo ser instalado como aplicativo em navegadores compatíveis. O cache do PWA foi renovado para a carga oficial de 24/09.
 
 ## Dados oficiais
 
-Base atualizada pela planilha oficial `Document(20260923-124359).csv` até **22/09/2026**.
+Base atualizada pela planilha oficial `Document(20260925-133710).csv` até **24/09/2026**.
 
-- 351 casais
-- 231 Q
-- 117 NQ
+- 374 casais
+- 245 Q
+- 126 NQ
 - 3 MQ
-- 78 vendas ativas
-- 3 cancelamentos de contrato
-- R$ 6.895.850 em VGV geral
-- R$ 6.619.850 em VGV ativo após cancelamentos
-- R$ 78.091,65 em custo de brindes
-- R$ 222,48 de custo médio por casal
+- 81 vendas ativas
+- 6 cancelamentos de contrato
+- R$ 7.437.450 em VGV geral
+- R$ 6.893.450 em VGV ativo após cancelamentos
+- R$ 83.723,07 em custo de brindes
+- R$ 223,86 de custo médio por casal
 
 O SETEMBRO X conta cada ocorrência de `ATIVO` como uma venda. Cancelamentos permanecem no histórico e seus valores ficam fora do VGV ativo.
 
