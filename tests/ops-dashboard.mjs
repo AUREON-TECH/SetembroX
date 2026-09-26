@@ -25,7 +25,7 @@ assert.match(css,/\.evo-chart\s*\{/,'daily evolution chart needs dedicated style
 
 assert.doesNotMatch(html+app,/Batalha por Equipes|Clacion\s*[×xX]\s*Felipe/i,'team battle must not be added');
 
-assert.match(app,/raceWinner\s*=\s*P\.find\([^\n]*Ricardo/i,'Ricardo must be the official winner of the 22 race');
+assert.match(app,/raceWinner=.*P\.find\([^\n]*Ricardo/i,'Ricardo must remain the official winner of the 22 race in Promotor view');
 assert.match(app,/Ricardo venceu a Corrida dos 22|Ricardo.*vencedor/i,'dashboard must identify Ricardo as the winner of the 22 race');
 
 assert.match(html,/data-go=["']diag["']/i,'navigation must expose the strengths and weaknesses tab');
