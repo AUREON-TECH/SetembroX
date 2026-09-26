@@ -13,7 +13,11 @@
       if(r[1]>0)a.result++;
       if(r[0]>0&&r[1]===0)a.activeNoSale++;
       if(r[0]===0)a.captureCritical++;
-      else if(r[0]===1){a.capture++; if(r[1]>0)a.lowVolumeSale++;}
+      else if(areaKey!=='promotor'){
+        if(r[1]>0)a.ok++;
+        else if(r[0]===1)a.capture++;
+        else{a.room++;if(r[0]>=3)a.roomStrong++;}
+      }else if(r[0]===1){a.capture++; if(r[1]>0)a.lowVolumeSale++;}
       else if(r[1]===0){a.room++; if(r[0]>=3)a.roomStrong++;}
       else a.ok++;
       return a;
@@ -80,7 +84,7 @@
     const oneWithSale=rows.filter(r=>r[0]===1&&r[1]>0).length;
     const twoPlusNoSale=rows.filter(r=>r[0]>=2&&r[1]===0).length;
     const threePlusNoSale=rows.filter(r=>r[0]>=3&&r[1]===0).length;
-    const captureScore=t.zero*2 + oneNoSale*1.5 + oneWithSale*.5;
+    const captureScore=t.zero*2 + oneNoSale*1.5 + (areaKey==='promotor'?oneWithSale*.5:0);
     const roomScore=twoPlusNoSale + threePlusNoSale*.75;
     const conv=t.c?t.s/t.c*100:0;
     const consistency=t.active/rows.length*100;
@@ -179,6 +183,8 @@
   }
 
   function initFX(){
+    const legend=q('fxLegendText');
+    if(legend)legend.textContent=areaKey==='closer'?'Sem atendimento • Fechamento atenção • Fechamento':areaKey==='liner'?'Sem atendimento • Conversão atenção • Resultado':'Captação • Sala/Conversão • Equilibrado';
     const sel=q('fxSel');
     if(!sel)return;
     sel.innerHTML='';
