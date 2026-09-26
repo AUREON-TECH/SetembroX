@@ -62,3 +62,8 @@ assert.doesNotMatch(sales,/salesByPerson|weekSalesByPerson/,'rerender script mus
 assert.match(sw,/\.\/area-data\.js/,'PWA cache must include role data');
 
 console.log('SETEMBRO X area roles audit passed');
+
+assert.match(app,/function initAreaSelector\(\)\{[\s\S]*?function go\(id\)\{/,'initAreaSelector must be top-level before go');
+assert.doesNotMatch(app,/function go\(id\)\{[\s\S]{0,200}function initAreaSelector/,'initAreaSelector must not be nested inside navigation');
+assert.match(app,/selArea\.onchange=\(\)=>\{/,'area selector must have a live change handler');
+assert.match(app,/location\.assign\(url\.toString\(\)\)/,'area change must navigate to the selected dataset');
