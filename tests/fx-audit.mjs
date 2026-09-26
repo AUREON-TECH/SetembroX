@@ -22,19 +22,19 @@ assert.doesNotMatch(html,/\\n<script/i,'HTML must not contain a literal escaped 
 
 const parsed=new Function(data+'; return {FX_DAILY,FX_EXPECTED,FX_PERIOD};')();
 const {FX_DAILY,FX_EXPECTED}=parsed;
-assert.ok(Object.keys(FX_DAILY).length>=22,'FX must include the professional roster');
+assert.ok(Object.keys(FX_DAILY).length>=24,'FX must include the professional roster');
 
 for(const [name,rows] of Object.entries(FX_DAILY)){
-  assert.equal(rows.length,24,name+' must have 24 daily records');
+  assert.equal(rows.length,25,name+' must have 25 daily records');
   const total=rows.reduce((a,r)=>({c:a.c+r[0],s:a.s+r[1],v:a.v+r[2],q:a.q+r[3],nq:a.nq+r[4]}),{c:0,s:0,v:0,q:0,nq:0});
   assert.deepEqual(total,FX_EXPECTED[name],name+' daily totals must match official monthly totals');
 }
 
 const global=Object.values(FX_EXPECTED).reduce((a,x)=>({c:a.c+x.c,s:a.s+x.s,v:a.v+x.v,q:a.q+x.q,nq:a.nq+x.nq}),{c:0,s:0,v:0,q:0,nq:0});
-assert.deepEqual(global,{c:374,s:81,v:7437450,q:245,nq:126},'FX global totals must match the official base through 24/09');
+assert.deepEqual(global,{c:382,s:84,v:7707370,q:253,nq:126},'FX global totals must match the official base through 25/09');
 
 assert.deepEqual(FX_EXPECTED.Paulo,{c:37,s:5,v:434900,q:25,nq:12},'Paulo totals must match the official sheet');
-assert.deepEqual(FX_DAILY.Paulo[23],[2,1,91900,2,0],'Paulo 24/09 must be 2 couples, 1 sale, 91900 VGV, 2 Q, 0 NQ');
+assert.deepEqual(FX_DAILY.Paulo[24],[0,0,0,0,0],'Paulo 25/09 must have no record');
 
 assert.match(engine,/function classify\(c,s\)/,'FX must classify daily performance');
 assert.match(engine,/CAPTAÇÃO • CRÍTICO/,'0 couple day must be a strong capture alert');
