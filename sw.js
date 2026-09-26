@@ -1,5 +1,5 @@
 // Dados oficiais atualizados até 25/09/2026; alteração deste arquivo força atualização do shell.
-const CACHE = 'setembrox-v27-area-roles';
+const CACHE = 'setembrox-v28-area-switch-fix';
 const CORE = ['./index.html', './styles.css', './entry-v2.css', './arena-x.css', './ops-dashboard.css', './diagnostic.css', './fx.css', './layout-premium.css', './area-data.js', './fx-data.js', './app.js', './fx-engine.js', './sales-count-fix.js', './manifest.webmanifest', './icon.svg', './icon-192.png', './icon-512.png', './icon-maskable-512.png'];
 const SENSITIVE_PARAMS = /(^|_)(token|access_token|refresh_token|password|senha|secret|session|auth|authorization|code|credential|credentials|api_key|apikey)(_|$)/i;
 const PRIVATE_PATHS = /\/(api|auth|login|logout|session|sessions|account|profile|admin)(\/|$)/i;
