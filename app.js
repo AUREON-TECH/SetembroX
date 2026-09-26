@@ -389,7 +389,8 @@ function profile(){
 
 function projection(){
   const b=team;
-  sc.innerHTML=`<div class="card pad sc"><div class="eye">CENÁRIO ATUAL</div><b class="c">${b}</b><span>casais projetados</span></div><div class="card pad sc"><div class="eye">+10% PERFORMANCE</div><b class="v">${Math.round(b*1.1)}</b><span>casais projetados</span></div><div class="card pad sc"><div class="eye">ALTA PERFORMANCE +25%</div><b class="g">${Math.round(b*1.25)}</b><span>casais projetados</span></div>`;
+  const projectionLabel=IS_PROMOTOR?'casais projetados':'atendimentos projetados';
+  sc.innerHTML=`<div class="card pad sc"><div class="eye">CENÁRIO ATUAL</div><b class="c">${b}</b><span>${projectionLabel}</span></div><div class="card pad sc"><div class="eye">+10% PERFORMANCE</div><b class="v">${Math.round(b*1.1)}</b><span>${projectionLabel}</span></div><div class="card pad sc"><div class="eye">ALTA PERFORMANCE +25%</div><b class="g">${Math.round(b*1.25)}</b><span>${projectionLabel}</span></div>`;
   const p=get('psel');
   const targetTitle=document.getElementById('projectionTargetTitle');
   if(!IS_PROMOTOR){
@@ -445,6 +446,8 @@ function go(id){
   const selArea=document.getElementById('areaSel');
   const current=document.getElementById('areaCurrent');
   if(current)current.textContent=AREA_LABEL;
+  const mainTitle=document.getElementById('pt');
+  if(mainTitle)mainTitle.textContent='Performance • '+AREA_LABEL;
   if(!selArea)return;
   selArea.value=AREA_KEY;
   selArea.onchange=()=>{
