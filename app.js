@@ -3,6 +3,24 @@ const P=[{"n":"Paulo","r":"Captador","e":1,"c":37,"s":5,"v":434900,"q":25,"nq":1
 const PR={"prof":[["Empresário(a)",75,17.3],["Autônomo(a)",26,7.7],["Advogado (a)",13,23.1],["Engenheiro (a)",12,16.7],["Comerciante(a)",10,0],["Engenheiro civil(a)",9,11.1]],"age":[["30–39",149,14.1],["40–49",110,19.1],["Até 29",65,13.8],["50–59",44,6.8],["60+",13,7.7]],"inc":[["R$ 15 mil+",327,15],["R$ 10–15 mil",53,11.3],["Até R$ 7 mil",2,50]],"car":[["ONIX",20,15],["HB20",17,17.6],["COROLLA",13,7.7],["HR-V",12,33.3],["ARGO",10,30],["COMPASS",10,10],["CIVIC",10,10],["T-CROSS",9,11.1]]};
 const DAILY=[["1",4,0,0,3,1,753.94],["2",11,1,367000,4,7,2619.7],["3",11,2,173900,6,5,2247.78],["4",22,2,234000,16,6,4595.51],["5",25,5,537200,18,7,6209.3],["6",17,1,79000,9,8,3757.63],["7",19,2,171000,15,3,5265.41],["8",10,1,77200,7,3,2719.7],["9",14,1,92000,13,1,3191.62],["10",14,1,92000,8,6,2539.75],["11",20,8,617600,16,4,4217.53],["12",30,16,1344200,25,5,7067.23],["13",27,6,473600,15,12,5207.48],["14",17,10,797600,10,7,4279.55],["15",0,0,0,0,0,0],["16",10,2,161000,7,2,2035.81],["17",18,1,92000,10,8,3563.59],["18",13,3,236200,8,4,2301.77],["19",26,3,270000,14,12,6183.34],["20",20,9,911150,13,7,4703.49],["21",10,1,77200,6,4,1963.79],["22",13,1,92000,8,5,2667.73],["23",14,2,179800,9,5,3743.59],["24",9,3,361800,5,4,1887.83],["25",8,3,269920,8,0,1681.87]];
 
+const OPERATION_S={...S};
+const OPERATION_P=P.map(p=>({...p}));
+const AREA_LABELS={promotor:'Promotor de Marketing',liner:'Liner / Consultor',closer:'Closer / Fechador'};
+const __areaParam=new URLSearchParams(location.search).get('area');
+const AREA_KEY=AREA_LABELS[__areaParam]?__areaParam:'promotor';
+const AREA_LABEL=AREA_LABELS[AREA_KEY];
+const IS_PROMOTOR=AREA_KEY==='promotor';
+const AREA_VOLUME_LABEL=IS_PROMOTOR?'casais':'atendimentos';
+const AREA_NOTE=AREA_KEY==='closer'?'15 fichas da base não possuem Closer atribuído e não entram no total individual desta visão.':'';
+if(!IS_PROMOTOR&&window.AREA_DATA&&window.AREA_DATA[AREA_KEY]){
+  const a=window.AREA_DATA[AREA_KEY];
+  Object.assign(S,a.S);
+  P.splice(0,P.length,...a.P.map(p=>({...p})));
+  Object.keys(PR).forEach(k=>delete PR[k]);
+  Object.assign(PR,a.PR);
+  DAILY.splice(0,DAILY.length,...a.DAILY.map(r=>[...r]));
+}
+
 const E=25,R=5,M=30;
 const metaCouples=400,metaSales=100,metaVgv=8500000;
 const money=x=>'R$ '+Intl.NumberFormat('pt-BR',{notation:x>=1e6?'compact':'standard',maximumFractionDigits:x>=1e6?2:0}).format(x||0);
@@ -16,8 +34,9 @@ const couplesRank=()=>[...el].sort((a,b)=>b.c-a.c||b.s-a.s);
 const vgvRank=()=>[...el].sort((a,b)=>b.v-a.v||b.s-a.s);
 const cap=captainRank()[0];
 const race=couplesRank()[0];
-const raceWinner=P.find(p=>p.n==='Ricardo')||race;
+const raceWinner=IS_PROMOTOR?(P.find(p=>p.n==='Ricardo')||race):race;
 const team=Math.round(S.couples/E*M);
+const operationTeam=Math.round(OPERATION_S.couples/E*M);
 
 const k=(l,v,s,t='c')=>`<div class="card kpi"><small>${l}</small><b class="${t}">${v}</b><span class="muted">${s}</span></div>`;
 const ins=(t,x)=>`<div class="in"><strong>${t}</strong><span class="muted">${x}</span></div>`;
@@ -32,7 +51,7 @@ function fightRows(list,metric,format){
   return list.slice(0,5).map((p,i)=>{
     const value=metric(p),gap=Math.max(0,leader-value);
     const gapText=i===0?'LÍDER':(format==='money'?`${moneyFull(gap)} do líder`:`${gap} do líder`);
-    const score=format==='money'?moneyFull(value):`${value} casais`;
+    const score=format==='money'?moneyFull(value):`${value} ${AREA_VOLUME_LABEL}`;
     const sub=format==='week'?`${p.ws} venda${p.ws===1?'':'s'} na semana`:`${p.s} venda${p.s===1?'':'s'} no mês`;
     return `<div class="fight ${i===0?'lead':''}"><div class="place">${i===0?'★':i+1}</div><div class="who"><b>${p.n}</b><small>${sub}</small></div><div class="score">${score}<span class="gap">${gapText}</span></div></div>`;
   }).join('');
@@ -47,17 +66,34 @@ function renderTodayOps(){
   todayOps.innerHTML=`
     <div class="ops-pad">
       <div class="ops-head"><div><span class="ops-kicker">HOJE • ${day}/09</span><h3>Pulso da operação</h3></div><span class="ops-live"><i></i> FECHAMENTO</span></div>
-      <div class="today-hero"><b>${couples}</b><span>CASAIS HOJE</span></div>
+      <div class="today-hero"><b>${couples}</b><span>${IS_PROMOTOR?'CASAIS HOJE':'ATENDIMENTOS HOJE'}</span></div>
       <div class="today-strip">
         <div class="today-stat"><small>Vendas</small><b class="g">${sales}</b></div>
         <div class="today-stat"><small>VGV</small><b class="v">${moneyFull(vgv)}</b></div>
         <div class="today-stat"><small>Qualificação</small><b>${q} Q • ${nq} NQ</b></div>
       </div>
-      <div class="today-highlight"><div><small>Destaque do dia</small><div class="muted" style="font-size:9px">Brindes: ${moneyFull(gift)}</div></div><strong>${leader.n} • ${leader.c} casais • ${leader.s} venda</strong></div>
+      <div class="today-highlight"><div><small>Destaque do dia</small><div class="muted" style="font-size:9px">Brindes: ${moneyFull(gift)}</div></div><strong>${leader.n} • ${leader.c} ${AREA_VOLUME_LABEL} • ${leader.s} venda</strong></div>
     </div>`;
 }
 
 function renderMetaPace(){
+  if(!IS_PROMOTOR){
+    const projected=Math.round(S.couples/E*M);
+    const conv=S.couples?S.sales/S.couples*100:0;
+    const pace=S.couples/Math.max(E,1);
+    metaPace.innerHTML=`
+      <div class="ops-pad">
+        <div class="ops-head"><div><span class="ops-kicker">RITMO DA ÁREA</span><h3>${AREA_LABEL}</h3></div><span class="ops-live"><i></i> BASE 25/09</span></div>
+        <div class="pace-summary">
+          <div class="pace-box"><small>Atendimentos</small><b class="c">${S.couples}</b><span>${pace.toFixed(1).replace('.',',')} por dia</span></div>
+          <div class="pace-box"><small>Conversão</small><b class="g">${pct(conv)}</b><span>${S.sales} vendas</span></div>
+          <div class="pace-box"><small>VGV</small><b class="v">${moneyFull(S.vgv)}</b><span>${moneyFull(S.vgv/Math.max(S.couples,1))} por atendimento</span></div>
+        </div>
+        <div class="today-highlight"><div><small>Projeção da área</small><div class="muted" style="font-size:9px">ritmo até 30/09</div></div><strong>${projected} atendimentos</strong></div>
+        ${AREA_NOTE?'<div class="pace-foot">'+AREA_NOTE+'</div>':''}
+      </div>`;
+    return;
+  }
   const mc=Math.max(0,metaCouples-S.couples),ms=Math.max(0,metaSales-S.sales),mv=Math.max(0,metaVgv-S.vgv);
   const days=Math.max(1,R);
   const pc=Math.min(100,S.couples/metaCouples*100),ps=Math.min(100,S.sales/metaSales*100),pv=Math.min(100,S.vgv/metaVgv*100);
@@ -108,26 +144,33 @@ function renderDailyEvolution(){
 }
 
 function radar(){
+  const wt=document.getElementById('radarWeekTitle'),vt=document.getElementById('radarVolumeTitle');
+  if(wt)wt.textContent=IS_PROMOTOR?'🏆 Capitão da Semana':'🏆 Top da Semana';
+  if(vt)vt.textContent=IS_PROMOTOR?'👫 Top 1 Casais':'👥 Top 1 Atendimentos';
   radarCaptain.innerHTML=fightRows(captainRank(),p=>p.w,'week');
   radarVgv.innerHTML=fightRows(vgvRank(),p=>p.v,'money');
   radarCouples.innerHTML=fightRows(couplesRank(),p=>p.c,'couples');
 }
 
 function cinema(){
-  const couplesPct=Math.min(100,S.couples/metaCouples*100);
-  const salesPct=Math.min(100,S.sales/metaSales*100);
-  const vgvPct=Math.min(100,S.vgv/metaVgv*100);
+  const baseEl=OPERATION_P.filter(p=>p.e);
+  const baseCap=[...baseEl].sort((a,b)=>b.w-a.w||b.ws-a.ws||b.wv-a.wv)[0];
+  const baseRace=[...baseEl].sort((a,b)=>b.c-a.c||b.s-a.s)[0];
+  const baseWinner=OPERATION_P.find(p=>p.n==='Ricardo')||baseRace;
+  const couplesPct=Math.min(100,OPERATION_S.couples/metaCouples*100);
+  const salesPct=Math.min(100,OPERATION_S.sales/metaSales*100);
+  const vgvPct=Math.min(100,OPERATION_S.vgv/metaVgv*100);
 
-  iCap.textContent=`${cap.n} • ${cap.w}`;
-  i22.textContent=`${raceWinner.n} • VENCEDOR`;
-  iProj.textContent=team+' casais';
-  missionText.innerHTML=`<b>${S.couples} casais</b>, <b>${S.sales} vendas</b> e <b>${money(S.vgv)}</b> em VGV. <b>${raceWinner.n}</b> venceu a Corrida dos 22; ${race.n} lidera o volume mensal com <b>${race.c} casais</b>.`;
+  iCap.textContent=`${baseCap.n} • ${baseCap.w}`;
+  i22.textContent=`${baseWinner.n} • VENCEDOR`;
+  iProj.textContent=operationTeam+' casais';
+  missionText.innerHTML=`<b>${OPERATION_S.couples} casais</b>, <b>${OPERATION_S.sales} vendas</b> e <b>${money(OPERATION_S.vgv)}</b> em VGV. <b>${baseWinner.n}</b> venceu a Corrida dos 22; ${baseRace.n} lidera o volume mensal com <b>${baseRace.c} casais</b>.`;
 
-  heroLeaderName.textContent=cap.n;
-  heroLeaderSub.textContent=`CAPITÃO DA SEMANA • ${cap.w} CASAIS NA SEMANA`;
-  goalCouplesText.textContent=`${S.couples} / ${metaCouples} • ${pct(couplesPct)}`;
-  goalSalesText.textContent=`${S.sales} / ${metaSales} • ${pct(salesPct)}`;
-  goalVgvText.textContent=`${money(S.vgv)} / R$ 8,5 mi • ${pct(vgvPct)}`;
+  heroLeaderName.textContent=baseCap.n;
+  heroLeaderSub.textContent=`CAPITÃO DA SEMANA • ${baseCap.w} CASAIS NA SEMANA`;
+  goalCouplesText.textContent=`${OPERATION_S.couples} / ${metaCouples} • ${pct(couplesPct)}`;
+  goalSalesText.textContent=`${OPERATION_S.sales} / ${metaSales} • ${pct(salesPct)}`;
+  goalVgvText.textContent=`${money(OPERATION_S.vgv)} / R$ 8,5 mi • ${pct(vgvPct)}`;
 
   requestAnimationFrame(()=>{
     barCouples.style.width=couplesPct+'%';
@@ -141,6 +184,23 @@ function cinema(){
 function renderArenaX(){
   const arena=document.getElementById('arenaX');
   if(!arena)return;
+  if(!IS_PROMOTOR){
+    const week=captainRank().slice(0,3),topV=vgvRank()[0],topC=couplesRank()[0];
+    arena.innerHTML=`
+      <div class="arena-head"><div><span class="arena-kicker">⚡ ARENA X • ${AREA_LABEL.toUpperCase()}</span><h3>PERFORMANCE DA ÁREA</h3></div><span class="arena-live"><i></i> OPERAÇÃO ATIVA</span></div>
+      <div class="arena-metrics">
+        <div class="arena-metric"><small>ATENDIMENTOS</small><b>${S.couples}</b><span>no mês</span></div>
+        <div class="arena-metric"><small>VENDAS</small><b>${S.sales}</b><span>${pct(S.sales/Math.max(S.couples,1)*100)} conversão</span></div>
+        <div class="arena-metric"><small>VGV</small><b>${moneyFull(S.vgv)}</b><span>da área</span></div>
+      </div>
+      <div class="arena-lower">
+        <div class="arena-battle"><div class="arena-title"><b>TOP DA SEMANA</b><span>atendimentos</span></div>
+          ${week.map((p,i)=>`<div class="arena-row"><span class="arena-pos">${i+1}</span><strong>${p.n}</strong><div class="arena-line"><i style="width:${Math.max(12,p.w/Math.max(week[0].w,1)*100)}%"></i></div><b>${p.w}</b></div>`).join('')}
+        </div>
+        <div class="arena-alert"><span class="arena-alert-label">DESTAQUES DA ÁREA</span><strong>${topV.n} • ${moneyFull(topV.v)} VGV</strong><p>${topC.n} lidera volume com ${topC.c} atendimentos.</p><em>${AREA_NOTE||'Leitura exclusiva desta função.'}</em></div>
+      </div>`;
+    return;
+  }
 
   const missingCouples=Math.max(0,metaCouples-S.couples);
   const missingSales=Math.max(0,metaSales-S.sales);
@@ -176,7 +236,7 @@ function renderArenaX(){
 
 function dash(){
   dk.innerHTML=[
-    k('Casais',S.couples,'base oficial até 25/09'),
+    k(IS_PROMOTOR?'Casais':'Atendimentos',S.couples,'base oficial até 25/09 • '+AREA_LABEL),
     k('Vendas',S.sales,pct(S.sales/S.couples*100)+' conversão','g'),
     k('VGV',money(S.vgv),money(S.vgv/S.sales)+' ticket','v'),
     k('Q',S.q,pct(S.q/S.couples*100)+' qualificação'),
@@ -189,15 +249,18 @@ function dash(){
   const sec=captainRank()[1];
   renderArenaX();
 
-  free.innerHTML=`<span class="badge g">CORRIDA DOS 22 • LIVRE DO MÊS</span><div class="big"><b>${raceWinner.n}</b><span class="g">VENCEDOR</span></div><div class="muted">${raceWinner.n} foi o primeiro captador a atingir 22 casais e conquistou a liberdade de horário no mês.</div><div class="prog"><i style="width:100%"></i></div><small class="muted">🏆 Conquista confirmada • ${race.n} é o líder atual de volume com ${race.c} casais.</small>`;
+  free.innerHTML=IS_PROMOTOR
+    ?`<span class="badge g">CORRIDA DOS 22 • LIVRE DO MÊS</span><div class="big"><b>${raceWinner.n}</b><span class="g">VENCEDOR</span></div><div class="muted">${raceWinner.n} foi o primeiro captador a atingir 22 casais e conquistou a liberdade de horário no mês.</div><div class="prog"><i style="width:100%"></i></div><small class="muted">🏆 Conquista confirmada • ${race.n} é o líder atual de volume com ${race.c} casais.</small>`
+    :`<span class="badge g">DESTAQUE • ${AREA_LABEL.toUpperCase()}</span><div class="big"><b>${race.n}</b><span class="g">TOP VOLUME</span></div><div class="muted">${race.n} lidera a área com ${race.c} atendimentos. ${vgvRank()[0].n} lidera VGV com ${moneyFull(vgvRank()[0].v)}.</div><div class="prog"><i style="width:100%"></i></div><small class="muted">${AREA_NOTE||'Visão exclusiva dos profissionais desta função.'}</small>`;
 
   const month=couplesRank();
   bars('top',month.slice(0,8).map(p=>[p.n,p.c]));
+  const topTitle=document.getElementById('topAreaTitle'); if(topTitle)topTitle.textContent=IS_PROMOTOR?'Top captação do mês':'Top '+AREA_LABEL+' do mês';
   di.innerHTML=
     ins('Projeção da equipe',`Ritmo atual: ${team} casais até 30/09.`)+
     ins('Capitão da semana',`${cap.n} lidera com ${cap.w} casais; ${sec.n} vem com ${sec.w}.`)+
     ins('Top VGV',`${vgvRank()[0].n} lidera com ${moneyFull(vgvRank()[0].v)}.`)+
-    ins('Corrida dos 22',`${raceWinner.n} venceu a disputa; ${race.n} lidera o volume atual com ${race.c} casais.`)+
+    ins(IS_PROMOTOR?'Corrida dos 22':'Liderança de volume',IS_PROMOTOR?`${raceWinner.n} venceu a disputa; ${race.n} lidera o volume atual com ${race.c} casais.`:`${race.n} lidera com ${race.c} atendimentos.`)+
     ins('Custo real',`${moneyFull(S.gift/S.couples)} por casal.`);
 }
 
@@ -213,7 +276,7 @@ function rank(){
     if(m==='weekly')return bsafe(y.w-x.w)||bsafe(y.ws-x.ws)||bsafe(y.wv-x.wv);
     return mv(y,m)-mv(x,m);
   });
-  rb.innerHTML=a.map((p,i)=>`<tr><td class="pos">${['🥇','🥈','🥉'][i]||'#'+(i+1)}</td><td><div class="person"><div class="av">${p.n[0]}</div><div><b>${p.n}</b><span class="mini">${p.r}</span></div></div></td><td><b>${p.c}</b></td><td>${p.w}</td><td>${p.s}</td><td>${moneyFull(p.v)}</td><td>${pct(cv(p))}</td><td>${p.q}</td><td>${moneyFull(co(p))}</td><td><b class="v">${p.p}</b></td><td>${p.e?`<span class="tag">${Math.max(0,22-p.c)} faltam</span>`:'<span class="mini">liderança</span>'}</td></tr>`).join('');
+  rb.innerHTML=a.map((p,i)=>`<tr><td class="pos">${['🥇','🥈','🥉'][i]||'#'+(i+1)}</td><td><div class="person"><div class="av">${p.n[0]}</div><div><b>${p.n}</b><span class="mini">${p.r}</span></div></div></td><td><b>${p.c}</b></td><td>${p.w}</td><td>${p.s}</td><td>${moneyFull(p.v)}</td><td>${pct(cv(p))}</td><td>${p.q}</td><td>${moneyFull(co(p))}</td><td><b class="v">${p.p}</b></td><td>${IS_PROMOTOR?(p.e?`<span class="tag">${Math.max(0,22-p.c)} faltam</span>`:'<span class="mini">liderança</span>'):`<span class="tag">${p.d} dias ativos</span>`}</td></tr>`).join('');
 }
 function bsafe(x){return Number.isFinite(x)?x:0}
 
@@ -231,7 +294,7 @@ function individual(){
     k('Custo/casal',moneyFull(co(p)),'brindes ÷ casais','a'),
     k('Dias trabalhados',p.d,'base atual')
   ].join('');
-  cc.innerHTML=`Você está com <b>${p.c} casais</b>. ${p.e?`Faltam <b>${Math.max(0,22-p.c)}</b> para 22 e a disputa do Livre do Mês.`:'Como Sub-líder, seu foco é elevar o ritmo da equipe.'} Sua projeção é <b>${p.p} casais</b>. Para 35, precisa de <b>${n35.toFixed(1).replace('.',',')}</b>/dia; para 50, <b>${n50.toFixed(1).replace('.',',')}</b>/dia.`;
+  cc.innerHTML=IS_PROMOTOR?`Você está com <b>${p.c} casais</b>. ${p.e?`Faltam <b>${Math.max(0,22-p.c)}</b> para 22 e a disputa do Livre do Mês.`:'Como Sub-líder, seu foco é elevar o ritmo da equipe.'} Sua projeção é <b>${p.p} casais</b>. Para 35, precisa de <b>${n35.toFixed(1).replace('.',',')}</b>/dia; para 50, <b>${n50.toFixed(1).replace('.',',')}</b>/dia.`:`<b>${p.n}</b> está com <b>${p.c} atendimentos</b>, <b>${p.s} vendas</b> e <b>${moneyFull(p.v)}</b> em VGV. Conversão de <b>${pct(cv(p))}</b> e projeção de <b>${p.p} atendimentos</b> até 30/09.`;
   const strong=cv(p)>=20?'Conversão':p.q/Math.max(p.c,1)>=.7?'Qualificação':'Volume';
   cg.innerHTML=`<div><small>Ponto forte</small><b>${strong}</b></div><div><small>Meta de hoje</small><b>${Math.max(2,Math.ceil(n35))} casais</b></div><div><small>Ritmo p/ 50</small><b>${n50.toFixed(1).replace('.',',')}/dia</b></div><div><small>Semana</small><b>${p.w} casais</b></div>`;
 }
@@ -293,9 +356,9 @@ function renderDiagnosis(){
   const qRate=S.q/S.couples*100;
 
   diagName.textContent=p.n;
-  diagTag.textContent='Base até 25/09 • comparação com a média da operação';
+  diagTag.textContent='Base até 25/09 • '+AREA_LABEL+' • comparação com a média da área';
   diagOps.innerHTML=
-    '<div class="diag-op"><small>Meta mais avançada</small><b class="c">Casais '+pct(coupleProgress)+'</b><span>'+S.couples+' de '+metaCouples+'</span></div>'+
+    '<div class="diag-op"><small>'+(IS_PROMOTOR?'Meta mais avançada':'Volume da área')+'</small><b class="c">'+(IS_PROMOTOR?'Casais '+pct(coupleProgress):S.couples+' atendimentos')+'</b><span>'+(IS_PROMOTOR?S.couples+' de '+metaCouples:AREA_LABEL)+'</span></div>'+
     '<div class="diag-op"><small>Maior atenção na meta</small><b class="a">Vendas '+pct(salesProgress)+'</b><span>'+S.sales+' de '+metaSales+'</span></div>'+
     '<div class="diag-op"><small>VGV realizado</small><b class="v">'+pct(vgvProgress)+'</b><span>'+moneyFull(S.vgv)+' de R$ 8,5 mi</span></div>'+
     '<div class="diag-op"><small>Qualificação da operação</small><b class="g">'+pct(qRate)+'</b><span>'+S.q+' Q em '+S.couples+' casais</span></div>';
@@ -314,17 +377,31 @@ function profile(){
   bars('ab',PR.age,(v,x)=>v+' • '+x+'%');
   bars('ib',PR.inc,(v,x)=>v+' • '+x+'%');
   bars('cb',PR.car,(v,x)=>v+' • '+x+'%');
+  const bestProf=[...PR.prof].sort((a,b)=>b[2]-a[2])[0];
+  const bestAge=[...PR.age].sort((a,b)=>b[2]-a[2])[0];
+  const bestCar=[...PR.car].sort((a,b)=>b[2]-a[2])[0];
   pi.innerHTML=
-    ins('Maior VGV por profissão','Empresário(a): R$ 1,85 mi em VGV geral.')+
-    ins('Faixa etária','40–49: 19,1% de conversão em 110 casais; 30–39: 14,1% em 149 casais.')+
-    ins('Carros com força','C4 e Jetta: 50,0%; BYD Song Pro e Ecosport: 40,0%; HR-V: 33,3%.')+
-    ins('Ponto','377 dos 382 registros vieram do Parque Dreams.');
+    ins('Maior conversão por profissão',bestProf[0]+': '+String(bestProf[2]).replace('.',',')+'% em '+bestProf[1]+' casais.')+
+    ins('Faixa etária com força',bestAge[0]+': '+String(bestAge[2]).replace('.',',')+'% em '+bestAge[1]+' casais.')+
+    ins('Carro com força',bestCar[0]+': '+String(bestCar[2]).replace('.',',')+'% em '+bestCar[1]+' casais.')+
+    ins('Base da área',S.couples+' casais vinculados a '+AREA_LABEL+'. '+(AREA_NOTE||''));
 }
 
 function projection(){
   const b=team;
   sc.innerHTML=`<div class="card pad sc"><div class="eye">CENÁRIO ATUAL</div><b class="c">${b}</b><span>casais projetados</span></div><div class="card pad sc"><div class="eye">+10% PERFORMANCE</div><b class="v">${Math.round(b*1.1)}</b><span>casais projetados</span></div><div class="card pad sc"><div class="eye">ALTA PERFORMANCE +25%</div><b class="g">${Math.round(b*1.25)}</b><span>casais projetados</span></div>`;
   const p=get('psel');
+  const targetTitle=document.getElementById('projectionTargetTitle');
+  if(!IS_PROMOTOR){
+    if(targetTitle)targetTitle.textContent='Leitura individual • '+AREA_LABEL;
+    tg.innerHTML=[
+      '<div class="card pad"><div class="eye">ATENDIMENTOS</div><b style="font-size:23px">'+p.c+'</b><span class="muted">'+(p.c/Math.max(p.d,1)).toFixed(1).replace('.',',')+' por dia ativo</span></div>',
+      '<div class="card pad"><div class="eye">CONVERSÃO</div><b style="font-size:23px">'+pct(cv(p))+'</b><span class="muted">'+p.s+' vendas</span></div>',
+      '<div class="card pad"><div class="eye">VGV</div><b style="font-size:23px">'+moneyFull(p.v)+'</b><span class="muted">'+moneyFull(p.v/Math.max(p.c,1))+' por atendimento</span></div>'
+    ].join('');
+    return;
+  }
+  if(targetTitle)targetTitle.textContent='Metas 22 → 35 → 50';
   tg.innerHTML=[22,35,50].map(t=>{
     const miss=Math.max(0,t-p.c),per=miss/R;
     return`<div class="card pad"><div class="eye">${t} CASAIS</div><b style="font-size:23px">${p.c} / ${t}</b><div class="prog"><i style="width:${Math.min(100,p.c/t*100)}%"></i></div><span class="muted">Faltam ${miss} • ${per.toFixed(1).replace('.',',')}/dia</span></div>`;
@@ -364,8 +441,27 @@ const META={
 
 function go(id){
   document.querySelectorAll('.sec').forEach(x=>x.classList.toggle('on',x.id===id));
-  document.querySelectorAll('[data-go]').forEach(x=>x.classList.toggle('active',x.dataset.go===id));
-  const m=META[id];eye.textContent=m[0];pt.textContent=m[1];ps.textContent=m[2];
+  function initAreaSelector(){
+  const selArea=document.getElementById('areaSel');
+  const current=document.getElementById('areaCurrent');
+  if(current)current.textContent=AREA_LABEL;
+  if(!selArea)return;
+  selArea.value=AREA_KEY;
+  selArea.onchange=()=>{
+    try{sessionStorage.setItem('sx-area-switch','1');}catch(_){}
+    const url=new URL(location.href);
+    if(selArea.value==='promotor')url.searchParams.delete('area'); else url.searchParams.set('area',selArea.value);
+    location.href=url.toString();
+  };
+  try{if(sessionStorage.getItem('sx-area-switch')==='1'){cin.classList.add('hide');sessionStorage.removeItem('sx-area-switch');}}catch(_){}
+  const statusHead=document.getElementById('rankStatusHead');
+  if(statusHead)statusHead.textContent=IS_PROMOTOR?'22 casais':'Dias ativos';
+  const topTitle=document.getElementById('topAreaTitle');
+  if(topTitle)topTitle.textContent=IS_PROMOTOR?'Top captação do mês':'Top '+AREA_LABEL+' do mês';
+}
+
+document.querySelectorAll('[data-go]').forEach(x=>x.classList.toggle('active',x.dataset.go===id));
+  const m=META[id];eye.textContent=m[0];pt.textContent=(id==='dash'?'Performance • '+AREA_LABEL:m[1]);ps.textContent=m[2];
   const step=FLOW_ORDER.indexOf(id)+1;
   const fb=document.getElementById('flowBadge');
   if(fb)fb.textContent='ETAPA '+String(step).padStart(2,'0')+' DE '+String(FLOW_ORDER.length).padStart(2,'0')+' • '+FLOW_LABEL[id];
@@ -377,9 +473,9 @@ rm.onchange=rank;
 const opts=P.map(p=>`<option>${p.n}</option>`).join('');
 sel.innerHTML=opts;psel.innerHTML=opts;
 sel.onchange=individual;psel.onchange=projection;dsel.onchange=renderDiagnosis;
-cinema();radar();dash();renderTodayOps();renderMetaPace();renderDailyEvolution();rank();individual();renderDiagnosis();profile();projection();costs();
+initAreaSelector();cinema();radar();dash();renderTodayOps();renderMetaPace();renderDailyEvolution();rank();individual();renderDiagnosis();profile();projection();costs();
 
-const swVersion='setembrox-v26-data-2509';
+const swVersion='setembrox-v27-area-roles';
 const canRegisterSw=location.protocol==='https:'||location.hostname==='localhost'||location.hostname==='127.0.0.1';
 if('serviceWorker'in navigator&&canRegisterSw){
   navigator.serviceWorker.register(`./sw.js?v=${swVersion}`,{updateViaCache:'none'})
