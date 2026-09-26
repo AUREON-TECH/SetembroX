@@ -18,6 +18,16 @@ O SETEMBRO X transforma dados da captação em leitura de performance e ação p
 - Projeções: cenário atual, +10% e alta performance +25%
 - Custo de Brinde e eficiência de aquisição
 
+## Visões por área
+
+O painel pode ser alternado sem misturar funções:
+
+- **Promotor de Marketing** — 24 profissionais da captação, com Ranking, Individual, FX e Diagnóstico próprios.
+- **Liner / Consultor** — 11 profissionais e 382 atendimentos atribuídos.
+- **Closer / Fechador** — 8 profissionais e 367 atendimentos atribuídos. Existem 15 fichas da base sem Closer preenchido; por isso elas não entram no volume individual da visão de Closer.
+- Vendas seguem a regra oficial: cada ocorrência de `ATIVO` conta como uma venda.
+- Ao trocar a área, Ranking, Individual, Semana, FX, Diagnóstico, Perfil, Projeções e Custos usam somente a função selecionada.
+
 ## Identidade
 
 Interface dark premium com azul elétrico, ciano, violeta, magenta, verde de performance e âmbar para custos/atenção.
