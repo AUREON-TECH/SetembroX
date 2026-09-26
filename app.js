@@ -440,9 +440,7 @@ const META={
   custos:['EFICIÊNCIA FINANCEIRA','Custo de Brinde','Quanto cada casal, Q e venda estão custando.']
 };
 
-function go(id){
-  document.querySelectorAll('.sec').forEach(x=>x.classList.toggle('on',x.id===id));
-  function initAreaSelector(){
+function initAreaSelector(){
   const selArea=document.getElementById('areaSel');
   const current=document.getElementById('areaCurrent');
   if(current)current.textContent=AREA_LABEL;
@@ -451,10 +449,14 @@ function go(id){
   if(!selArea)return;
   selArea.value=AREA_KEY;
   selArea.onchange=()=>{
+    const next=selArea.value;
+    if(current)current.textContent=AREA_LABELS[next]||AREA_LABEL;
+    selArea.disabled=true;
     try{sessionStorage.setItem('sx-area-switch','1');}catch(_){}
     const url=new URL(location.href);
-    if(selArea.value==='promotor')url.searchParams.delete('area'); else url.searchParams.set('area',selArea.value);
-    location.href=url.toString();
+    if(next==='promotor')url.searchParams.delete('area'); else url.searchParams.set('area',next);
+    url.searchParams.set('v','28');
+    location.assign(url.toString());
   };
   try{if(sessionStorage.getItem('sx-area-switch')==='1'){cin.classList.add('hide');sessionStorage.removeItem('sx-area-switch');}}catch(_){}
   const statusHead=document.getElementById('rankStatusHead');
@@ -463,7 +465,9 @@ function go(id){
   if(topTitle)topTitle.textContent=IS_PROMOTOR?'Top captação do mês':'Top '+AREA_LABEL+' do mês';
 }
 
-document.querySelectorAll('[data-go]').forEach(x=>x.classList.toggle('active',x.dataset.go===id));
+function go(id){
+  document.querySelectorAll('.sec').forEach(x=>x.classList.toggle('on',x.id===id));
+  document.querySelectorAll('[data-go]').forEach(x=>x.classList.toggle('active',x.dataset.go===id));
   const m=META[id];eye.textContent=m[0];pt.textContent=(id==='dash'?'Performance • '+AREA_LABEL:m[1]);ps.textContent=m[2];
   const step=FLOW_ORDER.indexOf(id)+1;
   const fb=document.getElementById('flowBadge');
@@ -478,7 +482,7 @@ sel.innerHTML=opts;psel.innerHTML=opts;
 sel.onchange=individual;psel.onchange=projection;dsel.onchange=renderDiagnosis;
 initAreaSelector();cinema();radar();dash();renderTodayOps();renderMetaPace();renderDailyEvolution();rank();individual();renderDiagnosis();profile();projection();costs();
 
-const swVersion='setembrox-v27-area-roles';
+const swVersion='setembrox-v28-area-switch-fix';
 const canRegisterSw=location.protocol==='https:'||location.hostname==='localhost'||location.hostname==='127.0.0.1';
 if('serviceWorker'in navigator&&canRegisterSw){
   navigator.serviceWorker.register(`./sw.js?v=${swVersion}`,{updateViaCache:'none'})
