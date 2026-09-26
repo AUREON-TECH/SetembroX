@@ -2,6 +2,8 @@
   const q = (id) => document.getElementById(id);
   const money = (x) => 'R$ ' + Intl.NumberFormat('pt-BR',{maximumFractionDigits:0}).format(x||0);
   const pct = (x) => (Number(x)||0).toFixed(1).replace('.',',') + '%';
+  const areaKey = new URLSearchParams(location.search).get('area') || 'promotor';
+  const areaLabel = areaKey==='liner'?'Liner / Consultor':areaKey==='closer'?'Closer / Fechador':'Promotor de Marketing';
 
   function totals(rows){
     return rows.reduce((a,r)=>{
@@ -34,6 +36,17 @@
   }
 
   function classify(c,s){
+    if(areaKey==='closer'){
+      if(c===0)return{kind:'capture',label:'SEM ATENDIMENTO',title:'Sem atendimento',desc:'Nenhum casal foi atribuído a este fechador no dia.'};
+      if(s===0)return{kind:'room',label:'FECHAMENTO • ATENÇÃO',title:c>=3?'Volume forte sem venda':'Atendimento sem venda',desc:(c>=3?'Alerta forte':'Alerta')+': houve '+c+' atendimento(s) e nenhuma venda. Revisar objeções, proposta e fechamento.'};
+      return{kind:'ok',label:'FECHAMENTO',title:c>=3?'Dia forte de fechamento':'Venda realizada',desc:'Houve atendimento e venda no mesmo dia. Sinal positivo de transformação.'};
+    }
+    if(areaKey==='liner'){
+      if(c===0)return{kind:'capture',label:'SEM ATENDIMENTO',title:'Sem atendimento',desc:'Nenhum casal foi atribuído a este Liner/Consultor no dia.'};
+      if(c===1&&s===0)return{kind:'capture',label:'BAIXO VOLUME',title:'Baixo volume',desc:'Apenas 1 atendimento e nenhuma venda. Aumentar volume e revisar a transição para fechamento.'};
+      if(s===0)return{kind:'room',label:'CONVERSÃO • ATENÇÃO',title:c>=3?'Volume forte sem venda':'Atendimento sem transformação',desc:(c>=3?'Alerta forte':'Alerta')+': houve volume de atendimento e nenhuma venda. Revisar diagnóstico, condução e passagem ao closer.'};
+      return{kind:'ok',label:'RESULTADO',title:c>=3?'Volume + resultado':'Atendimento convertido',desc:'Houve atendimento e venda no mesmo dia.'};
+    }
     if(c===0)return{kind:'capture',label:'CAPTAÇÃO • CRÍTICO',title:'Zero geração',desc:'0 casal: alerta direto de captação. Antes de fechar o feedback, confirme se houve folga, ausência ou impedimento operacional.'};
     if(c===1){
       if(s>0)return{kind:'capture',label:'CAPTAÇÃO • ATENÇÃO',title:'Venda com baixo volume',desc:'A venda aconteceu, mas só 1 oportunidade foi gerada. Resultado positivo com capacidade de produção abaixo do ideal.'};
@@ -72,9 +85,9 @@
     const conv=t.c?t.s/t.c*100:0;
     const consistency=t.active/rows.length*100;
     if(consistency>=75 && conv>=opConv) return{kind:'ok',title:'Performance equilibrada',priority:'Manter constância e replicar os dias de venda.',captureScore,roomScore};
-    if(captureScore>roomScore*1.25) return{kind:'capture',title:'Gargalo principal: CAPTAÇÃO',priority:'Primeiro corrigir volume e constância. Depois cobrar transformação.',captureScore,roomScore};
-    if(roomScore>captureScore*1.25) return{kind:'room',title:'Gargalo principal: TRANSFORMAÇÃO',priority:'O volume chega; o foco do feedback deve ser qualidade, transição e conversão em sala.',captureScore,roomScore};
-    return{kind:'mixed',title:'Gargalo MISTO',priority:'Há perda tanto na geração quanto na transformação. Separar metas de volume e conversão.',captureScore,roomScore};
+    if(captureScore>roomScore*1.25) return{kind:'capture',title:areaKey==='closer'?'Gargalo principal: VOLUME ATRIBUÍDO':areaKey==='liner'?'Gargalo principal: VOLUME DE ATENDIMENTO':'Gargalo principal: CAPTAÇÃO',priority:areaKey==='promotor'?'Primeiro corrigir volume e constância. Depois cobrar transformação.':'Primeiro entender volume atribuído e constância antes de avaliar conversão.',captureScore,roomScore};
+    if(roomScore>captureScore*1.25) return{kind:'room',title:areaKey==='closer'?'Gargalo principal: FECHAMENTO':areaKey==='liner'?'Gargalo principal: CONVERSÃO DO LINER':'Gargalo principal: TRANSFORMAÇÃO',priority:areaKey==='closer'?'O volume chega; o foco deve ser objeções, proposta e fechamento.':areaKey==='liner'?'O volume chega; o foco deve ser diagnóstico, condução e passagem ao closer.':'O volume chega; o foco do feedback deve ser qualidade, transição e conversão em sala.',captureScore,roomScore};
+    return{kind:'mixed',title:'Gargalo MISTO',priority:areaKey==='promotor'?'Há perda tanto na geração quanto na transformação. Separar metas de volume e conversão.':'Há oscilação de volume e transformação. Separar análise de atendimentos e conversão.',captureScore,roomScore};
   }
 
   function renderFX(){
@@ -89,7 +102,7 @@
     const rows=FX_DAILY[name];
     const checked=validate(name,rows);
     const badge=q('fxValidation');
-    badge.textContent=checked.ok?'✓ DADOS CONFERIDOS COM A BASE OFICIAL':'⚠ DADOS DIVERGENTES';
+    badge.textContent=checked.ok?'✓ '+areaLabel.toUpperCase()+' • DADOS CONFERIDOS':'⚠ DADOS DIVERGENTES';
     badge.className='fx-validate '+(checked.ok?'ok':'bad');
     q('fxName').textContent=name;
 
@@ -139,9 +152,9 @@
       ['Pico de volume',best+' casais nos dias '+bestDays.join(', ')+'.']
     ];
     const negatives=[
-      ['Dias zerados',t.zero+' dias: '+(zeroDays.length?zeroDays.join(', '):'nenhum')+'. Pela regra FX são alertas de captação; confirme escala/folga.'],
+      ['Dias zerados',t.zero+' dias: '+(zeroDays.length?zeroDays.join(', '):'nenhum')+'. '+(areaKey==='promotor'?'Pela regra FX são alertas de captação; confirme escala/folga.':'Confirmar escala, atribuição e jornada antes da conclusão.')],
       ['Dias ativos sem venda',t.activeNoSale+' dias tiveram casal e nenhuma venda.'],
-      ['Sala/Conversão',roomDays.length+' dias com 2+ casais e 0 venda'+(roomDays.length?': '+roomDays.join(', '):'')+'.'],
+      [(areaKey==='closer'?'Fechamento':areaKey==='liner'?'Conversão do Liner':'Sala/Conversão'),roomDays.length+' dias com 2+ atendimentos e 0 venda'+(roomDays.length?': '+roomDays.join(', '):'')+'.'],
       ['Conversão',pct(conv)+' no profissional vs '+pct(opConv)+' na operação.']
     ];
     const unknowns=[
@@ -162,7 +175,7 @@
 
     q('fxConclusion').innerHTML=
       '<div class="fx-conclusion-grid"><div><small>ETAPA 3 • CONCLUSÃO OPERACIONAL FX</small><span class="fx-decision '+d.kind+'">'+d.title+'</span><h3>'+d.priority+'</h3><p>Leitura fechada com '+t.c+' casais, '+t.s+' vendas, '+money(t.v)+' de VGV, '+pct(conv)+' de conversão e '+pct(consistency)+' de constância.</p><p class="human">Conclusão de performance para conduzir o feedback. Não é decisão automática de promoção, advertência ou desligamento; contexto de escala e observação da liderança continuam obrigatórios.</p></div>'+
-      '<div class="fx-scoregrid"><div><span>Captação crítica</span><b>'+t.captureCritical+' dias</b></div><div><span>Captação baixa</span><b>'+t.capture+' dias</b></div><div><span>Sala/Conversão</span><b>'+t.room+' dias</b></div><div><span>Equilibrado</span><b>'+t.ok+' dias</b></div></div></div>';
+      '<div class="fx-scoregrid"><div><span>'+(areaKey==='promotor'?'Captação crítica':'Sem atendimento')+'</span><b>'+t.captureCritical+' dias</b></div><div><span>'+(areaKey==='promotor'?'Captação baixa':'Baixo volume')+'</span><b>'+t.capture+' dias</b></div><div><span>'+(areaKey==='closer'?'Fechamento atenção':areaKey==='liner'?'Conversão atenção':'Sala/Conversão')+'</span><b>'+t.room+' dias</b></div><div><span>Resultado</span><b>'+t.ok+' dias</b></div></div></div>';
   }
 
   function initFX(){
