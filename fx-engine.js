@@ -106,7 +106,7 @@
     const rows=FX_DAILY[name];
     const checked=validate(name,rows);
     const badge=q('fxValidation');
-    badge.textContent=checked.ok?'✓ '+areaLabel.toUpperCase()+' • DADOS CONFERIDOS':'⚠ DADOS DIVERGENTES';
+    badge.textContent=checked.ok?'✓ '+areaLabel.toUpperCase()+' • DADOS CONFERIDOS COM A BASE OFICIAL':'⚠ DADOS DIVERGENTES';
     badge.className='fx-validate '+(checked.ok?'ok':'bad');
     q('fxName').textContent=name;
 
