@@ -22,9 +22,9 @@ O SETEMBRO X transforma dados da captação em leitura de performance e ação p
 
 O painel pode ser alternado sem misturar funções:
 
-- **Promotor de Marketing** — 24 profissionais da captação, com Ranking, Individual, FX e Diagnóstico próprios.
-- **Liner / Consultor** — 11 profissionais e 382 atendimentos atribuídos.
-- **Closer / Fechador** — 8 profissionais e 367 atendimentos atribuídos. Existem 15 fichas da base sem Closer preenchido; por isso elas não entram no volume individual da visão de Closer.
+- **Promotor de Marketing** — 25 nomes atribuídos na coluna da planilha; ranking competitivo considera os captadores e mantém liderança disponível no Individual/FX.
+- **Liner / Consultor** — 11 profissionais e 414 atendimentos atribuídos.
+- **Closer / Fechador** — 8 profissionais e 399 atendimentos atribuídos. Existem 15 fichas da base sem Closer preenchido; por isso elas não entram no volume individual da visão de Closer.
 - Vendas seguem a regra oficial: cada ocorrência de `ATIVO` conta como uma venda.
 - Ao trocar a área, Ranking, Individual, Semana, FX, Diagnóstico, Perfil, Projeções e Custos usam somente a função selecionada.
 
@@ -34,28 +34,28 @@ Interface dark premium com azul elétrico, ciano, violeta, magenta, verde de per
 
 ## PWA
 
-O projeto contém `manifest.webmanifest` e `sw.js`, podendo ser instalado como aplicativo em navegadores compatíveis. O cache do PWA foi renovado para a carga oficial de 25/09.
+O projeto contém `manifest.webmanifest` e `sw.js`, podendo ser instalado como aplicativo em navegadores compatíveis. O cache do PWA foi renovado para a carga oficial de 27/09.
 
 ## Dados oficiais
 
-Base atualizada pela planilha oficial `Document(20260926-130922).csv` até **25/09/2026**.
+Base atualizada pela planilha oficial `Document(10).csv` até **27/09/2026**.
 
-- 382 casais
-- 253 Q
-- 126 NQ
+- 414 casais
+- 276 Q
+- 135 NQ
 - 3 MQ
-- 84 vendas ativas
+- 88 vendas ativas
 - 6 cancelamentos de contrato
-- R$ 7.707.370 em VGV geral
-- R$ 7.163.370 em VGV ativo após cancelamentos
-- R$ 85.404,94 em custo de brindes
-- R$ 223,57 de custo médio por casal
+- R$ 8.038.770 em VGV geral
+- R$ 7.494.770 em VGV ativo após cancelamentos
+- R$ 94.701,97 em custo de brindes
+- R$ 228,75 de custo médio por casal
 
 O SETEMBRO X conta cada ocorrência de `ATIVO` como uma venda. Cancelamentos permanecem no histórico e seus valores ficam fora do VGV ativo.
 
 ## Metas de Setembro
 
-- 400 casais
+- 400 casais — **meta atingida: 414**
 - 100 vendas
 - R$ 8,5 milhões em VGV
 
