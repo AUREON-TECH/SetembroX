@@ -1,4 +1,4 @@
-// SETEMBRO X — atualização visual após carga oficial até 25/09/2026.
+// SETEMBRO X — atualização visual após carga oficial até 27/09/2026.
 // As vendas por profissional já vêm do dataset da área selecionada.
 (() => {
   if (typeof cinema === 'function') cinema();
