@@ -433,7 +433,7 @@ const META={
   dash:['CENTRAL DE MISSÃO','Performance da Captação','Onde estamos, onde podemos chegar e o que fazer hoje.'],
   rank:['COMPETITIVIDADE','Ranking de Performance','Resultado e projeção no mesmo lugar.'],
   ind:['PROFESSOR X','Performance Individual','Seu resultado transformado em ação.'],
-  fx:['FX • FEEDBACK EXPERIENCE','Raio-X de Performance','Constância, resultado, sinais diários e conclusão para uma conversa 1:1.'],
+  fx:['FX • FEEDBACK EXPERIENCE','Relatório de Performance','Constância, resultado, sinais diários e conclusão para uma conversa 1:1.'],
   diag:['DIAGNÓSTICO X','Pontos Fortes & Fracos','Leitura comparativa para feedback, desenvolvimento e ação.'],
   perfil:['INTELIGÊNCIA DE PERFIL','Perfil de Casais','Quem chega, quem compra e qual perfil gera resultado.'],
   proj:['FUTURO PROVÁVEL','Projeções','Ritmo atual, +10% e alta performance.'],
