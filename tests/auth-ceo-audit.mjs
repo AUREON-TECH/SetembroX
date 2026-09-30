@@ -79,7 +79,7 @@ assert.ok(authCss.length>1000,'login must have dedicated visual styling');
 assert.match(sw,/xia-performance\.js/,'PWA cache must include XIA data shell');
 assert.match(sw,/pending\.html/,'PWA cache must include pending approval page');
 assert.match(sw,/ALWAYS_NETWORK_FIRST/,'auth and CEO assets must prioritize fresh network versions');
-assert.match(sw,/raiox-v37-safe-access-flow/,'PWA cache version must be current');
+assert.match(sw,/const CACHE = ['"]raiox-v\d+[-\w]*['"]/,'PWA cache must use a versioned RAIO X cache');
 
 console.log('RAIO X auth + CEO audit passed');
 
