@@ -338,43 +338,168 @@ function diagnosticItem(m){
   return '<div class="diag-item"><div class="diag-item-top"><b>'+m.n+'</b><span class="diag-score">'+label+'</span></div><p>'+m.show+'</p></div>';
 }
 
+function attentionSeverityLabel(level){
+  return level===3?'CRÍTICO':level===2?'ATENÇÃO':'MONITORAR';
+}
+
+function attentionActionFor(metric){
+  const role=AREA_KEY;
+  const actions={
+    'Volume/dia':role==='promotor'
+      ?'Aumentar geração de oportunidades e acompanhar o ritmo por bloco do dia.'
+      :'Confirmar distribuição de atendimentos e disponibilidade antes de cobrar resultado.',
+    'Conversão':role==='closer'
+      ?'Revisar objeções, proposta, condução e fechamento nas últimas oportunidades.'
+      :role==='liner'
+        ?'Revisar diagnóstico, condução do atendimento e passagem para o closer.'
+        :'Revisar abordagem, convite, qualidade da transição e o que acontece depois da entrada em sala.',
+    'Qualificação':role==='promotor'
+      ?'Reforçar pesquisa e critérios de qualificação antes da entrada em sala.'
+      :'Revisar o perfil das oportunidades recebidas e a qualidade da passagem entre etapas.',
+    'VGV/casal':'Revisar mix de oportunidades e potencial financeiro dos atendimentos.',
+    'Custo/casal':role==='promotor'
+      ?'Revisar uso de brindes e reduzir custo sem perder geração de oportunidade.'
+      :'Tratar apenas como indicador atribuído; validar se o custo realmente está sob controle desta função.'
+  };
+  return actions[metric]||'Revisar o indicador com evidências antes de definir qualquer ação.';
+}
+
+function buildPeopleAttention(){
+  const totalDays=el.reduce((a,x)=>a+x.d,0)||1;
+  const totalC=el.reduce((a,x)=>a+x.c,0)||1;
+  const totalS=el.reduce((a,x)=>a+x.s,0);
+  const totalQ=el.reduce((a,x)=>a+x.q,0);
+  const totalG=el.reduce((a,x)=>a+x.g,0);
+  const avgPace=totalC/totalDays;
+  const avgConv=totalS/totalC*100;
+  const avgQual=totalQ/totalC*100;
+  const avgCost=totalG/totalC;
+  const out=[];
+
+  el.forEach(p=>{
+    const conv=cv(p);
+    const qual=p.q/Math.max(p.c,1)*100;
+    const cost=co(p);
+    const pace=p.c/Math.max(p.d,1);
+    const reasons=[];
+    let level=0;
+
+    if(p.c>=8&&p.s===0){
+      reasons.push({metric:'Conversão',text:'0 vendas em '+p.c+' '+AREA_VOLUME_LABEL});
+      level=Math.max(level,3);
+    }else if(p.c>=10&&conv<avgConv*.55){
+      reasons.push({metric:'Conversão',text:'Conversão '+pct(conv)+' vs média '+pct(avgConv)});
+      level=Math.max(level,3);
+    }else if(p.c>=10&&conv<avgConv*.75){
+      reasons.push({metric:'Conversão',text:'Conversão abaixo da média: '+pct(conv)+' vs '+pct(avgConv)});
+      level=Math.max(level,2);
+    }
+
+    if(p.c>=8&&qual<avgQual*.75){
+      reasons.push({metric:'Qualificação',text:'Qualificação '+pct(qual)+' vs média '+pct(avgQual)});
+      level=Math.max(level,2);
+    }
+
+    if(IS_PROMOTOR&&p.c>=8&&cost>avgCost*1.3){
+      reasons.push({metric:'Custo/casal',text:'Custo/casal '+moneyFull(cost)+' vs média '+moneyFull(avgCost)});
+      level=Math.max(level,2);
+    }
+
+    if(p.d>=8&&pace<avgPace*.65){
+      reasons.push({metric:'Volume/dia',text:'Ritmo '+pace.toFixed(1).replace('.',',')+'/dia vs média '+avgPace.toFixed(1).replace('.',',')});
+      level=Math.max(level,1);
+    }
+
+    if(reasons.length)out.push({p,level,reasons,conv,qual,cost,pace});
+  });
+
+  return out.sort((a,b)=>b.level-a.level||a.conv-b.conv||b.p.c-a.p.c);
+}
+
+function buildOperationAttention(){
+  const alerts=[];
+  const totalSales=S.sales+S.canceled;
+  const qRate=S.q/Math.max(S.couples,1)*100;
+  const nqRate=S.nq/Math.max(S.couples,1)*100;
+
+  if(IS_PROMOTOR&&S.sales<metaSales){
+    const gap=metaSales-S.sales;
+    alerts.push({level:3,title:'Meta de vendas ainda não fechou',text:S.sales+' vendas ativas de '+metaSales+'. Faltam '+gap+' venda'+(gap===1?'':'s')+'.',action:'Priorizar conversão e fechamento no último dia sem sacrificar qualidade.'});
+  }
+
+  if(S.canceled>0){
+    alerts.push({level:2,title:'Cancelamentos impactam o resultado',text:S.canceled+' cancelamentos. São '+(S.canceled/Math.max(totalSales,1)*100).toFixed(1).replace('.',',')+'% dos '+totalSales+' contratos/movimentações.',action:'Revisar origem, perfil e etapa em que esses contratos se perderam.'});
+  }
+
+  if(nqRate>=30){
+    alerts.push({level:2,title:'NQ acima de 30% da base',text:S.nq+' NQ em '+S.couples+' '+AREA_VOLUME_LABEL+' • '+pct(nqRate)+'.',action:IS_PROMOTOR?'Revisar pesquisa, perfil e critérios antes da entrada em sala.':'Comparar qualidade das oportunidades recebidas e origem dos NQ.'});
+  }
+
+  if(AREA_KEY==='closer'&&AREA_NOTE){
+    alerts.push({level:2,title:'Fichas sem Closer atribuído',text:AREA_NOTE,action:'Corrigir atribuição para não perder rastreabilidade de conversão e responsabilidade operacional.'});
+  }
+
+  if(IS_PROMOTOR&&S.activeVgv<metaVgv&&S.vgv>=metaVgv){
+    alerts.push({level:1,title:'VGV geral superou a meta, mas VGV ativo está abaixo',text:'VGV geral: '+moneyFull(S.vgv)+' • VGV ativo: '+moneyFull(S.activeVgv)+'.',action:'Acompanhar o efeito dos cancelamentos sobre o VGV realmente ativo.'});
+  }
+
+  if(!alerts.length){
+    alerts.push({level:1,title:'Sem alerta estrutural crítico',text:'Os indicadores gerais desta área não ultrapassaram os limites de atenção definidos.',action:'Use a lista de pessoas abaixo para acompanhamento individual.'});
+  }
+  return alerts;
+}
+
+function attentionCard(a){
+  return '<div class="attention-card level-'+a.level+'"><div class="attention-card-top"><span class="attention-badge">'+attentionSeverityLabel(a.level)+'</span><b>'+a.title+'</b></div><p>'+a.text+'</p><small>Próxima ação</small><strong>'+a.action+'</strong></div>';
+}
+
 function renderDiagnosis(){
   if(!document.getElementById('dsel'))return;
   if(!dsel.options.length)dsel.innerHTML=el.map(p=>'<option>'+p.n+'</option>').join('');
   const p=el.find(x=>x.n===dsel.value)||el[0];
   const metrics=diagnosticMetrics(p);
-  const strong=[...metrics].sort((a,b)=>b.score-a.score).slice(0,3);
   const weak=[...metrics].sort((a,b)=>a.score-b.score).slice(0,3);
   const weakest=weak[0];
 
-  const actions={
-    'Volume/dia':'Aumentar o número de abordagens e pesquisas por turno. Definir uma meta curta por bloco de horário e acompanhar o ritmo durante o dia.',
-    'Conversão':'Revisar abordagem, convite e transição. Ouvir objeções recorrentes e treinar uma resposta objetiva antes do próximo turno.',
-    'Qualificação':'Reforçar a pesquisa antes da entrada em sala, priorizando renda, perfil e critérios que aumentam a qualidade das fichas.',
-    'VGV/casal':'Buscar perfis com maior potencial de compra e melhorar a leitura do casal antes da entrega para sala.',
-    'Custo/casal':'Revisar o uso de brindes e priorizar os incentivos que geram mais entrada em sala com menor custo.'
-  };
-
-  const coupleProgress=S.couples/metaCouples*100;
-  const salesProgress=S.sales/metaSales*100;
-  const vgvProgress=S.vgv/metaVgv*100;
-  const qRate=S.q/S.couples*100;
+  const operationAlerts=buildOperationAttention();
+  const peopleAlerts=buildPeopleAttention();
+  const critical=peopleAlerts.filter(x=>x.level===3).length;
+  const warning=peopleAlerts.filter(x=>x.level===2).length;
+  const qRate=S.q/Math.max(S.couples,1)*100;
 
   diagName.textContent=p.n;
-  diagTag.textContent='Base até 29/09 • '+AREA_LABEL+' • comparação com a média da área';
+  diagTag.textContent='Base até 29/09 • '+AREA_LABEL+' • somente pontos de atenção';
   diagOps.innerHTML=
-    '<div class="diag-op"><small>'+(IS_PROMOTOR?'Meta mais avançada':'Volume da área')+'</small><b class="c">'+(IS_PROMOTOR?'Casais '+pct(coupleProgress):S.couples+' atendimentos')+'</b><span>'+(IS_PROMOTOR?S.couples+' de '+metaCouples:AREA_LABEL)+'</span></div>'+
-    '<div class="diag-op"><small>Maior atenção na meta</small><b class="a">Vendas '+pct(salesProgress)+'</b><span>'+S.sales+' de '+metaSales+'</span></div>'+
-    '<div class="diag-op"><small>VGV realizado</small><b class="v">'+pct(vgvProgress)+'</b><span>'+moneyFull(S.vgv)+' de R$ 8,5 mi</span></div>'+
-    '<div class="diag-op"><small>Qualificação da operação</small><b class="g">'+pct(qRate)+'</b><span>'+S.q+' Q em '+S.couples+' casais</span></div>';
+    '<div class="diag-op"><small>Críticos</small><b class="r">'+critical+'</b><span>pessoas com prioridade alta</span></div>'+
+    '<div class="diag-op"><small>Em atenção</small><b class="a">'+warning+'</b><span>pessoas para acompanhamento</span></div>'+
+    '<div class="diag-op"><small>'+(IS_PROMOTOR?'Vendas faltantes':'Conversão da área')+'</small><b class="'+(IS_PROMOTOR?'a':'g')+'">'+(IS_PROMOTOR?Math.max(0,metaSales-S.sales):pct(S.sales/Math.max(S.couples,1)*100))+'</b><span>'+(IS_PROMOTOR?S.sales+' de '+metaSales:S.sales+' vendas em '+S.couples+' atendimentos')+'</span></div>'+
+    '<div class="diag-op"><small>NQ da área</small><b class="a">'+pct(S.nq/Math.max(S.couples,1)*100)+'</b><span>'+S.nq+' NQ • Q '+pct(qRate)+'</span></div>';
 
-  diagStrength.innerHTML=strong.map(diagnosticItem).join('');
+  diagOperationCount.textContent=operationAlerts.length+' alerta'+(operationAlerts.length===1?'':'s');
+  diagOperationAttention.innerHTML=operationAlerts.map(attentionCard).join('');
+
+  diagPeopleCount.textContent=peopleAlerts.length+' pessoa'+(peopleAlerts.length===1?'':'s');
+  diagPeopleAttention.innerHTML=peopleAlerts.length?peopleAlerts.map(x=>{
+    const p=x.p;
+    return '<button class="attention-person level-'+x.level+'" data-diag-person="'+p.n+'">'+
+      '<div class="attention-person-head"><span class="attention-badge">'+attentionSeverityLabel(x.level)+'</span><b>'+p.n+'</b><em>'+p.c+' '+AREA_VOLUME_LABEL+' • '+p.s+' vendas</em></div>'+
+      '<div class="attention-reasons">'+x.reasons.map(r=>'<span>'+r.text+'</span>').join('')+'</div>'+
+      '<small>Conversão '+pct(x.conv)+' • Q '+pct(x.qual)+'</small>'+
+    '</button>';
+  }).join(''):'<div class="attention-empty">Nenhuma pessoa ultrapassou os limites de atenção definidos nesta área.</div>';
+
+  document.querySelectorAll('[data-diag-person]').forEach(btn=>btn.onclick=()=>{
+    dsel.value=btn.dataset.diagPerson;
+    renderDiagnosis();
+    document.querySelector('.attention-focus')?.scrollIntoView({behavior:'smooth',block:'center'});
+  });
+
   diagWeak.innerHTML=weak.map(diagnosticItem).join('');
 
   const avgDay=p.c/Math.max(p.d,1);
   diagAction.innerHTML=
-    '<div class="diag-action-grid"><div><small>PRÓXIMA AÇÃO • '+p.n+'</small><h3>Prioridade: '+weakest.n+'</h3><p>'+actions[weakest.n]+'</p></div>'+
-    '<div class="diag-action-kpis"><div><span>Casais</span><b>'+p.c+'</b></div><div><span>Vendas</span><b>'+p.s+'</b></div><div><span>Ritmo diário</span><b>'+avgDay.toFixed(1).replace('.',',')+'</b></div><div><span>Projeção</span><b>'+p.p+' casais</b></div></div></div>';
+    '<div class="diag-action-grid"><div><small>PRÓXIMA AÇÃO • '+p.n+'</small><h3>Prioridade: '+weakest.n+'</h3><p>'+attentionActionFor(weakest.n)+'</p></div>'+
+    '<div class="diag-action-kpis"><div><span>'+ (IS_PROMOTOR?'Casais':'Atendimentos') +'</span><b>'+p.c+'</b></div><div><span>Vendas</span><b>'+p.s+'</b></div><div><span>Conversão</span><b>'+pct(cv(p))+'</b></div><div><span>Ritmo diário</span><b>'+avgDay.toFixed(1).replace('.',',')+'</b></div></div></div>';
 }
 
 function profile(){
@@ -439,7 +564,7 @@ const META={
   rank:['COMPETITIVIDADE','Ranking de Performance','Resultado e projeção no mesmo lugar.'],
   ind:['PROFESSOR X','Performance Individual','Seu resultado transformado em ação.'],
   fx:['FX • FEEDBACK EXPERIENCE','Relatório de Performance','Constância, resultado, sinais diários e conclusão para uma conversa 1:1.'],
-  diag:['DIAGNÓSTICO X','Pontos Fortes & Fracos','Leitura comparativa para feedback, desenvolvimento e ação.'],
+  diag:['DIAGNÓSTICO X','Central de Atenção','Somente sinais que exigem ação, acompanhamento ou correção.'],
   perfil:['INTELIGÊNCIA DE PERFIL','Perfil de Casais','Quem chega, quem compra e qual perfil gera resultado.'],
   proj:['FUTURO PROVÁVEL','Projeções','Ritmo atual, +10% e alta performance.'],
   custos:['EFICIÊNCIA FINANCEIRA','Custo de Brinde','Quanto cada casal, Q e venda estão custando.']
@@ -487,7 +612,7 @@ sel.innerHTML=opts;psel.innerHTML=opts;
 sel.onchange=individual;psel.onchange=projection;dsel.onchange=renderDiagnosis;
 initAreaSelector();cinema();radar();dash();renderTodayOps();renderMetaPace();renderDailyEvolution();rank();individual();renderDiagnosis();profile();projection();costs();
 
-const swVersion='raiox-v32-total-sales-entry'
+const swVersion='raiox-v33-attention-diagnostic'
 const canRegisterSw=location.protocol==='https:'||location.hostname==='localhost'||location.hostname==='127.0.0.1';
 if('serviceWorker'in navigator&&canRegisterSw){
   navigator.serviceWorker.register(`./sw.js?v=${swVersion}`,{updateViaCache:'none'})
