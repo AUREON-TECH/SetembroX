@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#060a18">
+<title>RAIO X • Portal CEO</title>
+<link rel="icon" href="./icon.svg">
+<link rel="stylesheet" href="./ceo.css?v=1">
+</head>
+<body>
+<div id="ceoLoading" class="ceo-loading"><div class="loader-mark">RX</div><b>Validando acesso CEO...</b></div>
+
+<div id="ceoApp" class="ceo-app" hidden>
+  <aside class="ceo-side">
+    <div class="ceo-brand"><div class="ceo-mark">RX</div><div><b>RAIO X</b><small>PORTAL CEO</small></div></div>
+    <div class="ceo-user"><small>ACESSO EXCLUSIVO</small><b id="ceoUserName">CEO</b><span id="ceoUserEmail"></span></div>
+    <nav id="ceoNav">
+      <button class="active" data-tab="today">Hoje</button>
+      <button data-tab="teams">Equipes</button>
+      <button data-tab="people">Pessoas</button>
+      <button data-tab="one">Olho no Olho</button>
+      <button data-tab="tasks">Pendências</button>
+      <button data-tab="reports">Relatórios</button>
+    </nav>
+    <div class="ceo-side-bottom"><a href="./">← Voltar ao RAIO X</a><button id="ceoLogout">Sair</button></div>
+  </aside>
+
+  <main class="ceo-main">
+    <header class="ceo-top">
+      <div><span class="eyebrow">CENTRAL PRIVADA</span><h1 id="ceoTitle">Hoje</h1><p id="ceoSubtitle">Registro operacional diário da sua equipe.</p></div>
+      <div class="month-box"><label>MÊS DE REFERÊNCIA<select id="monthSelect"></select></label><button id="newMonthBtn" class="ghost">+ Novo mês</button></div>
+    </header>
+
+    <section id="today" class="ceo-tab on">
+      <div class="toolbar"><label>Data<input id="todayDate" type="date"></label><button id="reloadToday" class="ghost">Atualizar</button></div>
+      <div id="todaySummary" class="summary-grid"></div>
+      <div class="panel">
+        <div class="panel-head"><div><span class="eyebrow">PRESENÇA NA OPERAÇÃO</span><h2>Equipe do dia</h2></div><span id="todayCount" class="pill"></span></div>
+        <div id="todayPeople" class="presence-list"></div>
+      </div>
+    </section>
+
+    <section id="teams" class="ceo-tab">
+      <div class="panel">
+        <div class="panel-head"><div><span class="eyebrow">ESTRUTURA</span><h2>Equipes e horários</h2><p>Defina o horário combinado de cada equipe, por exemplo 10:00 ou 13:00.</p></div><button id="addTeamBtn" class="primary small">+ Nova equipe</button></div>
+        <div id="teamsGrid" class="team-grid"></div>
+      </div>
+      <div class="panel">
+        <div class="panel-head"><div><span class="eyebrow">VÍNCULOS DO MÊS</span><h2>Pessoas por equipe</h2></div></div>
+        <div id="teamAssignments" class="assignment-list"></div>
+      </div>
+    </section>
+
+    <section id="people" class="ceo-tab">
+      <div class="panel">
+        <div class="panel-head"><div><span class="eyebrow">CADASTRO MESTRE</span><h2>Pessoas</h2><p>Status, área e acesso individual ao RAIO X.</p></div><button id="addPersonBtn" class="primary small">+ Pessoa</button></div>
+        <div id="peopleTable" class="table-wrap"></div>
+      </div>
+    </section>
+
+    <section id="one" class="ceo-tab">
+      <div class="panel form-panel">
+        <div class="panel-head"><div><span class="eyebrow">1:1</span><h2>Olho no Olho</h2><p>Conversa, alinhamento, compromisso e revisão.</p></div><span class="pill">privado do CEO</span></div>
+        <div class="form-grid">
+          <label>Profissional<select id="onePerson"></select></label>
+          <label>Data<input id="oneDate" type="date"></label>
+          <label class="wide">Assunto<input id="oneTopic" placeholder="Ex.: alinhamento de performance"></label>
+          <label class="wide">O que está funcionando<textarea id="oneWorking" rows="3"></textarea></label>
+          <label class="wide">O que está atrapalhando<textarea id="oneBlockers" rows="3"></textarea></label>
+          <label class="wide">O que precisa melhorar<textarea id="oneImprovement" rows="3"></textarea></label>
+          <label class="wide">Que apoio precisa da liderança<textarea id="oneSupport" rows="3"></textarea></label>
+          <label class="wide">Compromissos definidos<textarea id="oneCommitments" rows="3"></textarea></label>
+          <label>Revisar em<input id="oneReviewDate" type="date"></label>
+          <label>Visibilidade<select id="oneVisibility"><option value="ceo_private">Privado do CEO</option><option value="share_with_leader">Compartilhável com líder</option><option value="professional_summary">Resumo para profissional</option></select></label>
+        </div>
+        <div class="form-actions"><button id="saveOneBtn" class="primary">Salvar Olho no Olho</button></div>
+      </div>
+      <div class="panel"><div class="panel-head"><div><span class="eyebrow">HISTÓRICO</span><h2>Conversas registradas</h2></div></div><div id="oneHistory" class="history-list"></div></div>
+    </section>
+
+    <section id="tasks" class="ceo-tab">
+      <div class="panel form-panel">
+        <div class="panel-head"><div><span class="eyebrow">ACOMPANHAMENTO</span><h2>Nova pendência</h2></div></div>
+        <div class="form-grid compact">
+          <label>Título<input id="taskTitle" placeholder="Ex.: conversar com Ricardo"></label>
+          <label>Pessoa<select id="taskPerson"><option value="">Sem pessoa específica</option></select></label>
+          <label>Prazo<input id="taskDue" type="date"></label>
+          <label>Prioridade<select id="taskPriority"><option value="normal">Normal</option><option value="high">Alta</option><option value="critical">Crítica</option><option value="low">Baixa</option></select></label>
+          <label class="wide">Observação<textarea id="taskNote" rows="2"></textarea></label>
+        </div>
+        <div class="form-actions"><button id="saveTaskBtn" class="primary">Adicionar pendência</button></div>
+      </div>
+      <div class="panel"><div class="panel-head"><div><span class="eyebrow">ABERTAS</span><h2>Pendências do CEO</h2></div></div><div id="tasksList" class="task-list"></div></div>
+    </section>
+
+    <section id="reports" class="ceo-tab">
+      <div id="reportSummary" class="summary-grid"></div>
+      <div class="panel">
+        <div class="panel-head"><div><span class="eyebrow">RELATÓRIO DO MÊS</span><h2 id="reportMonthTitle">—</h2></div><button id="refreshReports" class="ghost">Atualizar</button></div>
+        <div id="reportBody" class="report-body"></div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<div id="ceoToast" class="toast"></div>
+
+<script src="./auth-config.js"></script>
+<script src="./ceo.js"></script>
+</body>
+</html>
