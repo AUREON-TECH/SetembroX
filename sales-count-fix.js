@@ -1,4 +1,4 @@
-// RAIO X — atualização visual após carga oficial até 29/09/2026.
+// RAIO X — atualização visual após carga oficial até 30/09/2026.
 // As vendas por profissional já vêm do dataset da área selecionada.
 (() => {
   if (typeof cinema === 'function') cinema();
