@@ -95,7 +95,18 @@
       <div class="mc"><small>Projeção do mês</small><b id="iProj">—</b></div>
     </div>
     <div class="future-mantra">FOCO TOTAL NA OPERAÇÃO • CLAREZA • RITMO • RESULTADO</div>
-    <button class="enter" id="enter">ENTRAR NA OPERAÇÃO →</button>
+    <div class="entry-actions">
+      <button class="enter" id="enter">ENTRAR NA OPERAÇÃO →</button>
+      <a class="entry-ceo" id="entryCeoPortal" href="./ceo.html" hidden>
+        <span class="entry-ceo-icon">RX</span>
+        <span><small>ACESSO PRIVADO</small><b>ABRIR PORTAL CEO</b><em>Gestão • Pessoas • XIA • Agenda</em></span>
+        <strong>→</strong>
+      </a>
+      <button class="entry-install" id="installRaioX" type="button">
+        <span>⬇</span><b>INSTALAR RAIO X</b><small>Usar como aplicativo</small>
+      </button>
+      <div class="install-status" id="installStatus" hidden></div>
+    </div>
   </div>
 </div>
 
@@ -306,6 +317,7 @@
 </div>
 
 <script src="./auth-config.js" defer></script>
+<script src="./install.js?v=1" defer></script>
 <script src="./auth.js?v=4" defer></script>
 <script src="./area-data.js" defer></script>
 <script src="./fx-data.js" defer></script>
