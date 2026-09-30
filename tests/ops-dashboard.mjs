@@ -15,7 +15,7 @@ assert.match(app,/const\s+DAILY\s*=/,'app must carry daily evolution data');
 assert.match(app,/function\s+renderTodayOps\s*\(/,'app must render the Hoje panel');
 assert.match(app,/function\s+renderMetaPace\s*\(/,'app must render the target pace panel');
 assert.match(app,/function\s+renderDailyEvolution\s*\(/,'app must render the daily evolution panel');
-assert.match(app,/\["27",11,2,177000/,'latest daily data must represent 27/09');
+assert.match(app,/\["29",13,6,500719.96/,'latest daily data must represent 29/09');
 assert.match(app,/metaCouples\s*-\s*S\.couples/,'pace panel must use remaining couples');
 assert.match(app,/metaSales\s*-\s*S\.sales/,'pace panel must use remaining sales');
 assert.match(app,/metaVgv\s*-\s*S\.vgv/,'pace panel must use remaining VGV');
@@ -35,4 +35,4 @@ assert.match(app,/function\s+renderDiagnosis\s*\(/,'app must render strengths an
 assert.match(app,/Volume\/dia|Conversão|Qualificação|VGV\/casal|Custo\/casal/i,'diagnostic must compare performance dimensions');
 assert.match(diagnosticCss,/\.diag-grid\s*\{/,'diagnostic tab needs a dedicated premium layout');
 
-console.log('SETEMBRO X operations dashboard audit passed');
+console.log('RAIO X operations dashboard audit passed');
