@@ -30,7 +30,7 @@ assert.match(auth,/raiox_app_users/,'login must check access allowlist');
 assert.match(auth,/approval_status/,'login must enforce CEO approval');
 assert.match(auth,/pending\.html/,'pending users must be routed to approval status page');
 assert.match(auth,/raiox-request-access-v2/,'new access requests must use the safe v2 endpoint');
-assert.match(auth,/ctx\.access\.role!==['"]ceo['"]/,'CEO portal link must only be shown to CEO role');
+assert.match(auth,/const isCeo=ctx\.access\.role===['"]ceo['"]/,'CEO portal visibility must be derived only from CEO role');
 assert.doesNotMatch(auth,/sms|phone|otp/i,'main login must not depend on SMS/phone/OTP');
 
 assert.match(pendingHtml,/Aguardando aprovação/i,'pending status page must exist');
