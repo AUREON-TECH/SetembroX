@@ -82,3 +82,6 @@ assert.match(sw,/ALWAYS_NETWORK_FIRST/,'auth and CEO assets must prioritize fres
 assert.match(sw,/raiox-v37-safe-access-flow/,'PWA cache version must be current');
 
 console.log('RAIO X auth + CEO audit passed');
+
+assert.match(html,/id=["']entryCeoPortal["'][^>]*hidden/,'CEO portal CTA must exist on the operation entry and start hidden');
+assert.match(auth,/entryCeoPortal/,'auth must reveal the CEO entry CTA only for CEO sessions');
