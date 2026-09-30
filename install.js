@@ -9,15 +9,16 @@
     el.hidden=!text;
     el.textContent=text||'';
   }
+  function buttons(){return [...document.querySelectorAll('[data-install-raiox]')];}
   function refresh(){
-    const btn=$('installRaioX');
-    if(!btn)return;
+    const btns=buttons();
+    if(!btns.length)return;
     if(isStandalone()){
-      btn.hidden=true;
+      btns.forEach(btn=>btn.hidden=true);
       setStatus('RAIO X já está instalado neste aparelho.');
       return;
     }
-    btn.hidden=false;
+    btns.forEach(btn=>btn.hidden=false);
   }
 
   window.addEventListener('beforeinstallprompt',e=>{
@@ -31,24 +32,26 @@
     refresh();
   });
 
+  async function handleInstall(){
+    if(isStandalone()){refresh();return;}
+    if(deferredPrompt){
+      deferredPrompt.prompt();
+      const choice=await deferredPrompt.userChoice;
+      deferredPrompt=null;
+      if(choice?.outcome==='accepted')setStatus('Instalação iniciada.');
+      else setStatus('Instalação cancelada.');
+      return;
+    }
+    const ua=navigator.userAgent||'';
+    if(/iPhone|iPad|iPod/i.test(ua)){
+      setStatus('No iPhone/iPad: toque em Compartilhar e depois em “Adicionar à Tela de Início”.');
+    }else{
+      setStatus('Abra o menu do navegador e escolha “Instalar app” ou “Adicionar à tela inicial”.');
+    }
+  }
+
   document.addEventListener('DOMContentLoaded',()=>{
     refresh();
-    $('installRaioX')?.addEventListener('click',async()=>{
-      if(isStandalone()){refresh();return;}
-      if(deferredPrompt){
-        deferredPrompt.prompt();
-        const choice=await deferredPrompt.userChoice;
-        deferredPrompt=null;
-        if(choice?.outcome==='accepted')setStatus('Instalação iniciada.');
-        else setStatus('Instalação cancelada.');
-        return;
-      }
-      const ua=navigator.userAgent||'';
-      if(/iPhone|iPad|iPod/i.test(ua)){
-        setStatus('No iPhone/iPad: toque em Compartilhar e depois em “Adicionar à Tela de Início”.');
-      }else{
-        setStatus('Abra o menu do navegador e escolha “Instalar app” ou “Adicionar à tela inicial”.');
-      }
-    });
+    buttons().forEach(btn=>btn.addEventListener('click',handleInstall));
   });
 })();
