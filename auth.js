@@ -174,8 +174,11 @@
     const email=ctx.user.email||'';
     if($('authUserName'))$('authUserName').textContent=name;
     if($('authUserEmail'))$('authUserEmail').textContent=email;
+    const isCeo=ctx.access.role==='ceo';
     const ceo=$('ceoPortalLink');
-    if(ceo)ceo.hidden=ctx.access.role!=='ceo';
+    if(ceo)ceo.hidden=!isCeo;
+    const entryCeo=$('entryCeoPortal');
+    if(entryCeo)entryCeo.hidden=!isCeo;
     window.RAIOX_AUTH={user:ctx.user,access:ctx.access,session:ctx.session,signOut};
     window.dispatchEvent(new CustomEvent('raiox:authenticated',{detail:window.RAIOX_AUTH}));
   }
