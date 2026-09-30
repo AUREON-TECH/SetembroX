@@ -1,8 +1,9 @@
 // Dados oficiais atualizados até 29/09/2026; alteração deste arquivo força atualização do shell.
-const CACHE = 'raiox-v35-ceo-xia-agenda-approvals';
-const CORE = ['./index.html', './styles.css', './entry-v2.css', './arena-x.css', './ops-dashboard.css', './diagnostic.css', './fx.css', './layout-premium.css', './area-data.js', './fx-data.js', './app.js', './fx-engine.js', './sales-count-fix.js', './auth-config.js', './auth.js', './auth.css', './ceo.html', './ceo.js', './ceo.css', './xia-performance.js', './manifest.webmanifest', './icon.svg', './icon-192.png', './icon-512.png', './icon-maskable-512.png'];
+const CACHE = 'raiox-v36-fresh-auth-ceo';
+const CORE = ['./index.html', './styles.css', './entry-v2.css', './arena-x.css', './ops-dashboard.css', './diagnostic.css', './fx.css', './layout-premium.css', './area-data.js', './fx-data.js', './app.js', './fx-engine.js', './sales-count-fix.js', './auth-config.js', './auth.js', './auth.css', './ceo.html', './ceo.js', './ceo.css', './xia-performance.js', './pending.html', './pending.js', './pending.css', './manifest.webmanifest', './icon.svg', './icon-192.png', './icon-512.png', './icon-maskable-512.png'];
 const SENSITIVE_PARAMS = /(^|_)(token|access_token|refresh_token|password|senha|secret|session|auth|authorization|code|credential|credentials|api_key|apikey)(_|$)/i;
 const PRIVATE_PATHS = /\/(api|auth|login|logout|session|sessions|account|profile|admin)(\/|$)/i;
+const ALWAYS_NETWORK_FIRST = /\/(?:auth|ceo|pending|xia-performance)\.(?:js|css|html)$/i;
 
 function requestIsPrivate(request) {
   if (request.method !== 'GET') return true;
@@ -64,6 +65,21 @@ self.addEventListener('fetch', (event) => {
   if (requestIsPrivate(request)) return;
   const url = new URL(request.url);
   const isNavigation = request.mode === 'navigate' || url.pathname.endsWith('/index.html');
+
+  if (url.origin === self.location.origin && ALWAYS_NETWORK_FIRST.test(url.pathname)) {
+    event.respondWith(
+      fetch(request, { cache: 'no-store', credentials: 'same-origin', redirect: 'follow' })
+        .then(async (response) => {
+          if (responseIsCacheable(response)) {
+            const cache = await caches.open(CACHE);
+            await cache.put(request, response.clone());
+          }
+          return response;
+        })
+        .catch(async () => (await caches.match(request)) || Response.error())
+    );
+    return;
+  }
 
   if (isNavigation) {
     event.respondWith(
