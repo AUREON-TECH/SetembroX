@@ -19,21 +19,27 @@
 <link rel="stylesheet" href="./diagnostic.css?v=1">
 <link rel="stylesheet" href="./fx.css?v=1">
 <link rel="stylesheet" href="./layout-premium.css?v=1">
-<link rel="stylesheet" href="./auth.css?v=1">
+<link rel="stylesheet" href="./auth.css?v=2">
 </head>
 <body>
 <div id="authGate" class="auth-gate">
   <div class="auth-login">
     <div class="auth-logo"><div class="auth-logo-mark">RX</div><div><b>RAIO X</b><small>RELATÓRIO DE PERFORMANCE</small></div></div>
     <span class="auth-eyebrow">ACESSO À OPERAÇÃO</span>
-    <h1>Entre na sua conta</h1>
-    <p>Cada profissional acessa com o próprio e-mail e senha. Sua sessão fica salva neste aparelho para os próximos acessos.</p>
+    <div class="auth-mode-switch">
+      <button id="authModeLogin" class="active" type="button">Entrar</button>
+      <button id="authModeSignup" type="button">Criar acesso</button>
+    </div>
+    <h1 id="authTitle">Entre na sua conta</h1>
+    <p id="authIntro">Cada profissional acessa com o próprio e-mail e senha. Sua sessão fica salva neste aparelho para os próximos acessos.</p>
     <form id="authForm" class="auth-form">
+      <label id="authNameField" class="auth-field" hidden><span>Nome completo</span><input id="authName" type="text" autocomplete="name" placeholder="Seu nome completo"></label>
       <label class="auth-field"><span>E-mail</span><input id="authEmail" type="email" autocomplete="username" placeholder="seuemail@exemplo.com" required></label>
       <label class="auth-field"><span>Senha</span><div class="auth-pass"><input id="authPassword" type="password" autocomplete="current-password" placeholder="Sua senha" required><button id="authTogglePassword" type="button">Mostrar</button></div></label>
       <button id="authSubmit" class="auth-submit" type="submit">ENTRAR NO RAIO X</button>
     </form>
     <div id="authMessage" class="auth-message"></div>
+    <div id="authApprovalHint" class="auth-approval-hint" hidden>Ao criar a conta, ela ficará <b>aguardando aprovação do CEO</b>. Você não precisa confirmar por SMS.</div>
     <div class="auth-info">
       <div><small>ACESSO</small><b>E-mail + senha</b></div>
       <div><small>SESSÃO</small><b>Permanece conectada</b></div>
