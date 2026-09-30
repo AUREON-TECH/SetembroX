@@ -1,21 +1,46 @@
 {
   "id": "./?source=pwa",
-  "name": "SETEMBRO X — Performance da Captação",
-  "short_name": "SETEMBRO X",
-  "description": "Painel de inteligência para performance de captação, perfil de casais, ranking, projeções e custo de brinde.",
+  "name": "RAIO X — Relatório de Performance",
+  "short_name": "RAIO X",
+  "description": "Plataforma de inteligência para performance comercial, ranking, conversão, metas, diagnóstico e custos.",
   "lang": "pt-BR",
   "start_url": "./?source=pwa",
   "scope": "./",
   "display": "standalone",
-  "display_override": ["standalone"],
+  "display_override": [
+    "standalone"
+  ],
   "background_color": "#050713",
   "theme_color": "#070A16",
   "orientation": "portrait-primary",
-  "categories": ["business", "productivity"],
+  "categories": [
+    "business",
+    "productivity"
+  ],
   "icons": [
-    {"src":"./icon-192.png","sizes":"192x192","type":"image/png","purpose":"any"},
-    {"src":"./icon-512.png","sizes":"512x512","type":"image/png","purpose":"any"},
-    {"src":"./icon-maskable-512.png","sizes":"512x512","type":"image/png","purpose":"maskable"},
-    {"src":"./icon.svg","sizes":"any","type":"image/svg+xml","purpose":"any"}
+    {
+      "src": "./icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "./icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
   ]
 }
