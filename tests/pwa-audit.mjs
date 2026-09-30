@@ -22,7 +22,7 @@ for (const marker of ['authorization', 'cookie', 'range', 'if-range', 'no-store'
 const cacheMatch = sw.match(/const\s+CACHE\s*=\s*['"]([^'"]+)['"]/);
 assert.ok(cacheMatch, 'service worker cache must be versioned');
 const cacheVersion = cacheMatch[1];
-assert.match(cacheVersion, /setembrox-v\d+[-\w]*/, 'service worker cache must be versioned');
+assert.match(cacheVersion, /(?:setembrox|raiox)-v\d+[-\w]*/, 'service worker cache must be versioned');
 assert.ok(swLower.includes('response.status === 206') || swLower.includes('response.status!==206') || swLower.includes('response.status != 206'), 'service worker must reject partial responses');
 assert.match(sw, /function\s+isPublicShellRequest\s*\(/, 'service worker must explicitly whitelist public shell requests');
 assert.match(sw, /fetch\(request,\s*\{[^}]*cache:\s*['"]no-store['"][^}]*\}/s, 'navigation must use network fetch with no-store');
@@ -58,4 +58,4 @@ assert.match(appJs, /203\s*casais|metaCouples\s*-\s*S\.couples/i, 'ARENA X must 
 assert.match(appJs, /72\s*vendas|metaSales\s*-\s*S\.sales/i, 'ARENA X must expose the remaining sales target');
 assert.doesNotMatch(appJs, /\bcap\.innerHTML\s*=/, 'captain data object must not be mistaken for a DOM element');
 
-console.log('SETEMBRO X PWA audit passed');
+console.log('RAIO X PWA audit passed');
