@@ -62,3 +62,12 @@ console.log('RAIO X PWA audit passed');
 
 assert.match(appJs,/const totalSales=OPERATION_S\.sales\+OPERATION_S\.canceled/,'entry total sales must include active and cancelled contracts');
 assert.match(appJs,/goalSalesText\.textContent=.*ativas.*canceladas/s,'entry sales card must split active and cancelled sales');
+
+assert.match(html,/id=["']installRaioX["']/,'entry must expose an Install RAIO X button');
+assert.match(html,/data-install-raiox/,'PWA install action must be reusable inside the app');
+assert.match(html,/install\.js/i,'index must load the PWA install controller');
+const installJs=fs.readFileSync('install.js','utf8');
+assert.match(installJs,/beforeinstallprompt/,'install controller must handle beforeinstallprompt');
+assert.match(installJs,/appinstalled/,'install controller must detect completed installation');
+assert.match(sw,/\.\/install\.js/,'service worker shell must include install.js');
+assert.match(html,/id=["']entryCeoPortal["'][^>]*hidden/,'CEO entrance CTA must start hidden for non-CEO users');
