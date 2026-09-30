@@ -1,76 +1,75 @@
 # RAIO X — Relatório de Performance
 
-**Sistema de Performance da Captação — AUREON**
+**Sistema de Performance Comercial — AUREON**
 
-O RAIO X transforma dados da captação em leitura de performance e ação prática.
+O RAIO X transforma dados da operação em leitura de performance, gestão de pessoas e ação prática.
 
 ## Módulos
 
-- Dashboard executivo
-- Central operacional: Hoje, ritmo necessário para a meta e evolução diária
-- Radar da Disputa com Top 5 do Capitão da Semana, VGV e Casais
-- Perfil de Casais e Perfil Ideal do Mês
-- Ranking por casais, vendas, VGV, conversão, Q, MQ e custo
+- Dashboard executivo e Central operacional
+- Ranking por área: Promotor de Marketing, Liner / Consultor e Closer / Fechador
 - Performance Individual
-- FX — Feedback Experience: constância diária, gráfico, conversão, impulsionador, sinais Captação/Sala/Equilibrado e conclusão de performance
-- Pontos Fortes & Fracos — diagnóstico comparativo por profissional com ação recomendada
-- Professor X — treinador de performance baseado nos indicadores
-- Projeções: cenário atual, +10% e alta performance +25%
-- Custo de Brinde e eficiência de aquisição
+- FX — Feedback Experience
+- Diagnóstico X — pontos que realmente precisam de atenção
+- Perfil de Casais
+- Projeções e Custos
+- Portal CEO privado
+- Cadastro PJ de profissionais, cargos, equipes, horários e status
+- Presença operacional diária
+- Olho no Olho
+- XIA — análise 360° do profissional
+- Agenda inteligente
+- Pendências e relatórios
+- Aprovações de acesso
+- Metas individuais por mês
+- PWA instalável
 
 ## Visões por área
 
-O painel pode ser alternado sem misturar funções:
+- **Promotor de Marketing** — 23 profissionais com produção na base final.
+- **Liner / Consultor** — 12 profissionais e 455 atendimentos atribuídos.
+- **Closer / Fechador** — 8 profissionais e 437 atendimentos atribuídos.
+- Existem **18 fichas sem Closer atribuído**, por isso elas não entram no volume individual da visão de Closer.
+- Vendas ativas seguem a regra oficial: cada ocorrência de `ATIVO` conta como uma venda ativa.
+- Cancelamentos permanecem no histórico.
 
-- **Promotor de Marketing** — 25 nomes atribuídos na coluna da planilha; ranking competitivo considera os captadores e mantém liderança disponível no Individual/FX.
-- **Liner / Consultor** — 11 profissionais e 447 atendimentos atribuídos.
-- **Closer / Fechador** — 8 profissionais e 429 atendimentos atribuídos. Existem 18 fichas da base sem Closer preenchido; por isso elas não entram no volume individual da visão de Closer.
-- Vendas seguem a regra oficial: cada ocorrência de `ATIVO` conta como uma venda.
-- Ao trocar a área, Ranking, Individual, Semana, FX, Diagnóstico, Perfil, Projeções e Custos usam somente a função selecionada.
+## Dados oficiais — fechamento de Setembro
 
-## Identidade
+Base atualizada pela planilha oficial `Document(20260930-231444).csv` até **30/09/2026**.
 
-Interface dark premium com azul elétrico, ciano, violeta, magenta, verde de performance e âmbar para custos/atenção.
+- **455 casais**
+- **300 Q**
+- **152 NQ**
+- **3 MQ**
+- **105 contratos/vendas totais**
+- **81 vendas ativas**
+- **24 cancelamentos**
+- **R$ 8.961.589,96 em VGV geral**
+- **R$ 6.878.789,96 em VGV ativo**
+- **R$ 2.082.800,00 em VGV cancelado**
+- **1.370 brindes**
+- **R$ 105.334,81 em custo de brindes**
+- **R$ 231,51 de custo médio por casal**
 
-## PWA
+## Metas oficiais de Setembro
 
-O projeto contém `manifest.webmanifest` e `sw.js`, podendo ser instalado como aplicativo em navegadores compatíveis. O cache do PWA foi renovado para a carga oficial de 29/09.
+- 400 casais — **meta superada: 455**
+- 100 vendas — **81 vendas ativas**
+- R$ 8,5 milhões em VGV geral — **meta superada: R$ 8.961.589,96**
 
-## Dados oficiais
-
-Base atualizada pela planilha oficial `Document(20260930-032521).csv` até **29/09/2026**.
-
-- 447 casais
-- 296 Q
-- 148 NQ
-- 3 MQ
-- 97 vendas ativas
-- 6 cancelamentos de contrato
-- R$ 8.791.689,96 em VGV geral
-- R$ 8.247.689,96 em VGV ativo após cancelamentos
-- R$ 103.347,03 em custo de brindes
-- R$ 231,20 de custo médio por casal
-
-O RAIO X conta cada ocorrência de `ATIVO` como uma venda. Cancelamentos permanecem no histórico e seus valores ficam fora do VGV ativo.
-
-## Metas de Setembro
-
-- 400 casais — **meta superada: 447**
-- 100 vendas
-- R$ 8,5 milhões em VGV — **meta superada: R$ 8.791.689,96**
+Na entrada do RAIO X, o card **Vendas Totais** mostra todos os contratos do período: **105 totais = 81 ativos + 24 cancelados**.
 
 ## Radar da Disputa
 
-A Central exibe os cinco profissionais mais próximos da liderança em três frentes:
+- Capitão da Semana: semana de 28 a 30/09
+- Top 1 VGV
+- Top 1 Casais
+- **Ricardo** permanece registrado como vencedor oficial da Corrida dos 22.
 
-- Capitão da Semana — semana de 28 a 30/09, com desempate por vendas da semana e VGV
-- Top 1 VGV — acumulado do mês
-- Top 1 Casais — acumulado do mês
+## PWA e acesso
 
-O líder aparece destacado e cada concorrente mostra a distância até o primeiro colocado.
+O RAIO X possui `manifest.webmanifest`, Service Worker e botão **Instalar RAIO X**. O Portal CEO aparece na entrada somente para a conta autorizada como CEO.
 
-Na Corrida dos 22, **Ricardo foi o primeiro profissional a atingir 22 casais** e permanece registrado como vencedor oficial, independentemente do líder atual de volume mensal.
+## Histórico
 
-## Histórico anterior
-
-A versão anterior do repositório foi preservada na branch `backup-esteticagyr-2026-09-10`. O `main` representa exclusivamente o SETEMBRO X.
+A versão anterior do repositório foi preservada na branch `backup-esteticagyr-2026-09-10`. O `main` representa o RAIO X em produção.
