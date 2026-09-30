@@ -4,6 +4,7 @@
   const $=id=>document.getElementById(id);
   let current=null;
   let refreshTimer=null;
+  let mode='login';
 
   async function request(path,options={},token){
     const headers=Object.assign({
@@ -99,6 +100,37 @@
     save(session);
     return {session,user,access};
   }
+  async function signUp(name,email,password){
+    const data=await request('/auth/v1/signup',{
+      method:'POST',
+      body:JSON.stringify({
+        email:email.trim().toLowerCase(),
+        password,
+        data:{display_name:name.trim(),app:'raiox'}
+      })
+    });
+    if(data?.access_token){
+      try{await request('/auth/v1/logout',{method:'POST'},data.access_token);}catch(_){}
+    }
+    clear();
+    return data;
+  }
+
+  function setMode(next){
+    mode=next;
+    const signup=mode==='signup';
+    $('authModeLogin')?.classList.toggle('active',!signup);
+    $('authModeSignup')?.classList.toggle('active',signup);
+    if($('authNameField'))$('authNameField').hidden=!signup;
+    if($('authName'))$('authName').required=signup;
+    if($('authTitle'))$('authTitle').textContent=signup?'Crie seu acesso':'Entre na sua conta';
+    if($('authIntro'))$('authIntro').textContent=signup
+      ?'Cadastre seu nome, e-mail e senha. O acesso só será liberado depois da aprovação do CEO.'
+      :'Cada profissional acessa com o próprio e-mail e senha. Sua sessão fica salva neste aparelho para os próximos acessos.';
+    if($('authSubmit'))$('authSubmit').textContent=signup?'SOLICITAR ACESSO':'ENTRAR NO RAIO X';
+    if($('authApprovalHint'))$('authApprovalHint').hidden=!signup;
+    message('');
+  }
 
   async function signOut(){
     try{
@@ -121,7 +153,7 @@
     const btn=$('authSubmit');
     if(!btn)return;
     btn.disabled=loading;
-    btn.textContent=loading?'ENTRANDO...':'ENTRAR NO RAIO X';
+    btn.textContent=loading?(mode==='signup'?'ENVIANDO...':'ENTRANDO...'):(mode==='signup'?'SOLICITAR ACESSO':'ENTRAR NO RAIO X');
   }
 
   function message(text,type=''){
@@ -158,6 +190,9 @@
     const existing=await ensureSession();
     if(existing){reveal(existing);return;}
     showGate();
+    setMode('login');
+    $('authModeLogin')?.addEventListener('click',()=>setMode('login'));
+    $('authModeSignup')?.addEventListener('click',()=>setMode('signup'));
 
     $('authTogglePassword')?.addEventListener('click',()=>{
       const input=$('authPassword');
@@ -171,12 +206,24 @@
       message('');
       setLoading(true);
       try{
+        if(mode==='signup'){
+          const name=$('authName').value.trim();
+          const email=$('authEmail').value;
+          const password=$('authPassword').value;
+          if(name.length<3)throw Object.assign(new Error('Informe seu nome completo.'),{code:'form'});
+          if(password.length<6)throw Object.assign(new Error('A senha precisa ter pelo menos 6 caracteres.'),{code:'form'});
+          await signUp(name,email,password);
+          message('Cadastro enviado. Agora aguarde a aprovação do CEO para entrar.','success');
+          $('authPassword').value='';
+          return;
+        }
         const ctx=await signIn($('authEmail').value,$('authPassword').value);
         reveal(ctx);
       }catch(err){
         const msg=err.code==='not_allowed'
-          ?err.message
-          :err.status===400?'E-mail ou senha incorretos.':'Não foi possível entrar agora. Tente novamente.';
+          ?'Seu acesso ainda está aguardando aprovação do CEO.'
+          :err.code==='form'?err.message
+          :err.status===400?'E-mail ou senha incorretos.':'Não foi possível concluir agora. Tente novamente.';
         message(msg,'error');
       }finally{setLoading(false);}
     });
