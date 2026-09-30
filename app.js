@@ -158,7 +158,8 @@ function cinema(){
   const baseRace=[...baseEl].sort((a,b)=>b.c-a.c||b.s-a.s)[0];
   const baseWinner=OPERATION_P.find(p=>p.n==='Ricardo')||baseRace;
   const couplesRaw=OPERATION_S.couples/metaCouples*100;
-  const salesRaw=OPERATION_S.sales/metaSales*100;
+  const totalSales=OPERATION_S.sales+OPERATION_S.canceled;
+  const salesRaw=totalSales/metaSales*100;
   const vgvRaw=OPERATION_S.vgv/metaVgv*100;
   const couplesPct=Math.min(100,couplesRaw);
   const salesPct=Math.min(100,salesRaw);
@@ -172,7 +173,8 @@ function cinema(){
   heroLeaderName.textContent=baseCap.n;
   heroLeaderSub.textContent=`CAPITÃO DA SEMANA • ${baseCap.w} CASAIS NA SEMANA`;
   goalCouplesText.textContent=`${OPERATION_S.couples} / ${metaCouples} • ${pct(couplesRaw)}${OPERATION_S.couples>=metaCouples?' • META SUPERADA':''}`;
-  goalSalesText.textContent=`${OPERATION_S.sales} / ${metaSales} • ${pct(salesRaw)}`;
+  goalSalesTotal.textContent=totalSales;
+  goalSalesText.textContent=`META ${metaSales} • ${OPERATION_S.sales} ativas • ${OPERATION_S.canceled} canceladas`;
   goalVgvText.textContent=`${money(OPERATION_S.vgv)} / R$ 8,5 mi • ${pct(vgvRaw)}${OPERATION_S.vgv>=metaVgv?' • META SUPERADA':''}`;
 
   requestAnimationFrame(()=>{
