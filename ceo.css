@@ -69,3 +69,74 @@ textarea{font-size:12px}
  .modal{padding:10px}.modal-card{padding:17px}.modal .form-grid{grid-template-columns:1fr}
  .modal .form-grid .wide{grid-column:auto}
 }
+
+
+/* v3 — Aprovações, XIA, Agenda */
+.nav-approval{display:flex!important;align-items:center;justify-content:space-between;gap:10px}
+.nav-badge{display:inline-flex;min-width:22px;height:22px;padding:0 6px;align-items:center;justify-content:center;border-radius:999px;background:rgba(255,189,74,.12);border:1px solid rgba(255,189,74,.25);color:#ffd47d;font-size:9px;font-weight:900}
+.approval-summary{grid-template-columns:repeat(3,minmax(0,1fr));margin-bottom:14px}
+.approval-list{display:grid;gap:10px}
+.approval-card{display:grid;grid-template-columns:minmax(260px,1.4fr) minmax(180px,.8fr) auto;gap:14px;align-items:center;padding:14px 16px;border:1px solid rgba(255,255,255,.07);border-radius:15px;background:linear-gradient(145deg,rgba(255,255,255,.025),rgba(255,255,255,.012))}
+.approval-card.pending{border-color:rgba(255,189,74,.25);background:linear-gradient(145deg,rgba(65,46,13,.26),rgba(10,16,36,.96))}
+.approval-card.approved{border-color:rgba(56,240,166,.17)}
+.approval-card.rejected{border-color:rgba(255,82,110,.18);opacity:.9}
+.approval-person{display:flex;align-items:center;gap:11px;min-width:0}
+.approval-dot{width:10px;height:10px;border-radius:50%;background:#7e8fb1;box-shadow:0 0 0 5px rgba(126,143,177,.08)}
+.approval-card.pending .approval-dot{background:#ffbd4a;box-shadow:0 0 0 5px rgba(255,189,74,.08)}
+.approval-card.approved .approval-dot{background:#38f0a6;box-shadow:0 0 0 5px rgba(56,240,166,.08)}
+.approval-card.rejected .approval-dot{background:#ff526e;box-shadow:0 0 0 5px rgba(255,82,110,.08)}
+.approval-person b{display:block;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.approval-person small{display:block;margin-top:3px;color:#8193b8;font-size:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.approval-meta{display:grid;gap:4px}
+.approval-meta span{font-size:10px;font-weight:900;color:#d7e2f8}
+.approval-meta small{font-size:9px;color:#7182a7}
+.approval-actions{display:flex;justify-content:flex-end;gap:7px;flex-wrap:wrap}
+.approval-actions button{height:36px;padding:0 11px;border:1px solid rgba(255,255,255,.09);border-radius:9px;background:rgba(255,255,255,.03);color:#b9c7df;font-size:9px;font-weight:800;cursor:pointer}
+.approval-actions .approve{border-color:rgba(56,240,166,.25);background:rgba(56,240,166,.06);color:#8cf2c4}
+.approval-actions .reject{border-color:rgba(255,82,110,.22);background:rgba(255,82,110,.05);color:#ff9bac}
+.approval-empty{padding:18px;border:1px dashed rgba(255,255,255,.1);border-radius:13px;color:#7e8fb2;font-size:11px}
+
+.xia-hero{overflow:hidden}
+.xia-controls{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.xia-controls select{min-width:260px}
+.xia-identity{display:grid;gap:12px;margin-top:4px}
+.xia-person-head{display:flex;justify-content:space-between;align-items:flex-start;gap:18px;padding:14px;border:1px solid rgba(24,231,255,.12);border-radius:15px;background:rgba(24,231,255,.025)}
+.xia-person-head h3{margin:4px 0 4px;font-size:22px}
+.xia-person-head p{margin:0;color:#8ea0c4;font-size:11px}
+.xia-base{text-align:right;color:#7184aa;font-size:9px;line-height:1.6}
+.xia-role-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}
+.xia-role-card{padding:12px;border:1px solid rgba(255,255,255,.06);border-radius:13px;background:rgba(255,255,255,.02)}
+.xia-role-card small{display:block;color:#18e7ff;font-size:8px;font-weight:900;letter-spacing:.08em}
+.xia-role-card b{display:block;margin-top:5px;font-size:17px}
+.xia-role-card span{display:block;margin-top:4px;color:#8192b7;font-size:9px;line-height:1.4}
+.xia-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.xia-list{display:grid;gap:8px}
+.xia-item{padding:12px;border:1px solid rgba(255,255,255,.06);border-radius:12px;background:rgba(255,255,255,.02)}
+.xia-item b{font-size:11px}.xia-item p{margin:5px 0 0;color:#95a6c8;font-size:10px;line-height:1.5}
+.xia-item.critical{border-color:rgba(255,82,110,.22)}
+.xia-item.warn{border-color:rgba(255,189,74,.2)}
+.xia-item.info{border-color:rgba(24,231,255,.16)}
+.xia-empty{padding:14px;border:1px dashed rgba(255,255,255,.09);border-radius:12px;color:#7889ad;font-size:10px}
+.xia-prompt{min-height:360px;line-height:1.55;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+
+.agenda-list{display:grid;gap:8px}
+.agenda-card{display:grid;grid-template-columns:120px minmax(0,1fr) auto;gap:12px;align-items:center;padding:12px 14px;border:1px solid rgba(255,255,255,.06);border-radius:13px;background:rgba(255,255,255,.02)}
+.agenda-card.done{opacity:.55}
+.agenda-date b{display:block;font-size:11px}.agenda-date span{display:block;margin-top:3px;color:#7789ae;font-size:9px}
+.agenda-copy small{display:block;color:#18e7ff;font-size:8px;font-weight:900;text-transform:uppercase}.agenda-copy b{display:block;margin-top:3px;font-size:12px}.agenda-copy p{margin:4px 0 0;color:#8fa0c2;font-size:10px}
+.agenda-actions button{height:34px;padding:0 10px;border:1px solid rgba(56,240,166,.18);border-radius:8px;background:rgba(56,240,166,.05);color:#87efbf;font-size:9px;cursor:pointer}
+.agenda-actions span{font-size:9px;color:#7890a7}
+
+.role-group{display:grid;gap:8px;margin-bottom:18px}
+.role-group-head{display:flex;align-items:center;justify-content:space-between;padding:0 2px}
+.role-group-head h3{margin:0;font-size:15px}.role-group-head span{color:#7285aa;font-size:9px}
+
+@media(max-width:900px){
+ .approval-card{grid-template-columns:1fr}
+ .approval-actions{justify-content:flex-start}
+ .xia-grid,.xia-role-grid{grid-template-columns:1fr}
+ .xia-person-head{flex-direction:column}
+ .xia-base{text-align:left}
+ .agenda-card{grid-template-columns:1fr}
+ .approval-summary{grid-template-columns:1fr}
+}
