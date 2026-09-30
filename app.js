@@ -168,7 +168,7 @@ function cinema(){
   iCap.textContent=`${baseCap.n} • ${baseCap.w}`;
   i22.textContent=`${baseWinner.n} • VENCEDOR`;
   iProj.textContent=operationTeam+' casais';
-  missionText.innerHTML=`<b>${OPERATION_S.couples} casais</b>, <b>${OPERATION_S.sales} vendas</b> e <b>${money(OPERATION_S.vgv)}</b> em VGV. <b>${baseWinner.n}</b> venceu a Corrida dos 22; ${baseRace.n} lidera o volume mensal com <b>${baseRace.c} casais</b>.`;
+  missionText.innerHTML=`<b>${OPERATION_S.couples} casais</b>, <b>${totalSales} vendas totais</b> (${OPERATION_S.sales} ativas) e <b>${money(OPERATION_S.vgv)}</b> em VGV. <b>${baseWinner.n}</b> venceu a Corrida dos 22; ${baseRace.n} lidera o volume mensal com <b>${baseRace.c} casais</b>.`;
 
   heroLeaderName.textContent=baseCap.n;
   heroLeaderSub.textContent=`CAPITÃO DA SEMANA • ${baseCap.w} CASAIS NA SEMANA`;
@@ -612,7 +612,7 @@ sel.innerHTML=opts;psel.innerHTML=opts;
 sel.onchange=individual;psel.onchange=projection;dsel.onchange=renderDiagnosis;
 initAreaSelector();cinema();radar();dash();renderTodayOps();renderMetaPace();renderDailyEvolution();rank();individual();renderDiagnosis();profile();projection();costs();
 
-const swVersion='raiox-v38-install-ceo-entry'
+const swVersion='raiox-v39-close-30sep'
 const canRegisterSw=location.protocol==='https:'||location.hostname==='localhost'||location.hostname==='127.0.0.1';
 if('serviceWorker'in navigator&&canRegisterSw){
   navigator.serviceWorker.register(`./sw.js?v=${swVersion}`,{updateViaCache:'none'})
