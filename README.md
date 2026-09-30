@@ -1,8 +1,8 @@
-# SETEMBRO X
+# RAIO X — Relatório de Performance
 
 **Sistema de Performance da Captação — AUREON**
 
-O SETEMBRO X transforma dados da captação em leitura de performance e ação prática.
+O RAIO X transforma dados da captação em leitura de performance e ação prática.
 
 ## Módulos
 
@@ -23,8 +23,8 @@ O SETEMBRO X transforma dados da captação em leitura de performance e ação p
 O painel pode ser alternado sem misturar funções:
 
 - **Promotor de Marketing** — 25 nomes atribuídos na coluna da planilha; ranking competitivo considera os captadores e mantém liderança disponível no Individual/FX.
-- **Liner / Consultor** — 11 profissionais e 414 atendimentos atribuídos.
-- **Closer / Fechador** — 8 profissionais e 399 atendimentos atribuídos. Existem 15 fichas da base sem Closer preenchido; por isso elas não entram no volume individual da visão de Closer.
+- **Liner / Consultor** — 11 profissionais e 447 atendimentos atribuídos.
+- **Closer / Fechador** — 8 profissionais e 429 atendimentos atribuídos. Existem 18 fichas da base sem Closer preenchido; por isso elas não entram no volume individual da visão de Closer.
 - Vendas seguem a regra oficial: cada ocorrência de `ATIVO` conta como uma venda.
 - Ao trocar a área, Ranking, Individual, Semana, FX, Diagnóstico, Perfil, Projeções e Custos usam somente a função selecionada.
 
@@ -34,36 +34,36 @@ Interface dark premium com azul elétrico, ciano, violeta, magenta, verde de per
 
 ## PWA
 
-O projeto contém `manifest.webmanifest` e `sw.js`, podendo ser instalado como aplicativo em navegadores compatíveis. O cache do PWA foi renovado para a carga oficial de 27/09.
+O projeto contém `manifest.webmanifest` e `sw.js`, podendo ser instalado como aplicativo em navegadores compatíveis. O cache do PWA foi renovado para a carga oficial de 29/09.
 
 ## Dados oficiais
 
-Base atualizada pela planilha oficial `Document(10).csv` até **27/09/2026**.
+Base atualizada pela planilha oficial `Document(20260930-032521).csv` até **29/09/2026**.
 
-- 414 casais
-- 276 Q
-- 135 NQ
+- 447 casais
+- 296 Q
+- 148 NQ
 - 3 MQ
-- 88 vendas ativas
+- 97 vendas ativas
 - 6 cancelamentos de contrato
-- R$ 8.038.770 em VGV geral
-- R$ 7.494.770 em VGV ativo após cancelamentos
-- R$ 94.701,97 em custo de brindes
-- R$ 228,75 de custo médio por casal
+- R$ 8.791.689,96 em VGV geral
+- R$ 8.247.689,96 em VGV ativo após cancelamentos
+- R$ 103.347,03 em custo de brindes
+- R$ 231,20 de custo médio por casal
 
-O SETEMBRO X conta cada ocorrência de `ATIVO` como uma venda. Cancelamentos permanecem no histórico e seus valores ficam fora do VGV ativo.
+O RAIO X conta cada ocorrência de `ATIVO` como uma venda. Cancelamentos permanecem no histórico e seus valores ficam fora do VGV ativo.
 
 ## Metas de Setembro
 
-- 400 casais — **meta atingida: 414**
+- 400 casais — **meta superada: 447**
 - 100 vendas
-- R$ 8,5 milhões em VGV
+- R$ 8,5 milhões em VGV — **meta superada: R$ 8.791.689,96**
 
 ## Radar da Disputa
 
 A Central exibe os cinco profissionais mais próximos da liderança em três frentes:
 
-- Capitão da Semana — semana de 21 a 27/09, com desempate por vendas da semana e VGV
+- Capitão da Semana — semana de 28 a 30/09, com desempate por vendas da semana e VGV
 - Top 1 VGV — acumulado do mês
 - Top 1 Casais — acumulado do mês
 
