@@ -2,14 +2,15 @@
 const cfg=window.RAIOX_AUTH_CONFIG||{};
 const STORE='raiox.auth.session.v1';
 const $=id=>document.getElementById(id);
-const state={session:null,user:null,admin:null,months:[],month:null,people:[],teams:[],assignments:[],presence:[],one:[],tasks:[]};
+const state={session:null,user:null,admin:null,months:[],month:null,people:[],teams:[],assignments:[],presence:[],one:[],tasks:[],approvals:[]};
 const TITLES={
   today:['Hoje','Registro operacional diário da sua equipe.'],
   teams:['Equipes','Defina equipes, horários e vínculos do mês.'],
   people:['Pessoas','Cadastro mestre e acessos individuais ao RAIO X.'],
   one:['Olho no Olho','Conversa 1:1, compromissos e acompanhamento.'],
   tasks:['Pendências','Tudo que você precisa revisar, conversar ou acompanhar.'],
-  reports:['Relatórios','Resumo diário e mensal da gestão de pessoas.']
+  reports:['Relatórios','Resumo diário e mensal da gestão de pessoas.'],
+  approvals:['Aprovações','Controle quem pode ou não acessar o RAIO X.']
 };
 const STATUS={
   present:'Compareceu',absent:'Não compareceu',unavailable:'Indisponível',agreed_off:'Folga combinada',
@@ -45,9 +46,14 @@ async function validateCEO(){
 async function signOut(){try{await raw('/auth/v1/logout',{method:'POST'});}catch(_){}localStorage.removeItem(STORE);location.href='./';}
 
 async function loadBase(){
-  state.months=await rest('ceo_months?select=*&order=ref_month.desc');
-  state.people=await rest('ceo_people?select=*&order=full_name.asc');
+  const [months,people]=await Promise.all([
+    rest('ceo_months?select=*&order=ref_month.desc'),
+    rest('ceo_people?select=*&order=full_name.asc')
+  ]);
+  state.months=months;
+  state.people=people;
   fillPeopleSelects();
+  await loadApprovals();
   const preferred=state.months.find(m=>m.status==='open')||state.months[0];
   renderMonths(preferred?.id);
   if(preferred)await selectMonth(preferred.id);
@@ -75,6 +81,77 @@ async function loadToday(){
 }
 async function loadTasks(){state.tasks=await rest('ceo_tasks?select=*&month_id=eq.'+state.month.id+'&order=created_at.desc');}
 async function loadOne(){state.one=await rest('ceo_one_on_one?select=*&month_id=eq.'+state.month.id+'&order=meeting_date.desc,created_at.desc');}
+
+async function loadApprovals(){
+  try{
+    state.approvals=await rest('raiox_app_users?select=user_id,display_name,email,role,active,approval_status,requested_at,approved_at,created_at&order=requested_at.desc.nullslast,created_at.desc');
+  }catch(err){
+    state.approvals=[];
+    toast('Não foi possível carregar as aprovações.',true);
+  }
+  renderApprovals();
+}
+
+function approvalLabel(status){
+  return status==='approved'?'Aprovado':status==='rejected'?'Recusado':'Aguardando';
+}
+
+function renderApprovals(){
+  const rows=state.approvals||[];
+  const pending=rows.filter(x=>x.approval_status==='pending'||(!x.active&&x.approval_status!=='rejected'));
+  const approved=rows.filter(x=>x.approval_status==='approved'&&x.active);
+  const rejected=rows.filter(x=>x.approval_status==='rejected');
+
+  const badge=$('approvalBadge');
+  if(badge){
+    badge.textContent=pending.length;
+    badge.hidden=pending.length===0;
+  }
+
+  if($('approvalSummary')){
+    $('approvalSummary').innerHTML=[
+      ['Aguardando',pending.length,'precisam da sua decisão'],
+      ['Aprovados',approved.length,'podem entrar'],
+      ['Recusados',rejected.length,'sem acesso']
+    ].map(x=>'<div class="summary-card"><small>'+x[0]+'</small><b>'+x[1]+'</b><span>'+x[2]+'</span></div>').join('');
+  }
+
+  if(!$('approvalsList'))return;
+  const ordered=[...pending,...approved,...rejected.filter(x=>!pending.includes(x)&&!approved.includes(x))];
+  $('approvalsList').innerHTML=ordered.length?ordered.map(x=>{
+    const pendingStatus=x.approval_status==='pending'||(!x.active&&x.approval_status!=='rejected');
+    const cls=pendingStatus?'pending':x.active?'approved':'rejected';
+    const when=x.requested_at||x.created_at||'';
+    return '<div class="approval-card '+cls+'" data-approval="'+x.user_id+'">'+
+      '<div class="approval-person"><span class="approval-dot"></span><div><b>'+esc(x.display_name||'Usuário')+'</b><small>'+esc(x.email||'E-mail não informado')+'</small></div></div>'+
+      '<div class="approval-meta"><span>'+approvalLabel(pendingStatus?'pending':x.approval_status)+'</span><small>'+(when?new Date(when).toLocaleString('pt-BR'):'—')+'</small></div>'+
+      '<div class="approval-actions">'+
+        (pendingStatus?'<button class="approve" data-approve="'+x.user_id+'">Aprovar</button><button class="reject" data-reject="'+x.user_id+'">Recusar</button>':
+          x.active?'<button class="reject" data-revoke="'+x.user_id+'">Bloquear acesso</button>':'<button class="approve" data-approve="'+x.user_id+'">Reaprovar</button>')+
+      '</div>'+
+    '</div>';
+  }).join(''):'<div class="approval-empty">Nenhuma solicitação de acesso encontrada.</div>';
+
+  document.querySelectorAll('[data-approve]').forEach(btn=>btn.onclick=()=>approveAccess(btn.dataset.approve,true));
+  document.querySelectorAll('[data-reject]').forEach(btn=>btn.onclick=()=>approveAccess(btn.dataset.reject,false));
+  document.querySelectorAll('[data-revoke]').forEach(btn=>btn.onclick=()=>approveAccess(btn.dataset.revoke,false,true));
+}
+
+async function approveAccess(userId,approve,revoke=false){
+  const payload=approve
+    ?{active:true,approval_status:'approved',approved_at:new Date().toISOString(),approved_by:state.user.id,updated_at:new Date().toISOString()}
+    :{active:false,approval_status:'rejected',approved_at:null,approved_by:state.user.id,updated_at:new Date().toISOString()};
+  try{
+    await rest('raiox_app_users?user_id=eq.'+encodeURIComponent(userId),{
+      method:'PATCH',
+      headers:{Prefer:'return=minimal'},
+      body:JSON.stringify(payload)
+    });
+    toast(approve?'Acesso aprovado.':(revoke?'Acesso bloqueado.':'Solicitação recusada.'));
+    await loadApprovals();
+  }catch(err){toast(err.message,true);}
+}
+
 
 function activePeople(){return state.people.filter(p=>p.status==='active');}
 function personById(id){return state.people.find(p=>p.id===id);}
@@ -214,6 +291,7 @@ function setTab(id){
   document.querySelectorAll('#ceoNav button').forEach(b=>b.classList.toggle('active',b.dataset.tab===id));
   $('ceoTitle').textContent=TITLES[id][0];$('ceoSubtitle').textContent=TITLES[id][1];
   if(id==='reports')renderReports();
+  if(id==='approvals')loadApprovals();
 }
 function bind(){
   document.querySelectorAll('#ceoNav button').forEach(b=>b.onclick=()=>setTab(b.dataset.tab));
@@ -221,7 +299,7 @@ function bind(){
   $('todayDate').onchange=loadToday;$('reloadToday').onclick=loadToday;
   $('addTeamBtn').onclick=addTeam;$('addPersonBtn').onclick=addPerson;
   $('saveOneBtn').onclick=saveOne;$('saveTaskBtn').onclick=saveTask;
-  $('refreshReports').onclick=renderReports;$('newMonthBtn').onclick=newMonth;$('ceoLogout').onclick=signOut;
+  $('refreshReports').onclick=renderReports;if($('refreshApprovals'))$('refreshApprovals').onclick=loadApprovals;$('newMonthBtn').onclick=newMonth;$('ceoLogout').onclick=signOut;
 }
 async function init(){
   try{
