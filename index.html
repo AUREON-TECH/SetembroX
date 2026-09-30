@@ -189,18 +189,49 @@
 </section>
 
 <section id="diag" class="sec">
-  <div class="card diag-hero">
+  <div class="card diag-hero attention-hero">
     <div class="diag-hero-top">
-      <div><div class="eye">DIAGNÓSTICO X</div><h3>Pontos Fortes & Fracos</h3><p>Compare cada profissional com a média da operação e transforme o diagnóstico em ação.</p><span class="diag-tag" id="diagTag"></span></div>
-      <div class="diag-select-wrap"><small>Escolha o profissional</small><select id="dsel"></select></div>
+      <div>
+        <div class="eye">DIAGNÓSTICO X</div>
+        <h3>Central de Atenção</h3>
+        <p>Somente os pontos que exigem ação agora. Sem misturar indicadores bons com alertas.</p>
+        <span class="diag-tag" id="diagTag"></span>
+      </div>
+      <div class="diag-select-wrap">
+        <small>Foco individual</small>
+        <select id="dsel"></select>
+      </div>
     </div>
   </div>
+
   <div class="diag-ops" id="diagOps"></div>
-  <div class="diag-grid">
-    <div class="diag-panel strong"><div class="diag-panel-head"><h3>✓ Pontos fortes — <span class="diag-name" id="diagName">—</span></h3><span>acima da média</span></div><div class="diag-list" id="diagStrength"></div></div>
-    <div class="diag-panel weak"><div class="diag-panel-head"><h3>△ Pontos de atenção</h3><span>onde evoluir</span></div><div class="diag-list" id="diagWeak"></div></div>
+
+  <div class="attention-section">
+    <div class="attention-section-head">
+      <div><span class="attention-kicker">PRIORIDADES DA OPERAÇÃO</span><h3>O que precisa de atenção agora</h3></div>
+      <span class="attention-count" id="diagOperationCount">0 alertas</span>
+    </div>
+    <div class="attention-list" id="diagOperationAttention"></div>
   </div>
-  <div class="diag-action" id="diagAction"></div>
+
+  <div class="attention-section">
+    <div class="attention-section-head">
+      <div><span class="attention-kicker">PESSOAS</span><h3>Quem precisa de acompanhamento</h3></div>
+      <span class="attention-count" id="diagPeopleCount">0 pessoas</span>
+    </div>
+    <div class="attention-people" id="diagPeopleAttention"></div>
+  </div>
+
+  <div class="diag-grid attention-detail-grid">
+    <div class="diag-panel weak attention-focus">
+      <div class="diag-panel-head">
+        <h3>△ Atenção individual — <span class="diag-name" id="diagName">—</span></h3>
+        <span>comparação com a média da área</span>
+      </div>
+      <div class="diag-list" id="diagWeak"></div>
+    </div>
+    <div class="diag-action attention-action" id="diagAction"></div>
+  </div>
 </section>
 
 <section id="perfil" class="sec">
