@@ -20,6 +20,8 @@
       <button data-tab="teams">Equipes</button>
       <button data-tab="people">Pessoas</button>
       <button data-tab="one">Olho no Olho</button>
+      <button data-tab="xia">XIA</button>
+      <button data-tab="agenda">Agenda</button>
       <button data-tab="tasks">Pendências</button>
       <button data-tab="reports">Relatórios</button>
       <button data-tab="approvals" class="nav-approval">Aprovações <span id="approvalBadge" class="nav-badge" hidden>0</span></button>
@@ -91,6 +93,49 @@
       <div class="panel"><div class="panel-head"><div><span class="eyebrow">HISTÓRICO</span><h2>Conversas registradas</h2></div></div><div id="oneHistory" class="history-list"></div></div>
     </section>
 
+    <section id="xia" class="ceo-tab">
+      <div class="panel xia-hero">
+        <div class="panel-head">
+          <div><span class="eyebrow">X INTELLIGENCE ANALYSIS</span><h2>XIA • Inteligência Analítica do Profissional</h2><p>Uma leitura 360° baseada em evidências do RAIO X. Fato é separado de hipótese; decisões continuam humanas.</p></div>
+          <div class="xia-controls"><select id="xiaPerson"></select><button id="refreshXia" class="ghost">Atualizar análise</button><button id="copyXiaBtn" class="primary">Copiar para IA</button></div>
+        </div>
+        <div id="xiaIdentity" class="xia-identity"></div>
+        <div id="xiaMetrics" class="summary-grid"></div>
+      </div>
+      <div class="xia-grid">
+        <div class="panel"><div class="panel-head"><div><span class="eyebrow">LEITURA XIA</span><h2>Acertos e forças</h2></div></div><div id="xiaStrengths" class="xia-list"></div></div>
+        <div class="panel"><div class="panel-head"><div><span class="eyebrow">ATENÇÃO</span><h2>Onde pode melhorar</h2></div></div><div id="xiaAttention" class="xia-list"></div></div>
+      </div>
+      <div class="xia-grid">
+        <div class="panel"><div class="panel-head"><div><span class="eyebrow">CONSISTÊNCIA</span><h2>Padrão de execução</h2></div></div><div id="xiaConsistency" class="xia-list"></div></div>
+        <div class="panel"><div class="panel-head"><div><span class="eyebrow">LIDERANÇA</span><h2>Próximos passos</h2></div></div><div id="xiaActions" class="xia-list"></div></div>
+      </div>
+      <div class="panel">
+        <div class="panel-head"><div><span class="eyebrow">DOSSIÊ PARA IA</span><h2>Prompt completo do profissional</h2><p>Copie este conteúdo para a IA analisar usando todos os dados disponíveis, sem inventar causas.</p></div></div>
+        <textarea id="xiaPrompt" class="xia-prompt" rows="18" readonly></textarea>
+      </div>
+    </section>
+
+    <section id="agenda" class="ceo-tab">
+      <div class="panel form-panel">
+        <div class="panel-head"><div><span class="eyebrow">AGENDA INTELIGENTE</span><h2>Novo compromisso</h2><p>Treinamentos, meetings, Olho no Olho, reuniões, lembretes e compromissos.</p></div><span class="pill">Portal CEO</span></div>
+        <div class="form-grid compact">
+          <label>Tipo<select id="agendaType"><option value="meeting">Meeting</option><option value="training">Treinamento</option><option value="one_on_one">Olho no Olho</option><option value="commitment">Compromisso</option><option value="reminder">Lembrete</option><option value="operational">Operacional</option><option value="other">Outro</option></select></label>
+          <label>Título<input id="agendaTitle" placeholder="Ex.: Meeting da captação"></label>
+          <label>Data<input id="agendaDate" type="date"></label>
+          <label>Horário<input id="agendaStart" type="time"></label>
+          <label>Até<input id="agendaEnd" type="time"></label>
+          <label>Pessoa<select id="agendaPerson"><option value="">Toda a operação / sem pessoa</option></select></label>
+          <label>Equipe<select id="agendaTeam"><option value="">Sem equipe específica</option></select></label>
+          <label>Prioridade<select id="agendaPriority"><option value="normal">Normal</option><option value="high">Alta</option><option value="critical">Crítica</option><option value="low">Baixa</option></select></label>
+          <label class="wide">Anotações<textarea id="agendaNotes" rows="3" placeholder="Pauta, objetivo, materiais, pontos para lembrar..."></textarea></label>
+        </div>
+        <div class="form-actions"><button id="saveAgendaBtn" class="primary">Adicionar à agenda</button></div>
+      </div>
+      <div id="agendaSummary" class="summary-grid"></div>
+      <div class="panel"><div class="panel-head"><div><span class="eyebrow">PRÓXIMOS COMPROMISSOS</span><h2>Agenda do mês</h2></div></div><div id="agendaList" class="agenda-list"></div></div>
+    </section>
+
     <section id="tasks" class="ceo-tab">
       <div class="panel form-panel">
         <div class="panel-head"><div><span class="eyebrow">ACOMPANHAMENTO</span><h2>Nova pendência</h2></div></div>
@@ -142,6 +187,9 @@
       <label>Horário combinado<input id="personStartTime" type="time"></label>
       <label>Horário de saída opcional<input id="personEndTime" type="time"></label>
       <label>Equipe do mês<select id="personTeam"></select></label>
+      <label>Meta mensal de casais/atendimentos<input id="personGoalCouples" type="number" min="0" step="1" placeholder="0"></label>
+      <label>Meta mensal de vendas<input id="personGoalSales" type="number" min="0" step="1" placeholder="0"></label>
+      <label>Meta mensal de VGV<input id="personGoalVgv" type="number" min="0" step="100" placeholder="0"></label>
       <label class="wide">Observações<textarea id="personNotes" rows="3" placeholder="Informações importantes sobre a pessoa"></textarea></label>
       <label class="wide">Senha inicial opcional <small>Ao cadastrar uma pessoa nova, se preencher e-mail + senha, o acesso ao RAIO X é criado automaticamente sem SMS.</small><input id="personPassword" type="password" placeholder="Mínimo 6 caracteres"></label>
     </div>
@@ -152,6 +200,7 @@
 <div id="ceoToast" class="toast"></div>
 
 <script src="./auth-config.js"></script>
-<script src="./ceo.js?v=2"></script>
+<script src="./xia-performance.js"></script>
+<script src="./ceo.js?v=3"></script>
 </body>
 </html>
