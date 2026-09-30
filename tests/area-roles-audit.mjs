@@ -37,14 +37,14 @@ function totalsFromFx(FX){
 
 assert.equal(area.liner.P.length,11,'Liner view must contain 11 professionals');
 assert.equal(area.closer.P.length,8,'Closer view must contain 8 professionals');
-assert.deepEqual(totalsFromPeople(area.liner.P),{couples:414,sales:88,vgv:8038770,q:276,nq:135,gift:94701.97});
-assert.deepEqual(totalsFromPeople(area.closer.P),{couples:399,sales:88,vgv:8038770,q:266,nq:130,gift:92586.21});
-assert.deepEqual(totalsFromFx(area.liner.FX_EXPECTED),{couples:414,sales:88,vgv:8038770,q:276,nq:135});
-assert.deepEqual(totalsFromFx(area.closer.FX_EXPECTED),{couples:399,sales:88,vgv:8038770,q:266,nq:130});
+assert.deepEqual(totalsFromPeople(area.liner.P),{couples:447,sales:97,vgv:8791689.96,q:296,nq:148,gift:103347.03});
+assert.deepEqual(totalsFromPeople(area.closer.P),{couples:429,sales:97,vgv:8791689.96,q:283,nq:143,gift:100559.35});
+assert.deepEqual(totalsFromFx(area.liner.FX_EXPECTED),{couples:447,sales:97,vgv:8791689.96,q:296,nq:148});
+assert.deepEqual(totalsFromFx(area.closer.FX_EXPECTED),{couples:429,sales:97,vgv:8791689.96,q:283,nq:143});
 
 for(const [key,dataset] of Object.entries(area)){
   for(const [name,rows] of Object.entries(dataset.FX_DAILY)){
-    assert.equal(rows.length,27,key+' / '+name+' must have 27 daily records');
+    assert.equal(rows.length,29,key+' / '+name+' must have 29 daily records');
     const t=rows.reduce((a,r)=>({c:a.c+r[0],s:a.s+r[1],v:a.v+r[2],q:a.q+r[3],nq:a.nq+r[4]}),{c:0,s:0,v:0,q:0,nq:0});
     assert.deepEqual(t,dataset.FX_EXPECTED[name],key+' / '+name+' FX totals must reconcile');
   }
@@ -61,7 +61,7 @@ assert.match(engine,/areaKey==='liner'/,'FX engine must have Liner-specific logi
 assert.doesNotMatch(sales,/salesByPerson|weekSalesByPerson/,'rerender script must not overwrite selected-area sales');
 assert.match(sw,/\.\/area-data\.js/,'PWA cache must include role data');
 
-console.log('SETEMBRO X area roles audit passed');
+console.log('RAIO X area roles audit passed');
 
 assert.match(app,/function initAreaSelector\(\)\{[\s\S]*?function go\(id\)\{/,'initAreaSelector must be top-level before go');
 assert.doesNotMatch(app,/function go\(id\)\{[\s\S]{0,200}function initAreaSelector/,'initAreaSelector must not be nested inside navigation');
