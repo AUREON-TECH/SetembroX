@@ -19,8 +19,30 @@
 <link rel="stylesheet" href="./diagnostic.css?v=1">
 <link rel="stylesheet" href="./fx.css?v=1">
 <link rel="stylesheet" href="./layout-premium.css?v=1">
+<link rel="stylesheet" href="./auth.css?v=1">
 </head>
 <body>
+<div id="authGate" class="auth-gate">
+  <div class="auth-login">
+    <div class="auth-logo"><div class="auth-logo-mark">RX</div><div><b>RAIO X</b><small>RELATÓRIO DE PERFORMANCE</small></div></div>
+    <span class="auth-eyebrow">ACESSO À OPERAÇÃO</span>
+    <h1>Entre na sua conta</h1>
+    <p>Cada profissional acessa com o próprio e-mail e senha. Sua sessão fica salva neste aparelho para os próximos acessos.</p>
+    <form id="authForm" class="auth-form">
+      <label class="auth-field"><span>E-mail</span><input id="authEmail" type="email" autocomplete="username" placeholder="seuemail@exemplo.com" required></label>
+      <label class="auth-field"><span>Senha</span><div class="auth-pass"><input id="authPassword" type="password" autocomplete="current-password" placeholder="Sua senha" required><button id="authTogglePassword" type="button">Mostrar</button></div></label>
+      <button id="authSubmit" class="auth-submit" type="submit">ENTRAR NO RAIO X</button>
+    </form>
+    <div id="authMessage" class="auth-message"></div>
+    <div class="auth-info">
+      <div><small>ACESSO</small><b>E-mail + senha</b></div>
+      <div><small>SESSÃO</small><b>Permanece conectada</b></div>
+    </div>
+    <div class="auth-powered">CRIADO POR AUREON • PERFORMANCE INTELLIGENCE</div>
+  </div>
+</div>
+
+<div id="raioxAppShell" hidden>
 <div class="cin future-cin" id="cin">
   <div class="future-grid" aria-hidden="true"></div>
   <div class="future-stars" aria-hidden="true"></div>
@@ -86,7 +108,17 @@
     <button data-go="proj">07 · Projeções</button>
     <button data-go="custos">08 · Custos</button>
   </nav>
-  <div class="foot"><span class="dot"></span>Base oficial até 29/09/2026<br>Raphael Bueno • Gestão</div>
+  <div class="foot"><span class="dot"></span>Base oficial até 29/09/2026
+    <div class="auth-session-box">
+      <small>USUÁRIO CONECTADO</small>
+      <b id="authUserName">—</b>
+      <small id="authUserEmail">—</small>
+      <div class="auth-session-actions">
+        <a id="ceoPortalLink" href="./ceo.html" hidden>Portal CEO</a>
+        <button id="raioxLogout" type="button">Sair</button>
+      </div>
+    </div>
+  </div>
 </aside>
 
 <main>
@@ -266,6 +298,10 @@
   <button class="active" data-go="dash">01<br>Central</button><button data-go="rank">02<br>Ranking</button><button data-go="ind">03<br>Individual</button><button data-go="fx">04<br>FX</button><button data-go="diag">05<br>Diagnóstico</button><button data-go="perfil">06<br>Perfil</button><button data-go="proj">07<br>Projeção</button><button data-go="custos">08<br>Custos</button>
 </nav>
 
+</div>
+
+<script src="./auth-config.js" defer></script>
+<script src="./auth.js" defer></script>
 <script src="./area-data.js" defer></script>
 <script src="./fx-data.js" defer></script>
 <script src="./app.js" defer></script>
