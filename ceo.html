@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#060a18">
 <title>RAIO X • Portal CEO</title>
 <link rel="icon" href="./icon.svg">
-<link rel="stylesheet" href="./ceo.css?v=1">
+<link rel="stylesheet" href="./ceo.css?v=2">
 </head>
 <body>
 <div id="ceoLoading" class="ceo-loading"><div class="loader-mark">RX</div><b>Validando acesso CEO...</b></div>
@@ -33,7 +33,13 @@
     </header>
 
     <section id="today" class="ceo-tab on">
-      <div class="toolbar"><label>Data<input id="todayDate" type="date"></label><button id="reloadToday" class="ghost">Atualizar</button></div>
+      <div class="toolbar">
+        <label>Data<input id="todayDate" type="date"></label>
+        <button id="reloadToday" class="ghost">Atualizar</button>
+        <button id="markAllPresentBtn" class="ghost success">Todos presentes</button>
+        <button id="saveDayBtn" class="primary">Salvar o dia</button>
+      </div>
+      <div class="today-help">Padrão do dia: <b>todos começam como “Compareceu”</b>. Altere somente as exceções e depois clique em <b>Salvar o dia</b>.</div>
       <div id="todaySummary" class="summary-grid"></div>
       <div class="panel">
         <div class="panel-head"><div><span class="eyebrow">PRESENÇA NA OPERAÇÃO</span><h2>Equipe do dia</h2></div><span id="todayCount" class="pill"></span></div>
@@ -54,7 +60,7 @@
 
     <section id="people" class="ceo-tab">
       <div class="panel">
-        <div class="panel-head"><div><span class="eyebrow">CADASTRO MESTRE</span><h2>Pessoas</h2><p>Status, área e acesso individual ao RAIO X.</p></div><button id="addPersonBtn" class="primary small">+ Pessoa</button></div>
+        <div class="panel-head"><div><span class="eyebrow">CADASTRO MESTRE</span><h2>Pessoas</h2><p>Nome, função, horário, equipe, status e acesso individual ao RAIO X.</p></div><button id="addPersonBtn" class="primary small">+ Adicionar pessoa</button></div>
         <div id="peopleTable" class="table-wrap"></div>
       </div>
     </section>
@@ -104,9 +110,27 @@
   </main>
 </div>
 
+<div id="personModal" class="modal" hidden>
+  <div class="modal-card">
+    <div class="modal-head"><div><span class="eyebrow">CADASTRO DE PESSOA</span><h2 id="personModalTitle">Adicionar pessoa</h2></div><button id="closePersonModal" class="modal-close" type="button">×</button></div>
+    <div class="form-grid">
+      <label class="wide">Nome completo<input id="personName" placeholder="Nome e sobrenome"></label>
+      <label>Função<select id="personRole"><option>Promotor de Marketing</option><option>Liner / Consultor</option><option>Closer / Fechador</option><option>Liderança</option><option>Gestão</option><option>Apoio</option></select></label>
+      <label>Status<select id="personStatus"><option value="active">Ativo</option><option value="inactive">Inativo</option><option value="away">Indisponível</option><option value="ended">Encerrado</option></select></label>
+      <label>E-mail<input id="personEmail" type="email" placeholder="email@exemplo.com"></label>
+      <label>Horário combinado<input id="personStartTime" type="time"></label>
+      <label>Horário de saída opcional<input id="personEndTime" type="time"></label>
+      <label>Equipe do mês<select id="personTeam"></select></label>
+      <label class="wide">Observações<textarea id="personNotes" rows="3" placeholder="Informações importantes sobre a pessoa"></textarea></label>
+      <label class="wide">Senha inicial opcional <small>Se preencher junto com o e-mail, o acesso ao RAIO X será criado automaticamente.</small><input id="personPassword" type="password" placeholder="Mínimo 6 caracteres"></label>
+    </div>
+    <div class="modal-actions"><button id="cancelPersonModal" class="ghost" type="button">Cancelar</button><button id="savePersonBtn" class="primary" type="button">Salvar pessoa</button></div>
+  </div>
+</div>
+
 <div id="ceoToast" class="toast"></div>
 
 <script src="./auth-config.js"></script>
-<script src="./ceo.js"></script>
+<script src="./ceo.js?v=2"></script>
 </body>
 </html>
