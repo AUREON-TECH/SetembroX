@@ -48,7 +48,7 @@ assert.match(html, /entry-v2\.css/i, 'index must load the refined entry visual l
 assert.ok(fs.existsSync('entry-v2.css'), 'entry-v2.css must exist');
 assert.match(html, /META OFICIAL DO MÊS/i, 'entry must show the official monthly target section');
 assert.match(html, />400<\/strong>\s*<b>CASAIS<\/b>/i, 'entry must show the 400-couple target');
-assert.match(html, />100<\/strong>\s*<b>VENDAS<\/b>/i, 'entry must show the 100-sales target');
+assert.match(html, /id=["']goalSalesTotal["'][^>]*>[\s\S]*?<b>VENDAS TOTAIS<\/b>/i, 'entry must show total sales in the main sales card');
 assert.match(html, /R\$ 8,5 MI/i, 'entry must show the R$ 8.5M VGV target');
 assert.match(html, /heroLeaderName/i, 'entry must keep the weekly/top-couples leader highlight');
 
@@ -59,3 +59,6 @@ assert.match(appJs, /72\s*vendas|metaSales\s*-\s*S\.sales/i, 'ARENA X must expos
 assert.doesNotMatch(appJs, /\bcap\.innerHTML\s*=/, 'captain data object must not be mistaken for a DOM element');
 
 console.log('RAIO X PWA audit passed');
+
+assert.match(appJs,/const totalSales=OPERATION_S\.sales\+OPERATION_S\.canceled/,'entry total sales must include active and cancelled contracts');
+assert.match(appJs,/goalSalesText\.textContent=.*ativas.*canceladas/s,'entry sales card must split active and cancelled sales');
