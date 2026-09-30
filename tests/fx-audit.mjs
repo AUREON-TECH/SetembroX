@@ -25,16 +25,16 @@ const {FX_DAILY,FX_EXPECTED}=parsed;
 assert.ok(Object.keys(FX_DAILY).length>=24,'FX must include the professional roster');
 
 for(const [name,rows] of Object.entries(FX_DAILY)){
-  assert.equal(rows.length,27,name+' must have 27 daily records');
+  assert.equal(rows.length,29,name+' must have 29 daily records');
   const total=rows.reduce((a,r)=>({c:a.c+r[0],s:a.s+r[1],v:a.v+r[2],q:a.q+r[3],nq:a.nq+r[4]}),{c:0,s:0,v:0,q:0,nq:0});
   assert.deepEqual(total,FX_EXPECTED[name],name+' daily totals must match official monthly totals');
 }
 
 const global=Object.values(FX_EXPECTED).reduce((a,x)=>({c:a.c+x.c,s:a.s+x.s,v:a.v+x.v,q:a.q+x.q,nq:a.nq+x.nq}),{c:0,s:0,v:0,q:0,nq:0});
-assert.deepEqual(global,{c:414,s:88,v:8038770,q:276,nq:135},'FX global totals must match the official base through 27/09');
+assert.deepEqual(global,{c:447,s:97,v:8791689.96,q:296,nq:148},'FX global totals must match the official base through 29/09');
 
 assert.deepEqual(FX_EXPECTED.Paulo,{c:38,s:5,v:434900,q:26,nq:12},'Paulo totals must match the official sheet');
-assert.deepEqual(FX_DAILY.Paulo[26],[0,0,0,0,0],'Paulo 27/09 must have no record');
+assert.deepEqual(FX_DAILY.Paulo[28],[0,0,0,0,0],'Paulo 29/09 must have no record');
 
 assert.match(engine,/function classify\(c,s\)/,'FX must classify daily performance');
 assert.match(engine,/CAPTAÇÃO • CRÍTICO/,'0 couple day must be a strong capture alert');
@@ -50,4 +50,4 @@ assert.match(css,/\.fx-grid\s*\{/,'FX needs dedicated layout');
 assert.match(css,/\.fx-validate\.ok\s*\{/,'FX needs a validated-data state');
 assert.match(css,/\.fx-validate\.bad\s*\{/,'FX needs a divergent-data state');
 
-console.log('SETEMBRO X FX strong audit passed');
+console.log('RAIO X FX strong audit passed');
