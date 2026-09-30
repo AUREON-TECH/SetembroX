@@ -60,8 +60,13 @@
 
     <section id="people" class="ceo-tab">
       <div class="panel">
-        <div class="panel-head"><div><span class="eyebrow">CADASTRO MESTRE</span><h2>Pessoas</h2><p>Nome, função, horário, equipe, status e acesso individual ao RAIO X.</p></div><button id="addPersonBtn" class="primary small">+ Adicionar pessoa</button></div>
+        <div class="panel-head"><div><span class="eyebrow">CADASTRO PJ</span><h2>Pessoas da operação</h2><p>Cadastro completo com CNPJ, contato, função, horário, equipe, status e acesso ao RAIO X.</p></div><button id="addPersonBtn" class="primary small">+ Adicionar pessoa</button></div>
+        <div class="people-counter-row"><span id="activePeopleCount" class="pill">0 ativos</span><span class="people-hint">Ao distratar, a pessoa sai daqui e vai para o histórico abaixo.</span></div>
         <div id="peopleTable" class="table-wrap"></div>
+      </div>
+      <div class="panel ended-panel">
+        <div class="panel-head"><div><span class="eyebrow">HISTÓRICO</span><h2>Distratados</h2><p>Profissionais que não fazem mais parte da operação. Todo o histórico continua preservado.</p></div><span id="endedPeopleCount" class="pill ended">0 distratados</span></div>
+        <div id="endedPeopleTable" class="table-wrap"></div>
       </div>
     </section>
 
@@ -113,16 +118,20 @@
 <div id="personModal" class="modal" hidden>
   <div class="modal-card">
     <div class="modal-head"><div><span class="eyebrow">CADASTRO DE PESSOA</span><h2 id="personModalTitle">Adicionar pessoa</h2></div><button id="closePersonModal" class="modal-close" type="button">×</button></div>
+    <input id="personEditId" type="hidden">
     <div class="form-grid">
-      <label class="wide">Nome completo<input id="personName" placeholder="Nome e sobrenome"></label>
+      <label class="wide">Nome completo<input id="personName" placeholder="Nome completo"></label>
+      <label>CNPJ<input id="personCnpj" inputmode="numeric" placeholder="00.000.000/0000-00"></label>
+      <label>Telefone / WhatsApp<input id="personPhone" inputmode="tel" placeholder="(12) 99999-9999"></label>
       <label>Função<select id="personRole"><option>Promotor de Marketing</option><option>Liner / Consultor</option><option>Closer / Fechador</option><option>Liderança</option><option>Gestão</option><option>Apoio</option></select></label>
-      <label>Status<select id="personStatus"><option value="active">Ativo</option><option value="inactive">Inativo</option><option value="away">Indisponível</option><option value="ended">Encerrado</option></select></label>
+      <label>Status<select id="personStatus"><option value="active">Ativo</option><option value="inactive">Inativo</option><option value="away">Indisponível</option></select></label>
       <label>E-mail<input id="personEmail" type="email" placeholder="email@exemplo.com"></label>
+      <label>Data de entrada<input id="personStartedOn" type="date"></label>
       <label>Horário combinado<input id="personStartTime" type="time"></label>
       <label>Horário de saída opcional<input id="personEndTime" type="time"></label>
       <label>Equipe do mês<select id="personTeam"></select></label>
       <label class="wide">Observações<textarea id="personNotes" rows="3" placeholder="Informações importantes sobre a pessoa"></textarea></label>
-      <label class="wide">Senha inicial opcional <small>Se preencher junto com o e-mail, o acesso ao RAIO X será criado automaticamente.</small><input id="personPassword" type="password" placeholder="Mínimo 6 caracteres"></label>
+      <label class="wide">Senha inicial opcional <small>Ao cadastrar uma pessoa nova, se preencher e-mail + senha, o acesso ao RAIO X é criado automaticamente sem SMS.</small><input id="personPassword" type="password" placeholder="Mínimo 6 caracteres"></label>
     </div>
     <div class="modal-actions"><button id="cancelPersonModal" class="ghost" type="button">Cancelar</button><button id="savePersonBtn" class="primary" type="button">Salvar pessoa</button></div>
   </div>
