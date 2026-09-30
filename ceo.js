@@ -113,6 +113,11 @@ async function selectMonth(id){
   state.month=state.months.find(m=>m.id===id)||state.months[0];
   if(!state.month)return;
   $('monthSelect').value=state.month.id;
+  const monthPrefix=state.month.ref_month.slice(0,7);
+  const today=localDate();
+  if(!$('todayDate').value||$('todayDate').value.slice(0,7)!==monthPrefix){
+    $('todayDate').value=today.slice(0,7)===monthPrefix?today:state.month.ref_month;
+  }
   await Promise.all([loadTeams(),loadTasks(),loadOne(),loadGoals(),loadAgenda()]);
   await loadToday();
   fillPeopleSelects();
@@ -194,10 +199,15 @@ function markAllPresent(){
 async function saveDay(){
   const rows=[...document.querySelectorAll('.presence-row')];
   if(!rows.length)return;
+  const workDate=$('todayDate').value;
+  if(workDate.slice(0,7)!==state.month.ref_month.slice(0,7)){
+    toast('A data escolhida não pertence ao mês de referência selecionado.',true);
+    return;
+  }
   const body=rows.map(row=>({
     person_id:row.dataset.person,
     month_id:state.month.id,
-    work_date:$('todayDate').value,
+    work_date:workDate,
     status:row.querySelector('.presence-status').value||'present',
     arrival_time:row.querySelector('.arrival').value||null,
     note:row.querySelector('.presence-note').value||null,
@@ -264,7 +274,7 @@ function personTable(rows,ended=false){
         ?'<button data-edit-person="'+p.id+'">Ver / editar</button><button class="danger" data-delete-person="'+p.id+'">Excluir</button>'
         :'<button data-edit-person="'+p.id+'">Editar</button><button data-access-person="'+p.id+'">Acesso</button><button class="danger" data-end-person="'+p.id+'">Distratar</button><button class="danger" data-delete-person="'+p.id+'">Excluir</button>';
       return '<tr>'+
-        '<td><b>'+esc(p.full_name)+'</b><small>'+esc(roleOf(p))+(p.email?' • '+esc(p.email):'')+'</small></td>'+
+        '<td><b>'+esc(p.full_name)+'</b><small>'+esc((p.roles&&p.roles.length?p.roles:[roleOf(p)]).join(' • '))+(p.email?' • '+esc(p.email):'')+'</small></td>'+
         '<td>'+esc(p.cnpj||'—')+'<small>'+esc(p.phone||'sem telefone')+'</small></td>'+
         '<td><b>'+esc(effectiveStart(p))+'</b><small>'+esc(time5(p.default_end_time)||'saída não definida')+'</small></td>'+
         '<td>'+esc(team?.name||'Sem equipe')+'</td>'+
@@ -288,8 +298,8 @@ function renderPeople(){
 
   const grouped={};
   active.forEach(p=>{
-    const role=ROLE_ORDER.includes(roleOf(p))?roleOf(p):'Outros';
-    (grouped[role]??=[]).push(p);
+    const roles=(p.roles&&p.roles.length?p.roles:[roleOf(p)]).map(r=>ROLE_ORDER.includes(r)?r:'Outros');
+    [...new Set(roles)].forEach(role=>(grouped[role]??=[]).push(p));
   });
   $('peopleTable').innerHTML=ROLE_ORDER.filter(r=>grouped[r]?.length).map(role=>
     '<div class="role-group"><div class="role-group-head"><h3>'+esc(role)+'</h3><span>'+grouped[role].length+' pessoas</span></div>'+personTable(grouped[role])+'</div>'
