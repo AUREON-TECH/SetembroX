@@ -22,6 +22,7 @@
       <button data-tab="one">Olho no Olho</button>
       <button data-tab="tasks">Pendências</button>
       <button data-tab="reports">Relatórios</button>
+      <button data-tab="approvals" class="nav-approval">Aprovações <span id="approvalBadge" class="nav-badge" hidden>0</span></button>
     </nav>
     <div class="ceo-side-bottom"><a href="./">← Voltar ao RAIO X</a><button id="ceoLogout">Sair</button></div>
   </aside>
@@ -110,6 +111,17 @@
       <div class="panel">
         <div class="panel-head"><div><span class="eyebrow">RELATÓRIO DO MÊS</span><h2 id="reportMonthTitle">—</h2></div><button id="refreshReports" class="ghost">Atualizar</button></div>
         <div id="reportBody" class="report-body"></div>
+      </div>
+    </section>
+
+    <section id="approvals" class="ceo-tab">
+      <div class="panel">
+        <div class="panel-head">
+          <div><span class="eyebrow">ACESSOS AO RAIO X</span><h2>Aprovações</h2><p>Somente pessoas aprovadas por você conseguem entrar no sistema.</p></div>
+          <button id="refreshApprovals" class="ghost">Atualizar</button>
+        </div>
+        <div id="approvalSummary" class="summary-grid approval-summary"></div>
+        <div id="approvalsList" class="approval-list"></div>
       </div>
     </section>
   </main>
