@@ -21,3 +21,4 @@ jobs:
           node tests/fx-audit.mjs
           node tests/layout-premium-audit.mjs
           node tests/area-roles-audit.mjs
+          node tests/auth-ceo-audit.mjs
