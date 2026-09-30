@@ -435,3 +435,16 @@
 @media (prefers-reduced-motion:reduce){
   .orbit,.orbital-core .x,.goal-card::before,.future-cin::after{animation:none!important}
 }
+
+
+/* RAIO X — entrada institucional / Portal CEO / instalação */
+.entry-actions{display:grid;gap:10px;width:min(100%,720px);margin:16px auto 0}
+.entry-actions .enter{width:100%;margin:0}
+.entry-ceo{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:12px;padding:12px 14px;border:1px solid rgba(24,231,255,.22);border-radius:15px;background:linear-gradient(105deg,rgba(24,231,255,.08),rgba(139,92,255,.1));text-decoration:none;color:#f5fbff;box-shadow:0 16px 34px rgba(0,0,0,.16)}
+.entry-ceo:hover{border-color:rgba(24,231,255,.45);transform:translateY(-1px)}
+.entry-ceo-icon{display:grid;place-items:center;width:42px;height:42px;border:1px solid rgba(24,231,255,.25);border-radius:12px;background:#0a1328;font-weight:1000;font-size:13px}
+.entry-ceo span:nth-child(2){display:grid;text-align:left;gap:2px}.entry-ceo small{color:#18e7ff;font-size:7px;font-weight:900;letter-spacing:.14em}.entry-ceo b{font-size:11px;letter-spacing:.06em}.entry-ceo em{font-style:normal;color:#8596b9;font-size:8px}.entry-ceo strong{font-size:18px;color:#8fdfff}
+.entry-install{display:grid;grid-template-columns:auto auto 1fr;align-items:center;justify-content:center;gap:8px;width:100%;min-height:44px;padding:0 13px;border:1px solid rgba(255,255,255,.08);border-radius:13px;background:rgba(255,255,255,.025);color:#aebdd8;cursor:pointer}
+.entry-install:hover{border-color:rgba(139,92,255,.28);color:#eaf1ff}.entry-install span{font-size:14px}.entry-install b{font-size:9px;letter-spacing:.08em}.entry-install small{justify-self:start;color:#7183a8;font-size:8px}
+.install-status{padding:9px 11px;border:1px solid rgba(255,255,255,.07);border-radius:11px;background:rgba(255,255,255,.02);color:#8fa0c1;font-size:8px;line-height:1.5}
+@media(max-width:640px){.entry-actions{width:100%}.entry-ceo{grid-template-columns:auto 1fr auto}.entry-install{grid-template-columns:auto 1fr}.entry-install small{grid-column:2;justify-self:start;margin-top:-6px}}
