@@ -36,3 +36,10 @@ assert.match(app,/Volume\/dia|Conversão|Qualificação|VGV\/casal|Custo\/casal/
 assert.match(diagnosticCss,/\.diag-grid\s*\{/,'diagnostic tab needs a dedicated premium layout');
 
 console.log('RAIO X operations dashboard audit passed');
+
+assert.match(html,/id=["']diagOperationAttention["']/,'diagnostic must have an executive operation attention list');
+assert.match(html,/id=["']diagPeopleAttention["']/,'diagnostic must show professionals who require attention');
+assert.match(app,/function\s+buildPeopleAttention\s*\(/,'diagnostic must calculate people attention automatically');
+assert.match(app,/function\s+buildOperationAttention\s*\(/,'diagnostic must calculate operation attention automatically');
+assert.match(app,/CRÍTICO|ATENÇÃO|MONITORAR/,'diagnostic must classify attention severity');
+assert.doesNotMatch(html,/Pontos fortes —/i,'diagnostic attention page must not mix strengths into the executive alert view');
