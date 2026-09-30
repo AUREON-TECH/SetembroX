@@ -62,12 +62,14 @@
   }
 
   async function getAccess(userId,token){
-    const rows=await request('/rest/v1/raiox_app_users?select=user_id,display_name,role,active&user_id=eq.'+encodeURIComponent(userId),{
+    const rows=await request('/rest/v1/raiox_app_users?select=user_id,display_name,role,active,approval_status,email&user_id=eq.'+encodeURIComponent(userId),{
       method:'GET',
       headers:{Accept:'application/json'}
     },token);
     const row=Array.isArray(rows)?rows[0]:null;
-    if(!row||!row.active)throw Object.assign(new Error('Seu acesso ao RAIO X ainda não foi liberado pelo administrador.'),{code:'not_allowed'});
+    if(!row||!row.active||row.approval_status!=='approved'){
+      throw Object.assign(new Error('Aguardando aprovação do CEO.'),{code:'not_allowed',access:row});
+    }
     return row;
   }
 
@@ -75,14 +77,19 @@
     let session=load();
     if(!session)return null;
     const now=Math.floor(Date.now()/1000);
+    let user=null;
     try{
       if(!session.access_token||!session.expires_at||session.expires_at-now<90)session=await refresh(session);
-      const user=await getUser(session);
+      user=await getUser(session);
       session.user=user;
       const access=await getAccess(user.id,session.access_token);
       save(session);
       return {session,user,access};
     }catch(e){
+      if(e?.code==='not_allowed'){
+        save(session);
+        return {pending:true,session,user,access:e.access||null};
+      }
       clear();
       return null;
     }
@@ -95,25 +102,20 @@
     });
     const session=normalize(data);
     const user=data.user||await getUser(session);
-    const access=await getAccess(user.id,session.access_token);
     session.user=user;
     save(session);
+    const access=await getAccess(user.id,session.access_token);
     return {session,user,access};
   }
-  async function signUp(name,email,password){
-    const data=await request('/auth/v1/signup',{
+  async function signUp(email,password){
+    return request('/functions/v1/raiox-request-access',{
       method:'POST',
       body:JSON.stringify({
         email:email.trim().toLowerCase(),
         password,
-        data:{display_name:name.trim(),app:'raiox'}
+        display_name:email.trim().split('@')[0]
       })
     });
-    if(data?.access_token){
-      try{await request('/auth/v1/logout',{method:'POST'},data.access_token);}catch(_){}
-    }
-    clear();
-    return data;
   }
 
   function setMode(next){
@@ -121,8 +123,8 @@
     const signup=mode==='signup';
     $('authModeLogin')?.classList.toggle('active',!signup);
     $('authModeSignup')?.classList.toggle('active',signup);
-    if($('authNameField'))$('authNameField').hidden=!signup;
-    if($('authName'))$('authName').required=signup;
+    if($('authNameField'))$('authNameField').hidden=true;
+    if($('authName'))$('authName').required=false;
     if($('authTitle'))$('authTitle').textContent=signup?'Crie seu acesso':'Entre na sua conta';
     if($('authIntro'))$('authIntro').textContent=signup
       ?'Cadastre seu nome, e-mail e senha. O acesso só será liberado depois da aprovação do CEO.'
@@ -188,6 +190,7 @@
   async function init(){
     if(!cfg.url||!cfg.key){showGate();message('Configuração de autenticação indisponível.','error');return;}
     const existing=await ensureSession();
+    if(existing?.pending){location.replace('./pending.html');return;}
     if(existing){reveal(existing);return;}
     showGate();
     setMode('login');
@@ -207,22 +210,24 @@
       setLoading(true);
       try{
         if(mode==='signup'){
-          const name=$('authName').value.trim();
           const email=$('authEmail').value;
           const password=$('authPassword').value;
-          if(name.length<3)throw Object.assign(new Error('Informe seu nome completo.'),{code:'form'});
           if(password.length<6)throw Object.assign(new Error('A senha precisa ter pelo menos 6 caracteres.'),{code:'form'});
-          await signUp(name,email,password);
-          message('Cadastro enviado. Agora aguarde a aprovação do CEO para entrar.','success');
-          $('authPassword').value='';
+          await signUp(email,password);
+          try{
+            await signIn(email,password);
+          }catch(err){
+            if(err?.code==='not_allowed'){location.href='./pending.html';return;}
+            throw err;
+          }
+          location.href='./pending.html';
           return;
         }
         const ctx=await signIn($('authEmail').value,$('authPassword').value);
         reveal(ctx);
       }catch(err){
-        const msg=err.code==='not_allowed'
-          ?'Seu acesso ainda está aguardando aprovação do CEO.'
-          :err.code==='form'?err.message
+        if(err.code==='not_allowed'){location.href='./pending.html';return;}
+        const msg=err.code==='form'?err.message
           :err.status===400?'E-mail ou senha incorretos.':'Não foi possível concluir agora. Tente novamente.';
         message(msg,'error');
       }finally{setLoading(false);}
