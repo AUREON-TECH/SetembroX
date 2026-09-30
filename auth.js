@@ -108,7 +108,7 @@
     return {session,user,access};
   }
   async function signUp(email,password){
-    return request('/functions/v1/raiox-request-access',{
+    return request('/functions/v1/raiox-request-access-v2',{
       method:'POST',
       body:JSON.stringify({
         email:email.trim().toLowerCase(),
