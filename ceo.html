@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#060a18">
 <title>RAIO X • Portal de Gestão</title>
 <link rel="icon" href="./icon.svg">
-<link rel="stylesheet" href="./ceo.css?v=9">
+<link rel="stylesheet" href="./ceo.css?v=10">
 </head>
 <body>
 <div id="ceoLoading" class="ceo-loading"><div class="loader-mark">RX</div><b>Validando acesso de gestão...</b></div>
@@ -223,9 +223,24 @@
     </section>
 
     <section id="reports" class="ceo-tab">
+      <div class="report-command panel">
+        <div>
+          <span class="eyebrow">RAIO-X DE GESTÃO</span>
+          <h2>Relatório automático</h2>
+          <p>Escolha o período e gere uma leitura pronta para meeting, acompanhamento e fechamento.</p>
+        </div>
+        <div class="report-command-actions">
+          <div class="report-period-switch">
+            <button data-report-period="week">Semana</button>
+            <button class="active" data-report-period="month">Mês</button>
+          </div>
+          <button id="refreshReports" class="ghost">Atualizar</button>
+          <button id="copyReportBtn" class="primary">Copiar relatório</button>
+        </div>
+      </div>
       <div id="reportSummary" class="summary-grid"></div>
       <div class="panel">
-        <div class="panel-head"><div><span class="eyebrow">RELATÓRIO DO MÊS</span><h2 id="reportMonthTitle">—</h2></div><button id="refreshReports" class="ghost">Atualizar</button></div>
+        <div class="panel-head"><div><span class="eyebrow" id="reportPeriodEyebrow">RELATÓRIO DO MÊS</span><h2 id="reportMonthTitle">—</h2></div><span id="reportBaseLabel" class="pill"></span></div>
         <div id="reportBody" class="report-body"></div>
       </div>
     </section>
@@ -274,6 +289,6 @@
 <script src="./area-data.js"></script>
 <script src="./fx-data.js"></script>
 <script src="./xia-performance.js?v=2"></script>
-<script src="./ceo.js?v=11"></script>
+<script src="./ceo.js?v=12"></script>
 </body>
 </html>
