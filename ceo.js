@@ -5,7 +5,7 @@ const $=id=>document.getElementById(id);
 const state={
   session:null,user:null,admin:null,
   months:[],month:null,people:[],teams:[],assignments:[],
-  presence:[],one:[],tasks:[],approvals:[],agenda:[],goals:[],todayArea:'all'
+  presence:[],one:[],tasks:[],approvals:[],agenda:[],goals:[],todayArea:'all',reportPeriod:'month',reportText:''
 };
 const TITLES={
   today:['Hoje','Pulso executivo da operação: performance, presença e atenção.'],
@@ -885,35 +885,116 @@ async function finishTask(id){
   }catch(err){toast(err.message,true);}
 }
 
+function reportDateRange(){
+  const period=state.reportPeriod||'month';
+  const monthStart=state.month.ref_month;
+  const monthDate=new Date(monthStart+'T12:00:00');
+  const monthEndDate=new Date(monthDate);monthEndDate.setMonth(monthEndDate.getMonth()+1);monthEndDate.setDate(0);
+  if(period==='month')return {start:monthStart,end:localDate(monthEndDate),label:state.month.label};
+
+  let anchor=$('todayDate')?.value||localDate();
+  if(String(anchor).slice(0,7)!==monthStart.slice(0,7))anchor=monthStart;
+  const endDate=new Date(anchor+'T12:00:00');
+  const startDate=new Date(endDate);startDate.setDate(startDate.getDate()-6);
+  const floor=startDate<monthDate?monthDate:startDate;
+  return {start:localDate(floor),end:localDate(endDate),label:dateBr(localDate(floor))+' a '+dateBr(localDate(endDate))};
+}
+function reportAreaStats(roleName,range){
+  if(performanceUpdatedMonth()!==state.month.ref_month.slice(0,7))return null;
+  const roles=performanceRoles(roleName);
+  if(state.reportPeriod==='month'){
+    return roles.reduce((a,r)=>{a.c+=Number(r.c||0);a.s+=Number(r.s||0);a.v+=Number(r.v||0);a.q+=Number(r.q||0);a.nq+=Number(r.nq||0);return a;},{c:0,s:0,v:0,q:0,nq:0});
+  }
+  if(range.start.slice(0,7)!==state.month.ref_month.slice(0,7)||range.end.slice(0,7)!==state.month.ref_month.slice(0,7))return null;
+  const s=Number(range.start.slice(8,10)),e=Number(range.end.slice(8,10));
+  return roles.reduce((a,r)=>{
+    const x=roleRange(r,s,e);a.c+=x.c;a.s+=x.s;a.v+=x.v;a.q+=x.q;a.nq+=x.nq;return a;
+  },{c:0,s:0,v:0,q:0,nq:0});
+}
+function reportAreaCard(key,label,stats){
+  if(!stats)return '<div class="report-area-card"><small>'+esc(label)+'</small><b>Sem base</b><span>performance não carregada para este período</span></div>';
+  const conv=stats.c?stats.s/stats.c*100:0;
+  const qual=stats.c?stats.q/stats.c*100:0;
+  const volume=key==='promotor'?'casais':'atendimentos';
+  return '<div class="report-area-card"><small>'+esc(label)+'</small><b>'+stats.c+' '+volume+'</b><span>'+stats.s+' vendas • '+pct(conv)+' conversão</span><em>'+money(stats.v)+' VGV • Q '+pct(qual)+'</em></div>';
+}
 async function renderReports(){
   if(!state.month)return;
-  const start=state.month.ref_month;
-  const end=new Date(start+'T00:00:00');end.setMonth(end.getMonth()+1);const endStr=localDate(end);
-  const presence=await rest('ceo_daily_presence?select=*&work_date=gte.'+start+'&work_date=lt.'+endStr);
+  const range=reportDateRange();
+  const endExclusive=new Date(range.end+'T12:00:00');endExclusive.setDate(endExclusive.getDate()+1);
+  const endExclusiveStr=localDate(endExclusive);
+  const presence=await rest('ceo_daily_presence?select=*&work_date=gte.'+range.start+'&work_date=lt.'+endExclusiveStr);
   const counts={present:0,absent:0,late:0,agreed_off:0,unavailable:0,training:0,remote:0,left_early:0};
   presence.forEach(x=>{if(counts[x.status]!=null)counts[x.status]++;});
+
+  const one=state.one.filter(x=>x.meeting_date>=range.start&&x.meeting_date<=range.end);
   const open=state.tasks.filter(t=>t.status==='open').length;
-  $('reportMonthTitle').textContent=state.month.label;
+  const urgent=state.tasks.filter(t=>t.status==='open'&&(t.priority==='high'||t.priority==='critical')).length;
+  const signals=workingPeople().map(p=>xiaPersonSignal(p,presence)).filter(x=>x.reasons.length).sort((a,b)=>b.level-a.level||b.reasons.length-a.reasons.length);
+  const areas=Object.entries(TODAY_AREA_ROLES).map(([key,label])=>({key,label,stats:reportAreaStats(label,range)}));
+
+  $('reportMonthTitle').textContent=range.label;
+  $('reportPeriodEyebrow').textContent=state.reportPeriod==='week'?'RAIO-X DA SEMANA':'RAIO-X DO MÊS';
+  $('reportBaseLabel').textContent='Base de performance '+(window.XIA_PERFORMANCE?.updated||'—');
+  document.querySelectorAll('[data-report-period]').forEach(b=>b.classList.toggle('active',b.dataset.reportPeriod===state.reportPeriod));
+
   $('reportSummary').innerHTML=[
-    ['Registros',presence.length,'no mês'],
+    ['Período',state.reportPeriod==='week'?'7 dias':'Mês inteiro',range.label],
     ['Compareceu',counts.present,'registros'],
-    ['Não compareceu',counts.absent,'registros'],
-    ['Após combinado',counts.late,'registros'],
-    ['Olho no Olho',state.one.length,'conversas']
+    ['Ausências',counts.absent,'registros'],
+    ['Atrasos',counts.late,'registros'],
+    ['Olho no Olho',one.length,'conversas']
   ].map(x=>'<div class="summary-card"><small>'+x[0]+'</small><b>'+x[1]+'</b><span>'+x[2]+'</span></div>').join('');
-  const byPerson={};
-  presence.forEach(r=>{
-    byPerson[r.person_id]??={present:0,absent:0,late:0,other:0};
-    if(r.status==='present')byPerson[r.person_id].present++;
-    else if(r.status==='absent')byPerson[r.person_id].absent++;
-    else if(r.status==='late')byPerson[r.person_id].late++;
-    else byPerson[r.person_id].other++;
-  });
-  const attention=Object.entries(byPerson).filter(([,v])=>v.absent||v.late).sort((a,b)=>(b[1].absent*2+b[1].late)-(a[1].absent*2+a[1].late)).slice(0,10);
+
+  const attentionHtml=signals.length?signals.slice(0,8).map(x=>
+    '<button class="report-person-signal '+(x.level===3?'critical':x.level===2?'warn':'info')+'" data-report-person="'+x.p.id+'">'+
+      '<b>'+esc(x.p.full_name)+'</b><span>'+esc(roleOf(x.p))+'</span><p>'+x.reasons.map(esc).join(' • ')+'</p></button>'
+  ).join(''):'<div class="xia-empty">Nenhum sinal relevante pelos critérios atuais.</div>';
+
   $('reportBody').innerHTML=
-    '<div class="report-section"><h3>Resumo operacional</h3><p>'+counts.present+' comparecimentos • '+counts.absent+' não comparecimentos • '+counts.late+' após o horário combinado • '+counts.agreed_off+' folgas combinadas • '+counts.unavailable+' indisponibilidades.</p></div>'+
-    '<div class="report-section"><h3>Liderança e agenda</h3><p>'+state.one.length+' Olho no Olho • '+open+' pendências abertas • '+state.agenda.filter(a=>a.status==='scheduled').length+' compromissos agendados.</p></div>'+
-    '<div class="report-section"><h3>Pontos para revisar</h3><p>'+(attention.length?attention.map(([id,v])=>{const p=personById(id);return esc(p?.full_name||'Pessoa')+': '+v.absent+' não compareceu • '+v.late+' após combinado';}).join('<br>'):'Sem registros de não comparecimento/atraso no mês.')+'</p></div>';
+    '<div class="report-section report-performance"><div class="report-section-head"><div><span class="eyebrow">PERFORMANCE</span><h3>Resultado por área</h3></div></div><div class="report-area-grid">'+areas.map(a=>reportAreaCard(a.key,a.label,a.stats)).join('')+'</div></div>'+
+    '<div class="report-section"><div class="report-section-head"><div><span class="eyebrow">PESSOAS</span><h3>Quem merece acompanhamento</h3></div><span class="pill">'+signals.length+' sinais</span></div><div class="report-signal-grid">'+attentionHtml+'</div></div>'+
+    '<div class="report-section report-management-grid">'+
+      '<div><span class="eyebrow">GESTÃO</span><h3>Presença e liderança</h3><p>'+counts.present+' comparecimentos • '+counts.absent+' ausências • '+counts.late+' atrasos • '+one.length+' Olho no Olho.</p></div>'+
+      '<div><span class="eyebrow">PENDÊNCIAS</span><h3>Execução da liderança</h3><p>'+open+' abertas • '+urgent+' de prioridade alta/crítica • '+state.agenda.filter(a=>a.status==='scheduled'&&a.event_date>=range.start&&a.event_date<=range.end).length+' compromissos no período.</p></div>'+
+    '</div>'+
+    '<div class="report-section"><span class="eyebrow">PRÓXIMOS PASSOS</span><h3>Foco recomendado para o próximo ciclo</h3><div class="report-next-actions">'+
+      (signals.filter(x=>x.level===3).length?'<span>Priorizar '+signals.filter(x=>x.level===3).length+' profissional(is) com sinal crítico.</span>':'<span>Sem sinal crítico automático no período.</span>')+
+      (counts.absent||counts.late?'<span>Revisar '+(counts.absent+counts.late)+' ocorrência(s) de presença/horário.</span>':'<span>Presença sem ocorrência relevante para revisar.</span>')+
+      (urgent?'<span>Resolver '+urgent+' pendência(s) de alta/crítica prioridade.</span>':'<span>Sem pendência alta/crítica aberta.</span>')+
+    '</div></div>';
+
+  document.querySelectorAll('[data-report-person]').forEach(b=>b.onclick=()=>openProfessionalProfile(b.dataset.reportPerson));
+
+  const lines=[
+    'RAIO X — '+(state.reportPeriod==='week'?'RELATÓRIO SEMANAL':'RELATÓRIO MENSAL'),
+    'Período: '+range.label,
+    'Base de performance: '+(window.XIA_PERFORMANCE?.updated||'não informada'),
+    '',
+    'PERFORMANCE POR ÁREA',
+    ...areas.map(a=>{
+      const s=a.stats;if(!s)return a.label+': sem base de performance.';
+      return a.label+': '+s.c+' volume, '+s.s+' vendas, '+pct(s.c?s.s/s.c*100:0)+' conversão, '+money(s.v)+' VGV, Q '+pct(s.c?s.q/s.c*100:0)+'.';
+    }),
+    '',
+    'PRESENÇA E LIDERANÇA',
+    counts.present+' comparecimentos, '+counts.absent+' ausências, '+counts.late+' atrasos.',
+    one.length+' Olho no Olho no período. '+open+' pendências abertas; '+urgent+' alta/crítica.',
+    '',
+    'PESSOAS EM ACOMPANHAMENTO',
+    ...(signals.length?signals.slice(0,8).map(x=>x.p.full_name+' — '+x.reasons.join(' • ')):['Nenhum sinal relevante pelos critérios atuais.']),
+    '',
+    'PRÓXIMOS PASSOS',
+    (signals.filter(x=>x.level===3).length?'Priorizar os sinais críticos identificados.':'Manter acompanhamento dos indicadores e da constância.'),
+    (counts.absent||counts.late?'Revisar ocorrências de presença e horário em conversa individual.':'Sem ocorrência relevante de presença para revisão.'),
+    (urgent?'Resolver pendências de alta/crítica prioridade.':'Sem pendência alta/crítica aberta.')
+  ];
+  state.reportText=lines.join('\n');
+}
+async function copyReport(){
+  if(!state.reportText)await renderReports();
+  try{await navigator.clipboard.writeText(state.reportText);toast('Relatório copiado.');}
+  catch(_){toast('Não foi possível copiar automaticamente.',true);}
 }
 
 function perfForPerson(p){
@@ -1311,6 +1392,11 @@ function bind(){
   $('saveAgendaBtn').onclick=saveAgenda;
   $('saveTaskBtn').onclick=saveTask;
   $('refreshReports').onclick=renderReports;
+  $('copyReportBtn').onclick=copyReport;
+  document.querySelectorAll('[data-report-period]').forEach(b=>b.onclick=()=>{
+    state.reportPeriod=b.dataset.reportPeriod||'month';
+    renderReports();
+  });
   $('refreshApprovals').onclick=loadApprovals;
   $('newMonthBtn').onclick=newMonth;
   $('ceoLogout').onclick=signOut;
