@@ -178,3 +178,16 @@ assert.match(ceo,/raiox_performance_records/,'Portal must use persistent monthly
 assert.match(ceo,/function performanceData\(/,'analytics must read the selected month performance source');
 assert.match(ceo,/function reportGoalCard\(/,'reports must include Meta and Super Meta progress');
 assert.match(ceo,/preferredRole/,'multi-role analytics must support a preferred role');
+
+assert.match(ceoHtml,/id=["']monthGoalResearch["']/,'monthly goals must include research');
+assert.match(ceoHtml,/id=["']monthSuperGoalResearch["']/,'monthly super goals must include research');
+assert.match(ceoHtml,/id=["']teamGoalSummary["']/,'Teams must expose goal distribution summary');
+assert.match(ceoHtml,/id=["']teamGoalsEditor["']/,'Teams must expose per-team goal allocation');
+assert.match(ceo,/ceo_team_goals/,'Portal must persist team goals');
+assert.match(ceo,/function renderTeamGoalDistribution\(/,'Portal must calculate distributed vs remaining goals');
+assert.match(ceo,/function saveTeamGoal\(/,'Portal must save team goals');
+assert.match(ceoHtml,/data-tab=["']strategy["']/,'Portal must expose Reuniões & Estratégia tab');
+assert.match(ceoHtml,/id=["']strategyList["']/,'Strategy tab must render historical records');
+assert.match(ceo,/ceo_strategy_records/,'Portal must persist strategy records');
+assert.match(ceo,/async function saveStrategy\(/,'Strategy tab must save records');
+assert.match(ceo,/function renderStrategy\(/,'Strategy tab must render monthly history');
