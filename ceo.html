@@ -4,17 +4,17 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#060a18">
-<title>RAIO X • Portal CEO</title>
+<title>RAIO X • Portal de Gestão</title>
 <link rel="icon" href="./icon.svg">
 <link rel="stylesheet" href="./ceo.css?v=5">
 </head>
 <body>
-<div id="ceoLoading" class="ceo-loading"><div class="loader-mark">RX</div><b>Validando acesso CEO...</b></div>
+<div id="ceoLoading" class="ceo-loading"><div class="loader-mark">RX</div><b>Validando acesso de gestão...</b></div>
 
 <div id="ceoApp" class="ceo-app" hidden>
   <aside class="ceo-side">
-    <div class="ceo-brand"><div class="ceo-mark">RX</div><div><b>RAIO X</b><small>PORTAL CEO</small></div></div>
-    <div class="ceo-user"><small>ACESSO EXCLUSIVO</small><b id="ceoUserName">CEO</b><span id="ceoUserEmail"></span></div>
+    <div class="ceo-brand"><div class="ceo-mark">RX</div><div><b>RAIO X</b><small>PORTAL DE GESTÃO</small></div></div>
+    <div class="ceo-user"><small>ACESSO DE GESTÃO</small><b id="ceoUserName">Gestão</b><span id="ceoUserEmail"></span></div>
     <nav id="ceoNav">
       <button class="active" data-tab="today">Hoje</button>
       <button data-tab="teams">Equipes</button>
@@ -86,7 +86,7 @@
           <label class="wide">Que apoio precisa da liderança<textarea id="oneSupport" rows="3"></textarea></label>
           <label class="wide">Compromissos definidos<textarea id="oneCommitments" rows="3"></textarea></label>
           <label>Revisar em<input id="oneReviewDate" type="date"></label>
-          <label>Visibilidade<select id="oneVisibility"><option value="ceo_private">Privado do CEO</option><option value="share_with_leader">Compartilhável com líder</option><option value="professional_summary">Resumo para profissional</option></select></label>
+          <label>Visibilidade<select id="oneVisibility"><option value="ceo_private">Privado da Gestão</option><option value="share_with_leader">Compartilhável com líder</option><option value="professional_summary">Resumo para profissional</option></select></label>
         </div>
         <div class="form-actions"><button id="saveOneBtn" class="primary">Salvar Olho no Olho</button></div>
       </div>
@@ -118,7 +118,7 @@
 
     <section id="agenda" class="ceo-tab">
       <div class="panel form-panel">
-        <div class="panel-head"><div><span class="eyebrow">AGENDA INTELIGENTE</span><h2>Novo compromisso</h2><p>Treinamentos, meetings, Olho no Olho, reuniões, lembretes e compromissos.</p></div><span class="pill">Portal CEO</span></div>
+        <div class="panel-head"><div><span class="eyebrow">AGENDA INTELIGENTE</span><h2>Novo compromisso</h2><p>Treinamentos, meetings, Olho no Olho, reuniões, lembretes e compromissos.</p></div><span class="pill">Portal de Gestão</span></div>
         <div class="form-grid compact">
           <label>Tipo<select id="agendaType"><option value="meeting">Meeting</option><option value="training">Treinamento</option><option value="one_on_one">Olho no Olho</option><option value="commitment">Compromisso</option><option value="reminder">Lembrete</option><option value="operational">Operacional</option><option value="other">Outro</option></select></label>
           <label>Título<input id="agendaTitle" placeholder="Ex.: Meeting da captação"></label>
@@ -148,7 +148,7 @@
         </div>
         <div class="form-actions"><button id="saveTaskBtn" class="primary">Adicionar pendência</button></div>
       </div>
-      <div class="panel"><div class="panel-head"><div><span class="eyebrow">ABERTAS</span><h2>Pendências do CEO</h2></div></div><div id="tasksList" class="task-list"></div></div>
+      <div class="panel"><div class="panel-head"><div><span class="eyebrow">ABERTAS</span><h2>Pendências da Gestão</h2></div></div><div id="tasksList" class="task-list"></div></div>
     </section>
 
     <section id="reports" class="ceo-tab">
