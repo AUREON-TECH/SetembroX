@@ -4,8 +4,8 @@ const STORE='raiox.auth.session.v1';
 const $=id=>document.getElementById(id);
 const state={
   session:null,user:null,admin:null,
-  months:[],month:null,people:[],teams:[],assignments:[],performance:null,
-  presence:[],one:[],tasks:[],approvals:[],agenda:[],goals:[],todayArea:'promotor',professionalArea:'promotor',xiaRole:'',reportPeriod:'month',reportText:''
+  months:[],month:null,people:[],teams:[],assignments:[],teamGoals:[],performance:null,
+  presence:[],one:[],tasks:[],approvals:[],agenda:[],goals:[],strategy:[],todayArea:'promotor',professionalArea:'promotor',xiaRole:'',reportPeriod:'month',reportText:'',strategyTypeFilter:'all',strategyStatusFilter:'all'
 };
 const TITLES={
   today:['Hoje','Pulso executivo da operação: performance, presença e atenção.'],
@@ -13,6 +13,7 @@ const TITLES={
   people:['Profissionais','Raio-X individual, metas, presença, performance e acompanhamento.'],
   one:['Olho no Olho','Conversa 1:1, compromissos e acompanhamento.'],
   xia:['XIA','Central única de inteligência: operação, profissional, feedback e próximos passos.'],
+  strategy:['Reuniões & Estratégia','Pautas, decisões, estratégias de captação e mudanças da operação.'],
   agenda:['Agenda','Treinamentos, meetings, reuniões e compromissos.'],
   tasks:['Pendências','Tudo que você precisa revisar, conversar ou acompanhar.'],
   reports:['Relatórios','Resumo diário e mensal da gestão de pessoas.'],
@@ -128,20 +129,27 @@ async function selectMonth(id){
   if(!$('todayDate').value||$('todayDate').value.slice(0,7)!==monthPrefix){
     $('todayDate').value=today.slice(0,7)===monthPrefix?today:state.month.ref_month;
   }
-  await Promise.all([loadTeams(),loadTasks(),loadOne(),loadGoals(),loadAgenda()]);
+  await Promise.all([loadTeams(),loadTasks(),loadOne(),loadGoals(),loadAgenda(),loadStrategy()]);
   await loadToday();
   fillPeopleSelects();
-  renderTeams(); renderPeople(); renderOneHistory(); renderTasks(); renderAgenda(); await renderReports(); await renderProfessionalProfile();
+  renderTeams(); renderPeople(); renderOneHistory(); renderTasks(); renderAgenda(); renderStrategy(); await renderReports(); await renderProfessionalProfile();
   if(document.getElementById('xia')?.classList.contains('on'))await renderXIA();
 }
 async function loadTeams(){
-  state.teams=await rest('ceo_teams?select=*&month_id=eq.'+state.month.id+'&order=start_time.asc');
-  state.assignments=await rest('ceo_team_assignments?select=*&month_id=eq.'+state.month.id+'&valid_to=is.null');
+  const [teams,assignments,teamGoals]=await Promise.all([
+    rest('ceo_teams?select=*&month_id=eq.'+state.month.id+'&order=start_time.asc'),
+    rest('ceo_team_assignments?select=*&month_id=eq.'+state.month.id+'&valid_to=is.null'),
+    rest('ceo_team_goals?select=*&month_id=eq.'+state.month.id)
+  ]);
+  state.teams=teams;
+  state.assignments=assignments;
+  state.teamGoals=teamGoals;
 }
 async function loadTasks(){state.tasks=await rest('ceo_tasks?select=*&month_id=eq.'+state.month.id+'&order=created_at.desc');}
 async function loadOne(){state.one=await rest('ceo_one_on_one?select=*&month_id=eq.'+state.month.id+'&order=meeting_date.desc,created_at.desc');}
 async function loadGoals(){state.goals=await rest('ceo_person_goals?select=*&month_id=eq.'+state.month.id);}
 async function loadAgenda(){state.agenda=await rest('ceo_agenda?select=*&month_id=eq.'+state.month.id+'&order=event_date.asc,start_time.asc');}
+async function loadStrategy(){state.strategy=await rest('ceo_strategy_records?select=*&month_id=eq.'+state.month.id+'&order=record_date.desc,created_at.desc');}
 async function loadToday(){
   const date=$('todayDate').value||localDate(); $('todayDate').value=date;
   state.presence=await rest('ceo_daily_presence?select=*&work_date=eq.'+date);
@@ -178,7 +186,7 @@ async function loadPerformanceForMonth(){
 
   try{
     const rows=await rest(
-      'raiox_performance_records?select=professional_name,role,couples,sales,vgv,q,nq,gifts,active_days,week_volume,week_sales,week_vgv,daily,updated_on&ref_month=eq.'+
+      'raiox_performance_records?select=professional_name,role,researches,couples,sales,vgv,q,nq,gifts,active_days,week_volume,week_sales,week_vgv,daily,updated_on&ref_month=eq.'+
       encodeURIComponent(state.month.ref_month)+'&order=professional_name.asc,role.asc'
     );
     if(rows.length){
@@ -188,7 +196,7 @@ async function loadPerformanceForMonth(){
         if(!byName.has(r.professional_name))byName.set(r.professional_name,[]);
         byName.get(r.professional_name).push({
           role:r.role,
-          c:Number(r.couples||0),s:Number(r.sales||0),v:Number(r.vgv||0),
+          r:Number(r.researches||0),c:Number(r.couples||0),s:Number(r.sales||0),v:Number(r.vgv||0),
           q:Number(r.q||0),nq:Number(r.nq||0),g:Number(r.gifts||0),d:Number(r.active_days||0),
           w:Number(r.week_volume||0),ws:Number(r.week_sales||0),wv:Number(r.week_vgv||0),
           daily:Array.isArray(r.daily)?r.daily:[]
@@ -206,10 +214,13 @@ async function loadPerformanceForMonth(){
 }
 function operationMonthTotals(){
   if(!state.month||performanceUpdatedMonth()!==state.month.ref_month.slice(0,7))return null;
-  return performanceRoles('Promotor de Marketing').reduce((a,r)=>{
+  const roles=performanceRoles('Promotor de Marketing');
+  const hasResearch=roles.some(r=>Object.prototype.hasOwnProperty.call(r,'r'));
+  return roles.reduce((a,r)=>{
+    if(hasResearch)a.r+=Number(r.r||0);
     a.c+=Number(r.c||0);a.s+=Number(r.s||0);a.v+=Number(r.v||0);
     return a;
-  },{c:0,s:0,v:0});
+  },{r:hasResearch?0:null,c:0,s:0,v:0});
 }
 function goalStatus(current,goal,superGoal){
   goal=Number(goal||0);superGoal=Number(superGoal||0);
@@ -224,6 +235,7 @@ function renderMonthGoals(){
   if(!$('monthGoalsStrip')||!state.month)return;
   const m=state.month,total=operationMonthTotals();
   const items=[
+    {label:'Pesquisas',current:total?.r??null,goal:m.goal_research,superGoal:m.super_goal_research,fmt:v=>num(v)},
     {label:'Casais',current:total?.c??null,goal:m.goal_couples,superGoal:m.super_goal_couples,fmt:v=>num(v)},
     {label:'Vendas',current:total?.s??null,goal:m.goal_sales,superGoal:m.super_goal_sales,fmt:v=>num(v)},
     {label:'VGV',current:total?.v??null,goal:m.goal_vgv,superGoal:m.super_goal_vgv,fmt:v=>money(v)}
@@ -240,9 +252,11 @@ function openMonthGoals(){
   if(!state.month)return;
   const m=state.month;
   $('monthGoalModalTitle').textContent='Metas • '+m.label;
+  $('monthGoalResearch').value=Number(m.goal_research||0)||'';
   $('monthGoalCouples').value=Number(m.goal_couples||0)||'';
   $('monthGoalSales').value=Number(m.goal_sales||0)||'';
   $('monthGoalVgv').value=Number(m.goal_vgv||0)||'';
+  $('monthSuperGoalResearch').value=Number(m.super_goal_research||0)||'';
   $('monthSuperGoalCouples').value=Number(m.super_goal_couples||0)||'';
   $('monthSuperGoalSales').value=Number(m.super_goal_sales||0)||'';
   $('monthSuperGoalVgv').value=Number(m.super_goal_vgv||0)||'';
@@ -252,9 +266,11 @@ function closeMonthGoals(){if($('monthGoalModal'))$('monthGoalModal').hidden=tru
 async function saveMonthGoals(){
   if(!state.month)return;
   const body={
+    goal_research:Number($('monthGoalResearch').value||0),
     goal_couples:Number($('monthGoalCouples').value||0),
     goal_sales:Number($('monthGoalSales').value||0),
     goal_vgv:Number($('monthGoalVgv').value||0),
+    super_goal_research:Number($('monthSuperGoalResearch').value||0),
     super_goal_couples:Number($('monthSuperGoalCouples').value||0),
     super_goal_sales:Number($('monthSuperGoalSales').value||0),
     super_goal_vgv:Number($('monthSuperGoalVgv').value||0)
@@ -265,7 +281,7 @@ async function saveMonthGoals(){
     await rest('ceo_months?id=eq.'+state.month.id,{method:'PATCH',headers:{Prefer:'return=minimal'},body:JSON.stringify(body)});
     Object.assign(state.month,body);
     const i=state.months.findIndex(x=>x.id===state.month.id);if(i>=0)Object.assign(state.months[i],body);
-    renderMonthGoals();await renderReports();
+    renderMonthGoals();renderTeamGoalDistribution();await renderReports();
     toast('Meta e Super Meta salvas para '+state.month.label+'.');
     closeMonthGoals();
   }catch(err){toast(err.message,true);}
@@ -513,6 +529,65 @@ async function saveDay(){
   finally{$('saveDayBtn').disabled=false;$('saveDayBtn').textContent='Salvar o dia';}
 }
 
+function teamGoalFor(teamId){return state.teamGoals.find(g=>g.team_id===teamId)||null;}
+function sumTeamGoal(field){return state.teamGoals.reduce((a,g)=>a+Number(g[field]||0),0);}
+function distributionCard(label,total,distributed,fmt){
+  total=Number(total||0);distributed=Number(distributed||0);
+  const remaining=total-distributed;
+  const stateLabel=total<=0?'META NÃO DEFINIDA':remaining>0?'FALTAM '+fmt(remaining):remaining<0?'EXCEDEU '+fmt(Math.abs(remaining)):'100% DISTRIBUÍDO';
+  const pctValue=total?Math.min(100,distributed/total*100):0;
+  return '<div class="distribution-card"><small>'+esc(label)+'</small><b>'+fmt(distributed)+' / '+(total?fmt(total):'—')+'</b><span>'+stateLabel+'</span><div class="month-goal-progress"><i style="width:'+pctValue.toFixed(1)+'%"></i></div></div>';
+}
+function renderTeamGoalDistribution(){
+  if(!$('teamGoalSummary')||!$('teamGoalsEditor')||!state.month)return;
+  const m=state.month;
+  $('teamGoalSummary').innerHTML=[
+    distributionCard('Pesquisas',m.goal_research,sumTeamGoal('research_goal'),v=>num(v)),
+    distributionCard('Casais',m.goal_couples,sumTeamGoal('couples_goal'),v=>num(v)),
+    distributionCard('Vendas',m.goal_sales,sumTeamGoal('sales_goal'),v=>num(v)),
+    distributionCard('VGV',m.goal_vgv,sumTeamGoal('vgv_goal'),v=>money(v))
+  ].join('');
+
+  if(!state.teams.length){
+    $('teamGoalsEditor').innerHTML='<div class="approval-empty">Crie uma equipe primeiro para dividir a meta do mês.</div>';
+    return;
+  }
+
+  $('teamGoalsEditor').innerHTML=state.teams.map(team=>{
+    const g=teamGoalFor(team.id)||{};
+    return '<div class="team-goal-card" data-team-goal="'+team.id+'">'+
+      '<div class="team-goal-title"><div><small>EQUIPE</small><h3>'+esc(team.name)+'</h3></div><span>'+time5(team.start_time)+'</span></div>'+
+      '<div class="team-goal-section"><b>META</b><div class="team-goal-inputs">'+
+        '<label>Pesquisas<input data-tg="research_goal" type="number" min="0" step="1" value="'+Number(g.research_goal||0)+'"></label>'+
+        '<label>Casais<input data-tg="couples_goal" type="number" min="0" step="1" value="'+Number(g.couples_goal||0)+'"></label>'+
+        '<label>Vendas<input data-tg="sales_goal" type="number" min="0" step="1" value="'+Number(g.sales_goal||0)+'"></label>'+
+        '<label>VGV<input data-tg="vgv_goal" type="number" min="0" step="100" value="'+Number(g.vgv_goal||0)+'"></label>'+
+      '</div></div>'+
+      '<div class="team-goal-section super"><b>SUPER META</b><div class="team-goal-inputs">'+
+        '<label>Pesquisas<input data-tg="super_research_goal" type="number" min="0" step="1" value="'+Number(g.super_research_goal||0)+'"></label>'+
+        '<label>Casais<input data-tg="super_couples_goal" type="number" min="0" step="1" value="'+Number(g.super_couples_goal||0)+'"></label>'+
+        '<label>Vendas<input data-tg="super_sales_goal" type="number" min="0" step="1" value="'+Number(g.super_sales_goal||0)+'"></label>'+
+        '<label>VGV<input data-tg="super_vgv_goal" type="number" min="0" step="100" value="'+Number(g.super_vgv_goal||0)+'"></label>'+
+      '</div></div>'+
+      '<button class="primary small" data-save-team-goal="'+team.id+'">Salvar meta da equipe</button>'+
+    '</div>';
+  }).join('');
+  document.querySelectorAll('[data-save-team-goal]').forEach(b=>b.onclick=()=>saveTeamGoal(b.dataset.saveTeamGoal));
+}
+async function saveTeamGoal(teamId){
+  const card=document.querySelector('[data-team-goal="'+teamId+'"]');
+  if(!card)return;
+  const body={month_id:state.month.id,team_id:teamId,updated_at:new Date().toISOString()};
+  card.querySelectorAll('[data-tg]').forEach(input=>body[input.dataset.tg]=Number(input.value||0));
+  if(Object.values(body).some((v,k)=>typeof v==='number'&&(!Number.isFinite(v)||v<0))){toast('Revise os valores da meta da equipe.',true);return;}
+  try{
+    await rest('ceo_team_goals?on_conflict=month_id,team_id',{method:'POST',headers:{Prefer:'resolution=merge-duplicates,return=minimal'},body:JSON.stringify(body)});
+    state.teamGoals=await rest('ceo_team_goals?select=*&month_id=eq.'+state.month.id);
+    renderTeamGoalDistribution();
+    toast('Meta da equipe salva.');
+  }catch(err){toast(err.message,true);}
+}
+
 function renderTeams(){
   $('teamsGrid').innerHTML=state.teams.length?state.teams.map(t=>
     '<div class="team-card"><small>EQUIPE</small><h3>'+esc(t.name)+'</h3><b>'+time5(t.start_time)+'</b><p>Tolerância '+t.tolerance_minutes+' min'+(t.end_time?' • saída '+time5(t.end_time):'')+'</p></div>'
@@ -524,6 +599,7 @@ function renderTeams(){
     return '<div class="assignment-row"><div><b>'+esc(p.full_name)+'</b><span>'+esc(roleOf(p))+' • horário individual '+esc(time5(p.default_start_time)||'não definido')+'</span></div><select data-assign="'+p.id+'">'+options+'</select></div>';
   }).join('');
   document.querySelectorAll('[data-assign]').forEach(sel=>sel.onchange=()=>assignTeam(sel.dataset.assign,sel.value));
+  renderTeamGoalDistribution();
   fillAgendaTeams();
 }
 async function addTeam(){
@@ -935,6 +1011,7 @@ function fillPeopleSelects(){
   if($('onePerson'))$('onePerson').innerHTML=opts;
   if($('taskPerson'))$('taskPerson').innerHTML='<option value="">Sem pessoa específica</option>'+opts;
   if($('agendaPerson'))$('agendaPerson').innerHTML='<option value="">Toda a operação / sem pessoa</option>'+opts;
+  if($('strategyOwner'))$('strategyOwner').innerHTML='<option value="">Gestão / sem responsável individual</option>'+opts;
   if($('profilePerson')){
     const prior=$('profilePerson').value;
     const filtered=professionalWorkingPeople();
@@ -979,6 +1056,84 @@ function renderOneHistory(){
     return '<div class="history-card"><header><b>'+esc(p?.full_name||'Profissional')+' • '+esc(x.topic||'Olho no Olho')+'</b><small>'+dateBr(x.meeting_date)+(x.review_date?' • revisar '+dateBr(x.review_date):'')+'</small></header><p>'+
       (x.commitments?'Compromissos: '+esc(x.commitments):esc(x.improvement||x.blockers||'Registro salvo.'))+'</p></div>';
   }).join(''):'<div class="history-card"><p>Nenhuma conversa registrada neste mês.</p></div>';
+}
+
+const STRATEGY_TYPE_LABELS={meeting:'Reunião',agenda_item:'Pauta',strategy:'Estratégia',change:'Mudança',decision:'Decisão'};
+const STRATEGY_STATUS_LABELS={open:'Em aberto',in_progress:'Em andamento',done:'Concluído',archived:'Arquivado'};
+const STRATEGY_AREA_LABELS={captacao:'Captação',vendas:'Vendas',operacao:'Operação',pessoas:'Pessoas',processo:'Processo',geral:'Geral'};
+
+async function saveStrategy(){
+  const title=$('strategyTitle').value.trim();
+  if(!title){toast('Digite o título do registro.',true);return;}
+  const body={
+    month_id:state.month.id,
+    record_type:$('strategyType').value,
+    title,
+    record_date:$('strategyDate').value||localDate(),
+    area:$('strategyArea').value,
+    owner_id:$('strategyOwner').value||null,
+    participants:$('strategyParticipants').value.trim()||null,
+    priority:$('strategyPriority').value,
+    status:$('strategyStatus').value,
+    agenda_text:$('strategyAgendaText').value.trim()||null,
+    decision_text:$('strategyDecisionText').value.trim()||null,
+    next_steps:$('strategyNextSteps').value.trim()||null,
+    review_date:$('strategyReviewDate').value||null,
+    created_by:state.user?.id||null,
+    updated_at:new Date().toISOString()
+  };
+  try{
+    $('saveStrategyBtn').disabled=true;
+    await rest('ceo_strategy_records',{method:'POST',headers:{Prefer:'return=minimal'},body:JSON.stringify(body)});
+    ['strategyTitle','strategyParticipants','strategyAgendaText','strategyDecisionText','strategyNextSteps','strategyReviewDate'].forEach(id=>$(id).value='');
+    $('strategyDate').value=localDate();
+    toast('Registro de estratégia salvo.');
+    await loadStrategy();renderStrategy();
+  }catch(err){toast(err.message,true);}
+  finally{$('saveStrategyBtn').disabled=false;}
+}
+function renderStrategy(){
+  if(!$('strategyList'))return;
+  const typeFilter=state.strategyTypeFilter||'all';
+  const statusFilter=state.strategyStatusFilter||'all';
+  const visible=state.strategy.filter(x=>(typeFilter==='all'||x.record_type===typeFilter)&&(statusFilter==='all'||x.status===statusFilter));
+  const open=state.strategy.filter(x=>x.status==='open').length;
+  const progress=state.strategy.filter(x=>x.status==='in_progress').length;
+  const done=state.strategy.filter(x=>x.status==='done').length;
+  const today=localDate();
+  const reviews=state.strategy.filter(x=>x.review_date&&x.review_date<=today&&!['done','archived'].includes(x.status)).length;
+  $('strategySummary').innerHTML=[
+    ['Em aberto',open,'registros'],
+    ['Em andamento',progress,'registros'],
+    ['Concluídos',done,'no mês'],
+    ['Revisar',reviews,'pendentes']
+  ].map(x=>'<div class="summary-card"><small>'+x[0]+'</small><b>'+x[1]+'</b><span>'+x[2]+'</span></div>').join('');
+  $('strategyCount').textContent=visible.length+' registro'+(visible.length===1?'':'s');
+  $('strategyList').innerHTML=visible.length?visible.map(x=>{
+    const owner=personById(x.owner_id);
+    return '<article class="strategy-card '+esc(x.status)+'">'+
+      '<div class="strategy-card-head"><div><span>'+esc(STRATEGY_TYPE_LABELS[x.record_type]||x.record_type)+' • '+esc(STRATEGY_AREA_LABELS[x.area]||x.area)+'</span><h3>'+esc(x.title)+'</h3></div>'+
+      '<div><b>'+dateBr(x.record_date)+'</b><small>'+esc(STRATEGY_STATUS_LABELS[x.status]||x.status)+'</small></div></div>'+
+      '<div class="strategy-meta">'+(owner?'<span>Responsável: '+esc(owner.full_name)+'</span>':'<span>Responsável: Gestão</span>')+
+      (x.participants?'<span>Participantes: '+esc(x.participants)+'</span>':'')+
+      (x.review_date?'<span>Revisar: '+dateBr(x.review_date)+'</span>':'')+'</div>'+
+      (x.agenda_text?'<div class="strategy-block"><small>PAUTA / CONTEXTO</small><p>'+esc(x.agenda_text)+'</p></div>':'')+
+      (x.decision_text?'<div class="strategy-block decision"><small>DECISÃO</small><p>'+esc(x.decision_text)+'</p></div>':'')+
+      (x.next_steps?'<div class="strategy-block"><small>PRÓXIMOS PASSOS</small><p>'+esc(x.next_steps)+'</p></div>':'')+
+      '<div class="strategy-actions">'+
+        (x.status!=='done'&&x.status!=='archived'?'<button data-strategy-progress="'+x.id+'">Em andamento</button><button class="primary" data-strategy-done="'+x.id+'">Concluir</button>':'')+
+        (x.status!=='archived'?'<button class="ghost" data-strategy-archive="'+x.id+'">Arquivar</button>':'')+
+      '</div></article>';
+  }).join(''):'<div class="approval-empty">Nenhum registro para este filtro.</div>';
+  document.querySelectorAll('[data-strategy-progress]').forEach(b=>b.onclick=()=>updateStrategyStatus(b.dataset.strategyProgress,'in_progress'));
+  document.querySelectorAll('[data-strategy-done]').forEach(b=>b.onclick=()=>updateStrategyStatus(b.dataset.strategyDone,'done'));
+  document.querySelectorAll('[data-strategy-archive]').forEach(b=>b.onclick=()=>updateStrategyStatus(b.dataset.strategyArchive,'archived'));
+}
+async function updateStrategyStatus(id,status){
+  try{
+    await rest('ceo_strategy_records?id=eq.'+id,{method:'PATCH',headers:{Prefer:'return=minimal'},body:JSON.stringify({status,updated_at:new Date().toISOString()})});
+    await loadStrategy();renderStrategy();toast('Registro atualizado.');
+  }catch(err){toast(err.message,true);}
 }
 
 async function saveAgenda(){
@@ -1138,6 +1293,7 @@ async function renderReports(){
   const meta=state.month;
   const metaHtml='<div class="report-section"><div class="report-section-head"><div><span class="eyebrow">META DA OPERAÇÃO</span><h3>Meta e Super Meta • '+esc(state.month.label)+'</h3></div></div>'+
     '<div class="report-area-grid">'+
+      reportGoalCard('Pesquisas',opTotal?.r??null,meta.goal_research,meta.super_goal_research,v=>num(v))+
       reportGoalCard('Casais',opTotal?.c??null,meta.goal_couples,meta.super_goal_couples,v=>num(v))+
       reportGoalCard('Vendas',opTotal?.s??null,meta.goal_sales,meta.super_goal_sales,v=>num(v))+
       reportGoalCard('VGV',opTotal?.v??null,meta.goal_vgv,meta.super_goal_vgv,v=>money(v))+
@@ -1165,6 +1321,7 @@ async function renderReports(){
     'Base de performance: '+(performanceData()?.updated||'não informada'),
     '',
     'META DA OPERAÇÃO',
+    'Pesquisas: meta '+(Number(state.month.goal_research||0)||'não definida')+' | super '+(Number(state.month.super_goal_research||0)||'não definida'),
     'Casais: meta '+(Number(state.month.goal_couples||0)||'não definida')+' | super '+(Number(state.month.super_goal_couples||0)||'não definida'),
     'Vendas: meta '+(Number(state.month.goal_sales||0)||'não definida')+' | super '+(Number(state.month.super_goal_sales||0)||'não definida'),
     'VGV: meta '+(Number(state.month.goal_vgv||0)>0?money(state.month.goal_vgv):'não definida')+' | super '+(Number(state.month.super_goal_vgv||0)>0?money(state.month.super_goal_vgv):'não definida'),
@@ -1379,6 +1536,8 @@ async function answerRaioXQuestion(){
     const t=operationMonthTotals();
     answer.innerHTML=answerBlock(
       'META DA OPERAÇÃO • '+state.month.label,
+      'Pesquisas: <b>'+(t&&t.r!=null?num(t.r):'—')+'</b> / meta <b>'+(Number(state.month.goal_research||0)?num(state.month.goal_research):'não definida')+'</b>'+
+      (Number(state.month.super_goal_research||0)?' / super <b>'+num(state.month.super_goal_research)+'</b>':'')+'<br>'+
       'Casais: <b>'+(t?num(t.c):'—')+'</b> / meta <b>'+(Number(state.month.goal_couples||0)?num(state.month.goal_couples):'não definida')+'</b>'+
       (Number(state.month.super_goal_couples||0)?' / super <b>'+num(state.month.super_goal_couples)+'</b>':'')+'<br>'+
       'Vendas: <b>'+(t?num(t.s):'—')+'</b> / meta <b>'+(Number(state.month.goal_sales||0)?num(state.month.goal_sales):'não definida')+'</b>'+
@@ -1903,6 +2062,7 @@ function setTab(id){
   if(id==='reports')renderReports();
   if(id==='approvals')loadApprovals();
   if(id==='agenda')renderAgenda();
+  if(id==='strategy')renderStrategy();
   if(id==='xia')renderXIA();
 }
 function bind(){
@@ -1917,6 +2077,7 @@ function bind(){
   $('markAllPresentBtn').onclick=markAllPresent;
   $('saveDayBtn').onclick=saveDay;
   $('addTeamBtn').onclick=addTeam;
+  $('openMonthGoalsFromTeams').onclick=openMonthGoals;
   $('addPersonBtn').onclick=()=>openPersonModal();
   $('closePersonModal').onclick=closePersonModal;
   $('cancelPersonModal').onclick=closePersonModal;
@@ -1941,6 +2102,9 @@ function bind(){
     const id=$('profilePerson').value;if(id)openPersonModal(personById(id));
   };
   $('saveOneBtn').onclick=saveOne;
+  $('saveStrategyBtn').onclick=saveStrategy;
+  $('strategyTypeFilter').onchange=()=>{state.strategyTypeFilter=$('strategyTypeFilter').value;renderStrategy();};
+  $('strategyStatusFilter').onchange=()=>{state.strategyStatusFilter=$('strategyStatusFilter').value;renderStrategy();};
   $('saveAgendaBtn').onclick=saveAgenda;
   $('saveTaskBtn').onclick=saveTask;
   $('refreshReports').onclick=renderReports;
@@ -1978,6 +2142,7 @@ async function init(){
     syncProfessionalAreaUi();
     $('oneDate').value=localDate();
     if($('agendaDate'))$('agendaDate').value=localDate();
+    if($('strategyDate'))$('strategyDate').value=localDate();
     bind(); await loadBase();
     $('ceoLoading').style.display='none'; $('ceoApp').hidden=false;
   }catch(err){
