@@ -204,3 +204,8 @@ assert.match(ceo,/function renderQuickPresenceSearch\(/,'Quick presence must sea
 assert.match(ceo,/function selectQuickPresencePerson\(/,'Quick presence must select a professional');
 assert.match(ceoHtml,/class=["'][^"']*strategy-form-grid/,'Strategy form must use readable layout');
 assert.match(ceoHtml,/id=["']strategyAgendaText["'][^>]*rows=["']6["']/,'Strategy agenda textarea must be larger');
+
+assert.match(ceo,/approved_users\?select=email,name,role,approved/,'Approvals must include pre-approved users');
+assert.match(ceo,/awaiting_signup/,'Approvals must distinguish pre-approved users awaiting first access');
+assert.match(ceo,/META NÃO DEFINIDA/,'Zero goals must be shown as not defined, not as a real target');
+assert.match(auth,/password\.length<8/,'New signups must require at least 8 password characters');
