@@ -191,3 +191,16 @@ assert.match(ceoHtml,/id=["']strategyList["']/,'Strategy tab must render histori
 assert.match(ceo,/ceo_strategy_records/,'Portal must persist strategy records');
 assert.match(ceo,/async function saveStrategy\(/,'Strategy tab must save records');
 assert.match(ceo,/function renderStrategy\(/,'Strategy tab must render monthly history');
+
+assert.match(ceoHtml,/data-tab=["']goals["']/,'Portal must expose Livro de Metas tab');
+assert.match(ceoHtml,/id=["']goalBookCards["']/,'Livro de Metas must show all monthly goals');
+assert.match(ceoHtml,/id=["']openMonthGoalsFromBook["']/,'Livro de Metas must edit general goals');
+assert.match(ceo,/goals:\['Livro de Metas'/,'Portal titles must include Livro de Metas');
+assert.match(ceo,/if\(id==='goals'\)/,'Livro de Metas tab must render its content');
+assert.match(ceoHtml,/id=["']quickPresenceSearch["']/,'Today must expose quick presence search');
+assert.match(ceoHtml,/id=["']saveQuickPresenceBtn["']/,'Quick presence must expose save action');
+assert.match(ceo,/async function saveQuickPresence\(/,'Quick presence must persist one person at a time');
+assert.match(ceo,/function renderQuickPresenceSearch\(/,'Quick presence must search active professionals');
+assert.match(ceo,/function selectQuickPresencePerson\(/,'Quick presence must select a professional');
+assert.match(ceoHtml,/class=["'][^"']*strategy-form-grid/,'Strategy form must use readable layout');
+assert.match(ceoHtml,/id=["']strategyAgendaText["'][^>]*rows=["']6["']/,'Strategy agenda textarea must be larger');
