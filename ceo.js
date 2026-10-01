@@ -169,6 +169,13 @@ function performanceData(){return state.performance||null;}
 async function loadPerformanceForMonth(){
   state.performance=null;
   if(!state.month)return;
+
+  const legacy=window.XIA_PERFORMANCE||null;
+  if(legacy&&legacyPerformanceMonth(legacy)===state.month.ref_month.slice(0,7)){
+    state.performance=legacy;
+    return;
+  }
+
   try{
     const rows=await rest(
       'raiox_performance_records?select=professional_name,role,couples,sales,vgv,q,nq,gifts,active_days,week_volume,week_sales,week_vgv,daily,updated_on&ref_month=eq.'+
@@ -192,13 +199,10 @@ async function loadPerformanceForMonth(){
         updated:updated?dateBr(updated):state.month.label,
         people:[...byName.entries()].map(([name,roles])=>({name,roles}))
       };
-      return;
     }
   }catch(err){
     console.warn('RAIO X performance history unavailable',err);
   }
-  const legacy=performanceData()||null;
-  if(legacy&&legacyPerformanceMonth(legacy)===state.month.ref_month.slice(0,7))state.performance=legacy;
 }
 function operationMonthTotals(){
   if(!state.month||performanceUpdatedMonth()!==state.month.ref_month.slice(0,7))return null;
