@@ -12,7 +12,7 @@ const TITLES={
   teams:['Equipes','Defina equipes, horários e vínculos do mês.'],
   people:['Profissionais','Raio-X individual, metas, presença, performance e acompanhamento.'],
   one:['Olho no Olho','Conversa 1:1, compromissos e acompanhamento.'],
-  xia:['XIA','Inteligência analítica 360° de cada profissional.'],
+  xia:['XIA','Central única de inteligência: operação, profissional, feedback e próximos passos.'],
   agenda:['Agenda','Treinamentos, meetings, reuniões e compromissos.'],
   tasks:['Pendências','Tudo que você precisa revisar, conversar ou acompanhar.'],
   reports:['Relatórios','Resumo diário e mensal da gestão de pessoas.'],
@@ -956,8 +956,95 @@ function dailyConsistency(role){
 function xiaList(items,empty){
   return items.length?items.map(x=>'<div class="xia-item '+esc(x.level||'')+'"><b>'+esc(x.title)+'</b><p>'+esc(x.text)+'</p></div>').join(''):'<div class="xia-empty">'+esc(empty)+'</div>';
 }
+function xiaPersonSignal(p,presenceRows=[]){
+  const perf=perfForPerson(p);
+  const primary=choosePrimaryPerf(p,perf);
+  const sameMonth=perfMonthMatches();
+  const reasons=[];
+  let level=0;
+
+  if(primary&&sameMonth){
+    const conv=primary.c?primary.s/primary.c*100:0;
+    const qual=primary.c?primary.q/primary.c*100:0;
+    const consistency=dailyConsistency(primary);
+    if(primary.c>=8&&primary.s===0){reasons.push('0 vendas em '+primary.c+' oportunidades');level=Math.max(level,3);}
+    else if(primary.c>=8&&conv<10){reasons.push('conversão '+pct(conv));level=Math.max(level,3);}
+    else if(primary.c>=8&&conv<15){reasons.push('conversão abaixo do esperado: '+pct(conv));level=Math.max(level,2);}
+    if(primary.c>=8&&qual<50){reasons.push('qualificação '+pct(qual));level=Math.max(level,2);}
+    if(consistency.label==='Baixa'){reasons.push('baixa consistência diária');level=Math.max(level,2);}
+    const goal=goalByPerson(p.id);
+    if(goal?.sales_goal>0&&primary.s<goal.sales_goal*.7){reasons.push('vendas abaixo de 70% da meta');level=Math.max(level,1);}
+    if(goal?.couples_goal>0&&primary.c<goal.couples_goal*.7){reasons.push('volume abaixo de 70% da meta');level=Math.max(level,1);}
+  }
+
+  const personalPresence=presenceRows.filter(x=>x.person_id===p.id);
+  const absent=personalPresence.filter(x=>x.status==='absent').length;
+  const late=personalPresence.filter(x=>x.status==='late').length;
+  if(absent){reasons.push(absent+' não comparecimento'+(absent>1?'s':''));level=Math.max(level,2);}
+  if(late>=2){reasons.push(late+' atrasos registrados');level=Math.max(level,1);}
+
+  const urgent=state.tasks.filter(t=>t.person_id===p.id&&t.status==='open'&&(t.priority==='high'||t.priority==='critical')).length;
+  if(urgent){reasons.push(urgent+' pendência'+(urgent>1?'s':'')+' prioritária'+(urgent>1?'s':''));level=Math.max(level,2);}
+
+  return {p,primary,sameMonth,reasons,level};
+}
+async function renderXiaOperation(){
+  if(!$('xiaOperationSummary')||!state.month)return;
+  let presence=[];
+  try{presence=await rest('ceo_daily_presence?select=person_id,status,work_date&month_id=eq.'+state.month.id);}catch(_){presence=[];}
+  const signals=workingPeople().map(p=>xiaPersonSignal(p,presence)).filter(x=>x.reasons.length).sort((a,b)=>b.level-a.level||b.reasons.length-a.reasons.length);
+  const critical=signals.filter(x=>x.level===3).length;
+  const warning=signals.filter(x=>x.level===2).length;
+  const urgent=state.tasks.filter(t=>t.status==='open'&&(t.priority==='high'||t.priority==='critical')).length;
+  const presenceFlags=presence.filter(x=>x.status==='absent'||x.status==='late').length;
+
+  $('xiaOperationSummary').innerHTML=[
+    ['Analisados',workingPeople().length,'profissionais'],
+    ['Críticos',critical,'prioridade alta'],
+    ['Em atenção',warning,'acompanhamento'],
+    ['Pendências fortes',urgent,'alta/crítica'],
+    ['Presença',presenceFlags,'atrasos/ausências']
+  ].map(x=>'<div class="summary-card"><small>'+x[0]+'</small><b>'+x[1]+'</b><span>'+x[2]+'</span></div>').join('');
+
+  $('xiaOperationAlerts').innerHTML=signals.length?signals.slice(0,10).map(x=>{
+    const sev=x.level===3?'critical':x.level===2?'warn':'info';
+    return '<button class="xia-operation-person '+sev+'" data-xia-operation-person="'+x.p.id+'">'+
+      '<div><span>'+ (x.level===3?'CRÍTICO':x.level===2?'ATENÇÃO':'ACOMPANHAR') +'</span><b>'+esc(x.p.full_name)+'</b><small>'+esc(roleOf(x.p))+'</small></div>'+
+      '<p>'+x.reasons.map(esc).join(' • ')+'</p><strong>Ver Raio-X →</strong></button>';
+  }).join(''):'<div class="xia-empty">Nenhum sinal relevante pelos critérios atuais.</div>';
+
+  document.querySelectorAll('[data-xia-operation-person]').forEach(b=>b.onclick=()=>{
+    $('xiaPerson').value=b.dataset.xiaOperationPerson;
+    renderXIA();
+    $('xiaIdentity')?.scrollIntoView({behavior:'smooth',block:'start'});
+  });
+}
+function xiaFeedbackSummary(primary,sameMonth){
+  if(!primary||!sameMonth)return '<div class="xia-feedback-empty">Sem série de performance deste mês para gerar a leitura de tendência.</div>';
+  const ref=performanceReferenceDay()||31;
+  const recent=roleRange(primary,Math.max(1,ref-6),ref);
+  const previous=roleRange(primary,Math.max(1,ref-13),Math.max(1,ref-7));
+  const recentConv=recent.c?recent.s/recent.c*100:0;
+  const previousConv=previous.c?previous.s/previous.c*100:0;
+  const volumeDelta=previous.c?((recent.c-previous.c)/previous.c*100):null;
+  const convDelta=previous.c?(recentConv-previousConv):null;
+  let direction='estável';
+  if(volumeDelta!=null&&volumeDelta>=20)direction='aceleração de volume';
+  else if(volumeDelta!=null&&volumeDelta<=-20)direction='queda de volume';
+  else if(convDelta!=null&&convDelta>=5)direction='melhora de conversão';
+  else if(convDelta!=null&&convDelta<=-5)direction='queda de conversão';
+
+  return '<div class="xia-feedback-head"><div><span class="eyebrow">FEEDBACK XIA • 7 DIAS</span><h3>'+esc(direction)+'</h3></div><span>comparação com os 7 dias anteriores</span></div>'+
+    '<div class="xia-feedback-grid">'+
+      '<div><small>Volume</small><b>'+recent.c+'</b><span>'+(volumeDelta==null?'sem comparação':(volumeDelta>=0?'+':'')+num(volumeDelta,1)+'%')+'</span></div>'+
+      '<div><small>Vendas</small><b>'+recent.s+'</b><span>'+previous.s+' no período anterior</span></div>'+
+      '<div><small>Conversão</small><b>'+pct(recentConv)+'</b><span>'+(convDelta==null?'sem comparação':(convDelta>=0?'+':'')+num(convDelta,1)+' p.p.')+'</span></div>'+
+      '<div><small>VGV</small><b>'+money(recent.v)+'</b><span>'+money(previous.v)+' anterior</span></div>'+
+    '</div>';
+}
 async function renderXIA(){
   if(!$('xiaPerson'))return;
+  await renderXiaOperation();
   const personId=$('xiaPerson').value||workingPeople()[0]?.id;
   if(!personId){$('xiaIdentity').innerHTML='<div class="xia-empty">Nenhum profissional ativo.</div>';return;}
   $('xiaPerson').value=personId;
@@ -1041,6 +1128,8 @@ async function renderXIA(){
     ['Qualificação',primary&&sameMonth?pct(qual):'—','Q / volume'],
     ['Consistência',primary&&sameMonth?consistency.label:'—',consistency.score!=null?consistency.score+'/100':'sem amostra']
   ].map(x=>'<div class="summary-card"><small>'+x[0]+'</small><b>'+x[1]+'</b><span>'+esc(x[2])+'</span></div>').join('');
+
+  if($('xiaFeedback'))$('xiaFeedback').innerHTML=xiaFeedbackSummary(primary,sameMonth);
 
   $('xiaStrengths').innerHTML=xiaList(strengths,'Nenhum ponto forte mensurável foi destacado automaticamente nesta base.');
   $('xiaAttention').innerHTML=xiaList(attention,'Nenhum alerta relevante encontrado pelos critérios atuais.');
