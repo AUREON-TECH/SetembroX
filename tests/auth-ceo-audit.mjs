@@ -12,8 +12,9 @@ const pendingHtml=read('pending.html');
 const pendingJs=read('pending.js');
 const sw=read('sw.js');
 const xia=read('xia-performance.js');
+const monthLive=read('month-live.js');
 
-for(const [name,src] of [['auth.js',auth],['ceo.js',ceo],['pending.js',pendingJs],['sw.js',sw],['xia-performance.js',xia]]){
+for(const [name,src] of [['auth.js',auth],['ceo.js',ceo],['pending.js',pendingJs],['sw.js',sw],['xia-performance.js',xia],['month-live.js',monthLive]]){
   assert.doesNotThrow(()=>new Function(src),name+' must be valid JavaScript');
 }
 
@@ -213,3 +214,12 @@ assert.match(ceo,/approvalsLoadError/,'Approval load errors must not be rendered
 
 assert.doesNotMatch(ceo,/awaiting_signup|Aguardando cadastro|Pré-aprovado/,'Aprovações must not show pre-approved users without real accounts');
 assert.match(ceo,/raiox_app_users\?select=user_id,person_id,display_name,email,role,active,approval_status/,'Aprovações must load real RAIO X accounts');
+
+assert.match(html,/month-live\.js/,'Main RAIO X must load live month data');
+assert.match(monthLive,/ceo_months\?select=/,'Live month must read the open CEO month');
+assert.match(monthLive,/raiox_performance_records\?select=/,'Live month must read current-month performance');
+assert.match(monthLive,/goal_research/,'Live month must include research target');
+assert.match(monthLive,/goal_couples/,'Live month must include couples target');
+assert.match(monthLive,/goal_sales/,'Live month must include sales target');
+assert.match(monthLive,/goal_vgv/,'Live month must include VGV target');
+assert.match(monthLive,/currentMonthEmpty/,'Live month must clear stale previous-month data');
