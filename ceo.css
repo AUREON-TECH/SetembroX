@@ -140,3 +140,55 @@ textarea{font-size:12px}
  .agenda-card{grid-template-columns:1fr}
  .approval-summary{grid-template-columns:1fr}
 }
+
+
+/* RAIO X Portal de Gestão • Hoje executivo v1 */
+.today-command{
+  display:flex;justify-content:space-between;align-items:end;gap:18px;
+  padding:17px 18px;border:1px solid rgba(24,231,255,.1);border-radius:18px;
+  background:radial-gradient(circle at 0 0,rgba(24,231,255,.08),transparent 36%),linear-gradient(145deg,rgba(10,16,36,.98),rgba(7,11,26,.96));
+}
+.today-command h2{margin:4px 0 3px;font-size:18px}
+.today-command p{margin:0;color:#7f91b5;font-size:9px}
+.today-toolbar{flex-wrap:wrap;justify-content:flex-end}
+.today-performance-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:9px}
+.today-kpi{
+  position:relative;overflow:hidden;min-height:112px;padding:15px;
+  border:1px solid rgba(255,255,255,.07);border-radius:16px;
+  background:linear-gradient(150deg,rgba(14,21,45,.96),rgba(8,12,27,.96));
+}
+.today-kpi:before{content:"";position:absolute;inset:0 auto 0 0;width:2px;background:currentColor;opacity:.75}
+.today-kpi small{display:block;color:#7588ae;font-size:7px;font-weight:900;letter-spacing:.11em;text-transform:uppercase}
+.today-kpi b{display:block;margin-top:12px;color:#f6fbff;font-size:23px;line-height:1}
+.today-kpi span{display:block;margin-top:7px;color:#8395b8;font-size:8px;line-height:1.35}
+.today-kpi.cyan{color:#18e7ff}.today-kpi.green{color:#56f0a6}.today-kpi.violet{color:#b58cff}.today-kpi.blue{color:#72a8ff}.today-kpi.gold{color:#ffd477}
+.today-executive-grid{display:grid;grid-template-columns:.95fr 1.05fr;gap:12px}
+.today-summary{grid-template-columns:repeat(5,minmax(0,1fr))}
+.today-alerts{display:grid;gap:7px}
+.today-alert{display:grid;grid-template-columns:86px 1fr;gap:10px;padding:10px 11px;border:1px solid rgba(255,255,255,.06);border-radius:11px;background:rgba(255,255,255,.018)}
+.today-alert>span{align-self:start;justify-self:start;padding:4px 6px;border-radius:99px;background:rgba(255,255,255,.04);color:#8799bd;font-size:6px;font-weight:950;letter-spacing:.08em}
+.today-alert b{font-size:9px}.today-alert p{margin:3px 0 0;color:#8294b8;font-size:8px;line-height:1.4}
+.today-alert.critical{border-color:rgba(255,82,110,.24);background:rgba(255,82,110,.035)}
+.today-alert.critical>span{color:#ff91a5;background:rgba(255,82,110,.08)}
+.today-alert.warn{border-color:rgba(255,189,74,.18)}
+.today-alert.warn>span{color:#ffd17b;background:rgba(255,189,74,.06)}
+.today-alert.info{border-color:rgba(24,231,255,.12)}
+.today-alert.info>span{color:#80eefa;background:rgba(24,231,255,.05)}
+.today-alert-empty,.today-data-empty{display:grid;gap:4px;padding:14px;border:1px dashed rgba(255,255,255,.09);border-radius:12px;color:#7f91b5}
+.today-alert-empty b,.today-data-empty b{color:#a9b8d5;font-size:9px}.today-alert-empty span,.today-data-empty span{font-size:8px}
+.today-data-empty{grid-column:1/-1}
+@media(max-width:1100px){
+  .today-performance-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .today-executive-grid{grid-template-columns:1fr}
+}
+@media(max-width:760px){
+  .today-command{align-items:stretch;flex-direction:column}
+  .today-toolbar{justify-content:flex-start}
+  .today-performance-grid{grid-template-columns:1fr 1fr}
+  .today-summary{grid-template-columns:1fr 1fr}
+}
+@media(max-width:520px){
+  .today-performance-grid{grid-template-columns:1fr}
+  .today-kpi{min-height:92px}
+  .today-alert{grid-template-columns:1fr}
+}
