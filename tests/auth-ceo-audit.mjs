@@ -51,7 +51,7 @@ assert.match(ceoHtml,/personGoalSales/,'professional must support monthly sales 
 assert.match(ceoHtml,/personGoalVgv/,'professional must support monthly VGV goal');
 assert.match(ceoHtml,/Distratados/i,'CEO portal must preserve a terminated-professionals area');
 
-assert.match(ceo,/ceo_admins/,'CEO portal must validate admin authorization');
+assert.match(ceo,/raiox_app_users/,'Portal de Gestão must validate approved account authorization');
 assert.match(ceo,/ceo_daily_presence/,'CEO portal must store operational presence');
 assert.match(ceo,/status:row\.querySelector\(['"]\.presence-status['"]\)\.value\|\|['"]present['"]/,'day save must default each professional to present');
 assert.match(ceo,/function markAllPresent/,'CEO can mark everyone present');
