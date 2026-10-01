@@ -1037,6 +1037,194 @@ function dailyConsistency(role){
 function xiaList(items,empty){
   return items.length?items.map(x=>'<div class="xia-item '+esc(x.level||'')+'"><b>'+esc(x.title)+'</b><p>'+esc(x.text)+'</p></div>').join(''):'<div class="xia-empty">'+esc(empty)+'</div>';
 }
+function findPersonFromQuestion(question){
+  const q=norm(question);
+  if(!q)return null;
+  const people=workingPeople();
+  const exact=people.filter(p=>q.includes(norm(p.full_name)));
+  if(exact.length)return exact.sort((a,b)=>b.full_name.length-a.full_name.length)[0];
+
+  const byTwo=people.filter(p=>{
+    const parts=norm(p.full_name).split(/\s+/);
+    const two=parts.slice(0,2).join(' ');
+    return two&&q.includes(two);
+  });
+  if(byTwo.length===1)return byTwo[0];
+
+  const words=q.split(/\s+/).filter(Boolean);
+  const firstMatches=people.filter(p=>{
+    const first=norm(p.full_name).split(/\s+/)[0];
+    return first.length>=3&&words.includes(first);
+  });
+  return firstMatches.length===1?firstMatches[0]:null;
+}
+function personTrend(primary){
+  if(!primary||!perfMonthMatches())return null;
+  const ref=performanceReferenceDay()||31;
+  const recent=roleRange(primary,Math.max(1,ref-6),ref);
+  const previous=roleRange(primary,Math.max(1,ref-13),Math.max(1,ref-7));
+  const rc=recent.c?recent.s/recent.c*100:0;
+  const pc=previous.c?previous.s/previous.c*100:0;
+  return {
+    recent,previous,
+    volumeDelta:previous.c?((recent.c-previous.c)/previous.c*100):null,
+    convDelta:previous.c?(rc-pc):null,
+    recentConv:rc,previousConv:pc
+  };
+}
+function answerBlock(title,text,meta=''){
+  return '<div class="raio-answer-card"><small>'+esc(title)+'</small><p>'+text+'</p>'+(meta?'<span>'+esc(meta)+'</span>':'')+'</div>';
+}
+async function answerRaioXQuestion(){
+  const input=$('raioQuestion');
+  const answer=$('raioAnswer');
+  const rawQ=input?.value.trim()||'';
+  if(!rawQ){toast('Digite uma pergunta.',true);return;}
+  answer.innerHTML='<div class="raio-answer-loading">Analisando os dados do RAIO X...</div>';
+
+  const q=norm(rawQ);
+  const person=findPersonFromQuestion(rawQ);
+  let monthPresence=[];
+  try{monthPresence=await rest('ceo_daily_presence?select=*&month_id=eq.'+state.month.id+'&order=work_date.asc');}catch(_){monthPresence=[];}
+
+  if(person){
+    const perf=perfForPerson(person);
+    const primary=choosePrimaryPerf(person,perf);
+    const sameMonth=perfMonthMatches();
+    const goal=goalByPerson(person.id);
+    const one=state.one.filter(x=>x.person_id===person.id);
+    const tasks=state.tasks.filter(x=>x.person_id===person.id&&x.status==='open');
+    const pres=monthPresence.filter(x=>x.person_id===person.id);
+    const counts={present:0,absent:0,late:0,other:0};
+    pres.forEach(x=>{
+      if(x.status==='present')counts.present++;
+      else if(x.status==='absent')counts.absent++;
+      else if(x.status==='late')counts.late++;
+      else counts.other++;
+    });
+    const trend=personTrend(primary);
+    const volumeLabel=roleOf(person)==='Promotor de Marketing'?'casais':'atendimentos';
+
+    if(/atras|falt|presen/.test(q)){
+      answer.innerHTML=answerBlock(
+        'PRESENÇA • '+person.full_name,
+        '<b>'+counts.present+'</b> comparecimentos, <b>'+counts.absent+'</b> ausências, <b>'+counts.late+'</b> atrasos e <b>'+counts.other+'</b> outros registros.',
+        state.month.label
+      );
+      return;
+    }
+
+    if(/olho no olho|conversei|compromiss/.test(q)){
+      const last=one[0];
+      answer.innerHTML=last
+        ? answerBlock('ÚLTIMO OLHO NO OLHO • '+person.full_name,
+            'Em <b>'+dateBr(last.meeting_date)+'</b>: '+esc(last.topic||'Olho no Olho')+'.<br><br><b>Compromissos:</b> '+esc(last.commitments||'não registrados')+
+            (last.review_date?'<br><b>Revisão:</b> '+dateBr(last.review_date):''),
+            state.month.label)
+        : answerBlock('OLHO NO OLHO • '+person.full_name,'Nenhuma conversa registrada neste mês.',state.month.label);
+      return;
+    }
+
+    if(/meta/.test(q)){
+      const c=primary&&sameMonth?Number(primary.c||0):0;
+      const s=primary&&sameMonth?Number(primary.s||0):0;
+      const v=primary&&sameMonth?Number(primary.v||0):0;
+      answer.innerHTML=answerBlock(
+        'METAS • '+person.full_name,
+        'Volume: <b>'+c+' / '+Number(goal?.couples_goal||0)+'</b> • Vendas: <b>'+s+' / '+Number(goal?.sales_goal||0)+'</b> • VGV: <b>'+money(v)+' / '+money(goal?.vgv_goal||0)+'</b>.',
+        state.month.label
+      );
+      return;
+    }
+
+    if(/semana|7 dias|ultimos sete|últimos sete/.test(q)){
+      if(!trend){
+        answer.innerHTML=answerBlock('7 DIAS • '+person.full_name,'Não existe série de performance compatível com o mês selecionado.',state.month.label);
+        return;
+      }
+      const vd=trend.volumeDelta==null?'sem comparação':(trend.volumeDelta>=0?'+':'')+num(trend.volumeDelta,1)+'%';
+      const cd=trend.convDelta==null?'sem comparação':(trend.convDelta>=0?'+':'')+num(trend.convDelta,1)+' p.p.';
+      answer.innerHTML=answerBlock(
+        'ÚLTIMOS 7 DIAS • '+person.full_name,
+        '<b>'+trend.recent.c+'</b> '+volumeLabel+', <b>'+trend.recent.s+'</b> vendas, <b>'+pct(trend.recentConv)+'</b> de conversão e <b>'+money(trend.recent.v)+'</b> de VGV.<br><br>'+
+        'Comparado aos 7 dias anteriores: volume <b>'+vd+'</b> • conversão <b>'+cd+'</b>.',
+        'Base até '+(window.XIA_PERFORMANCE?.updated||'—')
+      );
+      return;
+    }
+
+    if(primary&&sameMonth){
+      const conv=primary.c?primary.s/primary.c*100:0;
+      const qual=primary.c?primary.q/primary.c*100:0;
+      const consistency=dailyConsistency(primary);
+      const last=one[0];
+      answer.innerHTML=answerBlock(
+        'RAIO-X • '+person.full_name,
+        '<b>'+primary.c+'</b> '+volumeLabel+', <b>'+primary.s+'</b> vendas, <b>'+pct(conv)+'</b> de conversão, <b>'+money(primary.v)+'</b> de VGV e <b>'+pct(qual)+'</b> de qualificação.<br><br>'+
+        'Consistência: <b>'+esc(consistency.label)+'</b>. Presença: '+counts.absent+' ausência(s) e '+counts.late+' atraso(s). '+
+        'Pendências abertas: '+tasks.length+'.'+
+        (last?'<br>Último Olho no Olho: '+dateBr(last.meeting_date)+' • compromisso: '+esc(last.commitments||'não registrado')+'.':''),
+        'Performance '+(window.XIA_PERFORMANCE?.updated||'—')+' • Gestão '+state.month.label
+      );
+    }else{
+      answer.innerHTML=answerBlock(
+        'RAIO-X • '+person.full_name,
+        'Não há performance compatível com este mês. Na gestão há '+counts.absent+' ausência(s), '+counts.late+' atraso(s), '+one.length+' Olho no Olho e '+tasks.length+' pendência(s) aberta(s).',
+        state.month.label
+      );
+    }
+    return;
+  }
+
+  const signals=workingPeople().map(p=>xiaPersonSignal(p,monthPresence)).filter(x=>x.reasons.length).sort((a,b)=>b.level-a.level||b.reasons.length-a.reasons.length);
+
+  if(/baixa.*convers|convers.*baixa/.test(q)){
+    const rows=workingPeople().map(p=>{const perf=perfForPerson(p),primary=choosePrimaryPerf(p,perf);return {p,primary,conv:primary?.c?primary.s/primary.c*100:null};})
+      .filter(x=>x.primary&&perfMonthMatches()&&x.primary.c>=8&&x.conv!=null)
+      .sort((a,b)=>a.conv-b.conv).slice(0,5);
+    answer.innerHTML=answerBlock('BAIXA CONVERSÃO',rows.length?rows.map(x=>'<b>'+esc(x.p.full_name)+'</b>: '+pct(x.conv)+' ('+x.primary.s+' vendas em '+x.primary.c+').').join('<br>'):'Sem amostra suficiente.',state.month.label);
+    return;
+  }
+
+  if(/melhor|evolu/.test(q)){
+    const rows=workingPeople().map(p=>{const perf=perfForPerson(p),primary=choosePrimaryPerf(p,perf),t=personTrend(primary);return {p,t};})
+      .filter(x=>x.t&&x.t.volumeDelta!=null)
+      .sort((a,b)=>(b.t.convDelta||0)-(a.t.convDelta||0)||b.t.volumeDelta-a.t.volumeDelta).slice(0,5);
+    answer.innerHTML=answerBlock('EVOLUÇÃO • 7 DIAS',rows.length?rows.map(x=>'<b>'+esc(x.p.full_name)+'</b>: conversão '+((x.t.convDelta||0)>=0?'+':'')+num(x.t.convDelta||0,1)+' p.p. • volume '+(x.t.volumeDelta>=0?'+':'')+num(x.t.volumeDelta,1)+'%.').join('<br>'):'Sem comparação suficiente.','Comparado aos 7 dias anteriores');
+    return;
+  }
+
+  if(/cai|queda|pior/.test(q)){
+    const rows=workingPeople().map(p=>{const perf=perfForPerson(p),primary=choosePrimaryPerf(p,perf),t=personTrend(primary);return {p,t};})
+      .filter(x=>x.t&&x.t.volumeDelta!=null)
+      .sort((a,b)=>(a.t.convDelta||0)-(b.t.convDelta||0)||a.t.volumeDelta-b.t.volumeDelta).slice(0,5);
+    answer.innerHTML=answerBlock('QUEDAS • 7 DIAS',rows.length?rows.map(x=>'<b>'+esc(x.p.full_name)+'</b>: conversão '+((x.t.convDelta||0)>=0?'+':'')+num(x.t.convDelta||0,1)+' p.p. • volume '+(x.t.volumeDelta>=0?'+':'')+num(x.t.volumeDelta,1)+'%.').join('<br>'):'Sem comparação suficiente.','Comparado aos 7 dias anteriores');
+    return;
+  }
+
+  if(/atras|falt|presen/.test(q)){
+    const grouped={};
+    monthPresence.forEach(x=>{
+      if(!['absent','late'].includes(x.status))return;
+      grouped[x.person_id]??={absent:0,late:0};
+      grouped[x.person_id][x.status]++;
+    });
+    const rows=Object.entries(grouped).map(([id,v])=>({p:personById(id),...v})).filter(x=>x.p).sort((a,b)=>(b.absent*2+b.late)-(a.absent*2+a.late)).slice(0,8);
+    answer.innerHTML=answerBlock('PRESENÇA • PONTOS DE ATENÇÃO',rows.length?rows.map(x=>'<b>'+esc(x.p.full_name)+'</b>: '+x.absent+' ausência(s) • '+x.late+' atraso(s).').join('<br>'):'Sem ausências ou atrasos registrados.',state.month.label);
+    return;
+  }
+
+  if(/aten|alerta|prioridade|precisa/.test(q)){
+    answer.innerHTML=answerBlock('ATENÇÃO DA OPERAÇÃO',signals.length?signals.slice(0,7).map(x=>'<b>'+esc(x.p.full_name)+'</b>: '+x.reasons.map(esc).join(' • ')+'.').join('<br>'):'Nenhum sinal relevante pelos critérios atuais.',state.month.label);
+    return;
+  }
+
+  answer.innerHTML=answerBlock(
+    'PERGUNTA NÃO RECONHECIDA',
+    'Tente perguntar por um profissional ou usar termos como <b>semana</b>, <b>mês</b>, <b>meta</b>, <b>atrasos</b>, <b>Olho no Olho</b>, <b>baixa conversão</b>, <b>quem melhorou</b> ou <b>quem precisa de atenção</b>.',
+    'Os resultados usam apenas dados registrados no RAIO X'
+  );
+}
 function xiaPersonSignal(p,presenceRows=[]){
   const perf=perfForPerson(p);
   const primary=choosePrimaryPerf(p,perf);
@@ -1402,6 +1590,12 @@ function bind(){
   $('ceoLogout').onclick=signOut;
   $('xiaPerson').onchange=renderXIA;
   $('refreshXia').onclick=renderXIA;
+  $('askRaioBtn').onclick=answerRaioXQuestion;
+  $('raioQuestion').addEventListener('keydown',e=>{if(e.key==='Enter')answerRaioXQuestion();});
+  document.querySelectorAll('[data-raio-question]').forEach(b=>b.onclick=()=>{
+    $('raioQuestion').value=b.dataset.raioQuestion||b.textContent;
+    answerRaioXQuestion();
+  });
   $('copyXiaBtn').onclick=copyXIA;
 }
 async function init(){
