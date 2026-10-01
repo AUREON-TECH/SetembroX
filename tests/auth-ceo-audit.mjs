@@ -66,7 +66,7 @@ assert.match(ceo,/approval_status/,'CEO portal must manage access approval state
 assert.match(ceo,/reset_password/,'CEO portal must support password changes');
 assert.match(ceo,/Distratados|status:'ended'/,'CEO portal must support contract termination history');
 assert.match(ceo,/data-delete-person|deletePerson/,'CEO portal must allow deleting erroneous/non-team records');
-assert.match(ceo,/XIA_PERFORMANCE/,'XIA must consume the performance snapshot');
+assert.match(ceo,/performanceData\(\)/,'XIA must consume the performance source for the selected month');
 assert.match(ceo,/buildXiaPrompt/,'XIA must generate a complete prompt for external AI analysis');
 assert.match(ceo,/Não invente|nao invente/i,'XIA must distinguish evidence from unsupported inference');
 
@@ -172,3 +172,9 @@ assert.match(ceoHtml,/id=["']monthSuperGoalVgv["']/,'Super Meta must support VGV
 assert.match(ceo,/async function saveMonthGoals\(/,'monthly goals must be persisted in ceo_months');
 assert.match(ceoHtml,/id=["']xiaRole["']/,'XIA must let multi-role professionals be analyzed in the selected role');
 assert.match(ceo,/\['ceo','manager'\]\.includes\(access\.role\)/,'Portal de Gestão must authorize CEO and manager roles');
+
+assert.match(ceo,/async function loadPerformanceForMonth\(/,'Portal must load performance by selected month');
+assert.match(ceo,/raiox_performance_records/,'Portal must use persistent monthly performance records');
+assert.match(ceo,/function performanceData\(/,'analytics must read the selected month performance source');
+assert.match(ceo,/function reportGoalCard\(/,'reports must include Meta and Super Meta progress');
+assert.match(ceo,/preferredRole/,'multi-role analytics must support a preferred role');
