@@ -473,11 +473,12 @@
       <label>Horário combinado<input id="personStartTime" type="time"></label>
       <label>Horário de saída opcional<input id="personEndTime" type="time"></label>
       <label>Equipe do mês<select id="personTeam"></select></label>
+      <label>Meta mensal de pesquisas<input id="personGoalResearch" type="number" min="0" step="1" placeholder="0"></label>
       <label>Meta mensal de casais/atendimentos<input id="personGoalCouples" type="number" min="0" step="1" placeholder="0"></label>
       <label>Meta mensal de vendas<input id="personGoalSales" type="number" min="0" step="1" placeholder="0"></label>
       <label>Meta mensal de VGV<input id="personGoalVgv" type="number" min="0" step="100" placeholder="0"></label>
       <label class="wide">Observações<textarea id="personNotes" rows="3" placeholder="Informações importantes sobre a pessoa"></textarea></label>
-      <label class="wide">Senha inicial opcional <small>Ao cadastrar uma pessoa nova, se preencher e-mail + senha, o acesso ao RAIO X é criado automaticamente sem SMS.</small><input id="personPassword" type="password" placeholder="Mínimo 6 caracteres"></label>
+      <label class="wide">Senha inicial opcional <small>Ao cadastrar uma pessoa nova, se preencher e-mail + senha, o acesso ao RAIO X é criado automaticamente sem SMS.</small><input id="personPassword" type="password" placeholder="Mínimo 8 caracteres"></label>
     </div>
     <div class="modal-actions"><button id="cancelPersonModal" class="ghost" type="button">Cancelar</button><button id="savePersonBtn" class="primary" type="button">Salvar pessoa</button></div>
   </div>
@@ -489,6 +490,6 @@
 <script src="./area-data.js"></script>
 <script src="./fx-data.js"></script>
 <script src="./xia-performance.js?v=2"></script>
-<script src="./ceo.js?v=20"></script>
+<script src="./ceo.js?v=21"></script>
 </body>
 </html>
