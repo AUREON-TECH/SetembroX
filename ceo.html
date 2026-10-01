@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#060a18">
 <title>RAIO X • Portal de Gestão</title>
 <link rel="icon" href="./icon.svg">
-<link rel="stylesheet" href="./ceo.css?v=13">
+<link rel="stylesheet" href="./ceo.css?v=14">
 </head>
 <body>
 <div id="ceoLoading" class="ceo-loading"><div class="loader-mark">RX</div><b>Validando acesso de gestão...</b></div>
@@ -21,6 +21,7 @@
       <button data-tab="people">Profissionais</button>
       <button data-tab="one">Olho no Olho</button>
       <button data-tab="xia">XIA</button>
+      <button data-tab="strategy">Reuniões & Estratégia</button>
       <button data-tab="agenda">Agenda</button>
       <button data-tab="tasks">Pendências</button>
       <button data-tab="reports">Relatórios</button>
@@ -81,6 +82,20 @@
         <div class="panel-head"><div><span class="eyebrow">ESTRUTURA</span><h2>Equipes e horários</h2><p>Defina o horário combinado de cada equipe, por exemplo 10:00 ou 13:00.</p></div><button id="addTeamBtn" class="primary small">+ Nova equipe</button></div>
         <div id="teamsGrid" class="team-grid"></div>
       </div>
+
+      <div class="panel team-goals-panel">
+        <div class="panel-head">
+          <div>
+            <span class="eyebrow">DISTRIBUIÇÃO DA META</span>
+            <h2>Meta por equipe</h2>
+            <p>Divida a meta geral do mês entre os times. O RAIO X mostra quanto já foi distribuído e quanto ainda falta.</p>
+          </div>
+          <button id="openMonthGoalsFromTeams" class="ghost small">Editar meta geral</button>
+        </div>
+        <div id="teamGoalSummary" class="team-goal-summary"></div>
+        <div id="teamGoalsEditor" class="team-goals-editor"></div>
+      </div>
+
       <div class="panel">
         <div class="panel-head"><div><span class="eyebrow">VÍNCULOS DO MÊS</span><h2>Pessoas por equipe</h2></div></div>
         <div id="teamAssignments" class="assignment-list"></div>
@@ -214,6 +229,87 @@
       </div>
     </section>
 
+    <section id="strategy" class="ceo-tab">
+      <div class="strategy-command panel">
+        <div>
+          <span class="eyebrow">MEMÓRIA EXECUTIVA</span>
+          <h2>Reuniões & Estratégia</h2>
+          <p>Registre pautas, decisões, estratégias de captação e mudanças de processo. Aqui fica o histórico do que foi decidido e do que precisa acontecer.</p>
+        </div>
+        <div class="strategy-filters">
+          <select id="strategyTypeFilter" aria-label="Filtrar por tipo">
+            <option value="all">Todos os tipos</option>
+            <option value="meeting">Reuniões</option>
+            <option value="agenda_item">Pautas</option>
+            <option value="strategy">Estratégias</option>
+            <option value="change">Mudanças</option>
+            <option value="decision">Decisões</option>
+          </select>
+          <select id="strategyStatusFilter" aria-label="Filtrar por status">
+            <option value="all">Todos os status</option>
+            <option value="open">Em aberto</option>
+            <option value="in_progress">Em andamento</option>
+            <option value="done">Concluídos</option>
+            <option value="archived">Arquivados</option>
+          </select>
+        </div>
+      </div>
+
+      <div id="strategySummary" class="summary-grid"></div>
+
+      <div class="panel form-panel">
+        <div class="panel-head">
+          <div><span class="eyebrow">NOVO REGISTRO</span><h2>Pauta, estratégia ou mudança</h2><p>Transforme uma conversa em decisão registrada e acompanhável.</p></div>
+          <span class="pill">gestão</span>
+        </div>
+        <div class="form-grid compact">
+          <label>Tipo<select id="strategyType">
+            <option value="meeting">Reunião</option>
+            <option value="agenda_item">Pauta</option>
+            <option value="strategy">Estratégia</option>
+            <option value="change">Mudança</option>
+            <option value="decision">Decisão</option>
+          </select></label>
+          <label>Título<input id="strategyTitle" placeholder="Ex.: Nova estratégia de abordagem no Park"></label>
+          <label>Data<input id="strategyDate" type="date"></label>
+          <label>Área<select id="strategyArea">
+            <option value="captacao">Captação</option>
+            <option value="vendas">Vendas</option>
+            <option value="operacao">Operação</option>
+            <option value="pessoas">Pessoas</option>
+            <option value="processo">Processo</option>
+            <option value="geral">Geral</option>
+          </select></label>
+          <label>Responsável<select id="strategyOwner"><option value="">Gestão / sem responsável individual</option></select></label>
+          <label>Prioridade<select id="strategyPriority">
+            <option value="normal">Normal</option>
+            <option value="high">Alta</option>
+            <option value="critical">Crítica</option>
+            <option value="low">Baixa</option>
+          </select></label>
+          <label>Status<select id="strategyStatus">
+            <option value="open">Em aberto</option>
+            <option value="in_progress">Em andamento</option>
+            <option value="done">Concluído</option>
+          </select></label>
+          <label>Revisar em<input id="strategyReviewDate" type="date"></label>
+          <label class="wide">Participantes<input id="strategyParticipants" placeholder="Ex.: Raphael, Felipe, Luis Neto"></label>
+          <label class="wide">Pauta / contexto<textarea id="strategyAgendaText" rows="3" placeholder="O que foi discutido ou qual problema estamos tentando resolver?"></textarea></label>
+          <label class="wide">Decisão tomada<textarea id="strategyDecisionText" rows="3" placeholder="O que ficou decidido?"></textarea></label>
+          <label class="wide">Próximos passos<textarea id="strategyNextSteps" rows="3" placeholder="Quem faz o quê e qual é o próximo movimento?"></textarea></label>
+        </div>
+        <div class="form-actions"><button id="saveStrategyBtn" class="primary">Salvar registro</button></div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head">
+          <div><span class="eyebrow">HISTÓRICO DO MÊS</span><h2>Decisões e estratégias registradas</h2></div>
+          <span id="strategyCount" class="pill">0 registros</span>
+        </div>
+        <div id="strategyList" class="strategy-list"></div>
+      </div>
+    </section>
+
     <section id="agenda" class="ceo-tab">
       <div class="panel form-panel">
         <div class="panel-head"><div><span class="eyebrow">AGENDA INTELIGENTE</span><h2>Novo compromisso</h2><p>Treinamentos, meetings, Olho no Olho, reuniões, lembretes e compromissos.</p></div><span class="pill">Portal de Gestão</span></div>
@@ -290,7 +386,8 @@
     <div class="modal-head"><div><span class="eyebrow">META DA OPERAÇÃO</span><h2 id="monthGoalModalTitle">Metas do mês</h2></div><button id="closeMonthGoalModal" class="modal-close" type="button">×</button></div>
     <div class="goal-form-section">
       <div class="goal-form-title"><b>META</b><span>Objetivo oficial do mês</span></div>
-      <div class="form-grid compact">
+      <div class="form-grid compact goal-four-grid">
+        <label>Pesquisas<input id="monthGoalResearch" type="number" min="0" step="1"></label>
         <label>Casais / Atendimentos<input id="monthGoalCouples" type="number" min="0" step="1"></label>
         <label>Vendas<input id="monthGoalSales" type="number" min="0" step="1"></label>
         <label>VGV (R$)<input id="monthGoalVgv" type="number" min="0" step="0.01"></label>
@@ -298,7 +395,8 @@
     </div>
     <div class="goal-form-section super">
       <div class="goal-form-title"><b>SUPER META</b><span>Segundo nível de conquista do mês</span></div>
-      <div class="form-grid compact">
+      <div class="form-grid compact goal-four-grid">
+        <label>Pesquisas<input id="monthSuperGoalResearch" type="number" min="0" step="1"></label>
         <label>Casais / Atendimentos<input id="monthSuperGoalCouples" type="number" min="0" step="1"></label>
         <label>Vendas<input id="monthSuperGoalSales" type="number" min="0" step="1"></label>
         <label>VGV (R$)<input id="monthSuperGoalVgv" type="number" min="0" step="0.01"></label>
@@ -339,6 +437,6 @@
 <script src="./area-data.js"></script>
 <script src="./fx-data.js"></script>
 <script src="./xia-performance.js?v=2"></script>
-<script src="./ceo.js?v=15"></script>
+<script src="./ceo.js?v=16"></script>
 </body>
 </html>
