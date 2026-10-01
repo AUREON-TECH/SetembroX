@@ -119,3 +119,11 @@ assert.match(ceo,/async function renderProfessionalProfile\(/,'portal must rende
 assert.match(ceo,/function roleRange\(/,'professional profile must calculate rolling daily periods');
 assert.match(ceo,/function openProfessionalProfile\(/,'directory must open the selected professional Raio-X');
 assert.match(ceoCss,/\.professional-profile-panel/,'professional profile must have dedicated visual styling');
+
+assert.match(ceoHtml,/id=["']xiaOperationSummary["']/,'XIA must include operation-level summary');
+assert.match(ceoHtml,/id=["']xiaOperationAlerts["']/,'XIA must include operation-level alerts');
+assert.match(ceoHtml,/id=["']xiaFeedback["']/,'XIA must include a 7-day feedback block');
+assert.match(ceo,/async function renderXiaOperation\(/,'XIA must analyze the operation in one place');
+assert.match(ceo,/function xiaPersonSignal\(/,'XIA must combine performance presence and leadership signals');
+assert.match(ceo,/function xiaFeedbackSummary\(/,'XIA must compare the last 7 days with the previous period');
+assert.match(ceoCss,/\.xia-command-center/,'unified XIA needs dedicated operation styling');
