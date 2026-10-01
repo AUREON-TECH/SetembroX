@@ -174,11 +174,11 @@
     const email=ctx.user.email||'';
     if($('authUserName'))$('authUserName').textContent=name;
     if($('authUserEmail'))$('authUserEmail').textContent=email;
-    const isCeo=ctx.access.role==='ceo';
+    const canManage=['ceo','manager'].includes(ctx.access.role);
     const ceo=$('ceoPortalLink');
-    if(ceo)ceo.hidden=!isCeo;
+    if(ceo)ceo.hidden=!canManage;
     const entryCeo=$('entryCeoPortal');
-    if(entryCeo)entryCeo.hidden=!isCeo;
+    if(entryCeo)entryCeo.hidden=!canManage;
     window.RAIOX_AUTH={user:ctx.user,access:ctx.access,session:ctx.session,signOut};
     window.dispatchEvent(new CustomEvent('raiox:authenticated',{detail:window.RAIOX_AUTH}));
   }
