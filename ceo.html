@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#060a18">
 <title>RAIO X • Portal de Gestão</title>
 <link rel="icon" href="./icon.svg">
-<link rel="stylesheet" href="./ceo.css?v=10">
+<link rel="stylesheet" href="./ceo.css?v=11">
 </head>
 <body>
 <div id="ceoLoading" class="ceo-loading"><div class="loader-mark">RX</div><b>Validando acesso de gestão...</b></div>
@@ -155,6 +155,24 @@
     </section>
 
     <section id="xia" class="ceo-tab">
+      <div class="panel xia-ask-panel">
+        <div class="panel-head">
+          <div><span class="eyebrow">PERGUNTE AO RAIO X</span><h2>Consulta de gestão</h2><p>Pergunte sobre um profissional, uma semana, o mês, presença, metas ou quem merece atenção.</p></div>
+          <span class="pill">responde com a base real</span>
+        </div>
+        <div class="xia-ask-form">
+          <input id="raioQuestion" placeholder="Ex.: Como foi a última semana do Clacion?">
+          <button id="askRaioBtn" class="primary">Perguntar</button>
+        </div>
+        <div class="xia-ask-suggestions">
+          <button data-raio-question="Quem precisa de atenção?">Quem precisa de atenção?</button>
+          <button data-raio-question="Quem está com baixa conversão?">Baixa conversão</button>
+          <button data-raio-question="Quem melhorou nos últimos 7 dias?">Quem melhorou?</button>
+          <button data-raio-question="Quem caiu nos últimos 7 dias?">Quem caiu?</button>
+        </div>
+        <div id="raioAnswer" class="raio-answer"><span>Faça uma pergunta para começar.</span></div>
+      </div>
+
       <div class="panel xia-command-center">
         <div class="panel-head">
           <div><span class="eyebrow">XIA • CENTRAL DE INTELIGÊNCIA</span><h2>Diagnóstico da operação</h2><p>Uma única leitura para descobrir quem precisa de atenção, por qual evidência e qual deve ser o próximo acompanhamento.</p></div>
@@ -289,6 +307,6 @@
 <script src="./area-data.js"></script>
 <script src="./fx-data.js"></script>
 <script src="./xia-performance.js?v=2"></script>
-<script src="./ceo.js?v=12"></script>
+<script src="./ceo.js?v=13"></script>
 </body>
 </html>
