@@ -970,15 +970,53 @@ async function savePerson(){
     const email=$('personEmail').value.trim();
     const password=$('personPassword').value;
     if(!id&&email&&password){
-      if(password.length<6)throw new Error('A senha inicial precisa ter pelo menos 6 caracteres.');
+      if(password.length<8)throw new Error('A senha inicial precisa ter pelo menos 8 caracteres.');
       await adminAction('create_user',{person_id:personId,display_name:name,email,password});
     }
 
     state.people=await rest('ceo_people?select=*&order=full_name.asc');
-    await loadGoals(); await loadApprovals(); fillPeopleSelects(); renderPeople(); renderToday(); await renderProfessionalProfile(); closePersonModal();
+    await loadGoals(); await loadApprovals();
+    const savedPerson=personById(personId);
+    if(savedPerson?.email){
+      await syncAccessLinkForPerson(savedPerson);
+      await loadApprovals();
+    }
+    fillPeopleSelects(); renderPeople(); renderToday(); await renderProfessionalProfile(); closePersonModal();
     toast('Cadastro salvo.');
   }catch(err){toast(err.message,true);}
   finally{$('savePersonBtn').disabled=false;}
+}
+async function syncAccessLinkForPerson(person){
+  if(!person?.id)return;
+  const email=norm(person.email);
+  if(!email)return;
+  const access=(state.approvals||[]).find(a=>norm(a.email)===email);
+  if(!access?.user_id)return;
+  if(access.person_id===person.id)return;
+  await rest('raiox_app_users?user_id=eq.'+encodeURIComponent(access.user_id),{
+    method:'PATCH',
+    headers:{Prefer:'return=minimal'},
+    body:JSON.stringify({person_id:person.id,updated_at:new Date().toISOString()})
+  });
+}
+async function disableAccessForPerson(person,{detach=false}={}){
+  if(!person?.id)return;
+  const approvals=state.approvals||[];
+  const byPerson=approvals.find(a=>a.person_id===person.id);
+  const email=norm(person.email);
+  const byEmail=email?approvals.find(a=>norm(a.email)===email):null;
+  const access=byPerson||byEmail;
+  const body={active:false,approval_status:'rejected',updated_at:new Date().toISOString()};
+  if(detach)body.person_id=null;
+  if(access?.user_id){
+    await rest('raiox_app_users?user_id=eq.'+encodeURIComponent(access.user_id),{
+      method:'PATCH',headers:{Prefer:'return=minimal'},body:JSON.stringify(body)
+    });
+    return;
+  }
+  await rest('raiox_app_users?person_id=eq.'+person.id,{
+    method:'PATCH',headers:{Prefer:'return=minimal'},body:JSON.stringify(body)
+  });
 }
 async function endPerson(id){
   const p=personById(id); if(!p)return;
@@ -987,7 +1025,7 @@ async function endPerson(id){
   if(!confirm('Distratar '+p.full_name+'? O histórico será preservado.'))return;
   try{
     await rest('ceo_people?id=eq.'+id,{method:'PATCH',headers:{Prefer:'return=minimal'},body:JSON.stringify({status:'ended',ended_on:localDate(),end_reason:reason||null,updated_at:new Date().toISOString()})});
-    await rest('raiox_app_users?person_id=eq.'+id,{method:'PATCH',headers:{Prefer:'return=minimal'},body:JSON.stringify({active:false,approval_status:'rejected',updated_at:new Date().toISOString()})});
+    await disableAccessForPerson(p);
     state.people=await rest('ceo_people?select=*&order=full_name.asc');
     await loadApprovals(); fillPeopleSelects(); renderPeople(); renderToday(); await renderProfessionalProfile();
     toast('Profissional movido para Distratados.');
@@ -997,7 +1035,7 @@ async function deletePerson(id){
   const p=personById(id); if(!p)return;
   if(!confirm('Excluir definitivamente o cadastro de '+p.full_name+'? Use apenas para quem não faz parte da operação ou foi cadastrado por engano.'))return;
   try{
-    await rest('raiox_app_users?person_id=eq.'+id,{method:'PATCH',headers:{Prefer:'return=minimal'},body:JSON.stringify({active:false,approval_status:'rejected',person_id:null,updated_at:new Date().toISOString()})});
+    await disableAccessForPerson(p,{detach:true});
     await rest('ceo_people?id=eq.'+id,{method:'DELETE',headers:{Prefer:'return=minimal'}});
     state.people=await rest('ceo_people?select=*&order=full_name.asc');
     await loadGoals(); await loadApprovals(); fillPeopleSelects(); renderPeople(); renderToday(); await renderProfessionalProfile();
@@ -1018,7 +1056,7 @@ async function openAccessForPerson(personId){
   }
   const email=p.email||prompt('E-mail de acesso de '+p.full_name+':','');
   if(!email)return;
-  const password=prompt('Senha inicial (mínimo 6 caracteres):','');
+  const password=prompt('Senha inicial (mínimo 8 caracteres):','');
   if(!password)return;
   try{
     await adminAction('create_user',{person_id:p.id,display_name:p.full_name,email,password});
@@ -1027,9 +1065,9 @@ async function openAccessForPerson(personId){
   }catch(err){toast(err.message,true);}
 }
 async function resetPassword(userId,name='usuário'){
-  const password=prompt('Nova senha para '+name+' (mínimo 6 caracteres):','');
+  const password=prompt('Nova senha para '+name+' (mínimo 8 caracteres):','');
   if(password===null)return;
-  if(password.length<6){toast('A senha precisa ter pelo menos 6 caracteres.',true);return;}
+  if(password.length<8){toast('A senha precisa ter pelo menos 8 caracteres.',true);return;}
   try{await adminAction('reset_password',{user_id:userId,password});toast('Senha alterada com sucesso.');}
   catch(err){toast(err.message,true);}
 }
