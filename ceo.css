@@ -297,3 +297,39 @@ textarea{font-size:12px}
 .raio-answer-card small{display:block;color:#18e7ff;font-size:7px;font-weight:950;letter-spacing:.09em}.raio-answer-card p{margin:7px 0 0;color:#9aacca;font-size:10px;line-height:1.6}.raio-answer-card p b{color:#eef7ff}.raio-answer-card>span{display:block;margin-top:8px;color:#6f83a8;font-size:7px}
 .raio-answer-loading{color:#8ca0c4;font-size:9px}
 @media(max-width:700px){.xia-ask-form{grid-template-columns:1fr}.xia-ask-form button{width:100%}}
+
+
+/* Profissionais • uma função por vez */
+.profession-switch{
+  display:inline-flex;
+  gap:3px;
+  margin-top:10px;
+  padding:3px;
+  border:1px solid rgba(255,255,255,.07);
+  border-radius:11px;
+  background:rgba(255,255,255,.02);
+}
+.profession-switch button{
+  height:30px;
+  padding:0 12px;
+  border:0;
+  border-radius:8px;
+  background:transparent;
+  color:#778aae;
+  font-size:7px;
+  font-weight:950;
+  letter-spacing:.035em;
+  cursor:pointer;
+  transition:.18s ease;
+}
+.profession-switch button:hover{color:#c5d3ef;background:rgba(255,255,255,.025)}
+.profession-switch button.active{
+  color:#b7f8ff;
+  background:rgba(24,231,255,.08);
+  box-shadow:inset 0 0 0 1px rgba(24,231,255,.16);
+}
+.role-group.single-role{margin-top:4px}
+@media(max-width:620px){
+  .profession-switch{display:grid;grid-template-columns:repeat(3,1fr);width:100%}
+  .profession-switch button{padding:0 7px}
+}
