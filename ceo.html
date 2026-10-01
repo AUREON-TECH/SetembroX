@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#060a18">
 <title>RAIO X • Portal de Gestão</title>
 <link rel="icon" href="./icon.svg">
-<link rel="stylesheet" href="./ceo.css?v=6">
+<link rel="stylesheet" href="./ceo.css?v=7">
 </head>
 <body>
 <div id="ceoLoading" class="ceo-loading"><div class="loader-mark">RX</div><b>Validando acesso de gestão...</b></div>
@@ -44,6 +44,12 @@
         </div>
         <div class="toolbar today-toolbar">
           <label>Data<input id="todayDate" type="date"></label>
+          <label>Área<select id="todayArea">
+            <option value="all">Todos</option>
+            <option value="promotor">Promotor de Marketing</option>
+            <option value="liner">Liner / Consultor</option>
+            <option value="closer">Closer / Fechador</option>
+          </select></label>
           <button id="reloadToday" class="ghost">Atualizar</button>
           <button id="markAllPresentBtn" class="ghost success">Todos presentes</button>
           <button id="saveDayBtn" class="primary">Salvar o dia</button>
@@ -223,6 +229,6 @@
 <script src="./area-data.js"></script>
 <script src="./fx-data.js"></script>
 <script src="./xia-performance.js?v=2"></script>
-<script src="./ceo.js?v=8"></script>
+<script src="./ceo.js?v=9"></script>
 </body>
 </html>
