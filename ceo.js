@@ -1036,53 +1036,16 @@ async function resetPassword(userId,name='usuário'){
 
 async function loadApprovals(){
   try{
-    const [accessRows,preapprovedRows]=await Promise.all([
-      rest('raiox_app_users?select=user_id,person_id,display_name,email,role,active,approval_status,requested_at,approved_at,created_at&order=requested_at.desc.nullslast,created_at.desc'),
-      rest('approved_users?select=email,name,role,approved&approved=eq.true&order=name.asc')
-    ]);
-    const byEmail=new Map();
-    (accessRows||[]).forEach(row=>{
-      const key=norm(row.email);
-      if(key)byEmail.set(key,{...row,preapproved:false});
-    });
-    (preapprovedRows||[]).forEach(invite=>{
-      const key=norm(invite.email);
-      if(!key)return;
-      const existing=byEmail.get(key);
-      if(existing){
-        byEmail.set(key,{
-          ...existing,
-          display_name:existing.display_name||invite.name||existing.email,
-          role:existing.role||invite.role||'member',
-          preapproved:true
-        });
-      }else{
-        byEmail.set(key,{
-          user_id:null,
-          person_id:null,
-          display_name:invite.name||invite.email,
-          email:invite.email,
-          role:invite.role||'member',
-          active:true,
-          approval_status:'approved',
-          requested_at:null,
-          approved_at:null,
-          created_at:null,
-          preapproved:true,
-          awaiting_signup:true
-        });
-      }
-    });
-    state.approvals=[...byEmail.values()];
+    state.approvals=await rest('raiox_app_users?select=user_id,person_id,display_name,email,role,active,approval_status,requested_at,approved_at,created_at&order=requested_at.desc.nullslast,created_at.desc');
     state.approvalsLoadError='';
   }catch(err){
     state.approvals=[];
     state.approvalsLoadError=err?.message||'Não foi possível carregar as aprovações.';
     toast('Não foi possível carregar as aprovações.',true);
   }
-  if(!state.approvalsLoadError)state.approvalsLoadError='';
   renderApprovals();
 }
+
 function approvalLabel(status){return status==='approved'?'Aprovado':status==='rejected'?'Recusado':'Aguardando';}
 function renderApprovals(){
   const rows=state.approvals||[];
@@ -1097,44 +1060,43 @@ function renderApprovals(){
     if($('approvalsList'))$('approvalsList').innerHTML='<div class="approval-empty error">Falha ao carregar os acessos. Clique em <b>Atualizar</b> para tentar novamente.</div>';
     return;
   }
-  const pending=rows.filter(x=>!x.awaiting_signup&&(x.approval_status==='pending'||(!x.active&&x.approval_status!=='rejected')));
-  const approved=rows.filter(x=>(x.approval_status==='approved'&&x.active)||x.awaiting_signup);
+
+  const pending=rows.filter(x=>x.approval_status==='pending'||(!x.active&&x.approval_status!=='rejected'));
+  const approved=rows.filter(x=>x.approval_status==='approved'&&x.active);
   const rejected=rows.filter(x=>x.approval_status==='rejected');
   const badge=$('approvalBadge');
   if(badge){badge.textContent=pending.length;badge.hidden=pending.length===0;}
+
   if($('approvalSummary'))$('approvalSummary').innerHTML=[
     ['Aguardando',pending.length,'precisam da sua decisão'],
-    ['Aprovados',approved.length,'ativos ou pré-aprovados'],
+    ['Aprovados',approved.length,'podem entrar'],
     ['Recusados/Bloqueados',rejected.length,'sem acesso']
   ].map(x=>'<div class="summary-card"><small>'+x[0]+'</small><b>'+x[1]+'</b><span>'+x[2]+'</span></div>').join('');
 
   if(!$('approvalsList'))return;
   const ordered=[...pending,...approved,...rejected.filter(x=>!pending.includes(x)&&!approved.includes(x))];
   $('approvalsList').innerHTML=ordered.length?ordered.map(x=>{
-    const isPending=!x.awaiting_signup&&(x.approval_status==='pending'||(!x.active&&x.approval_status!=='rejected'));
-    const cls=isPending?'pending':(x.active||x.awaiting_signup)?'approved':'rejected';
+    const isPending=x.approval_status==='pending'||(!x.active&&x.approval_status!=='rejected');
+    const cls=isPending?'pending':x.active?'approved':'rejected';
     const when=x.requested_at||x.created_at||'';
-    const statusText=x.awaiting_signup?'Pré-aprovado':approvalLabel(isPending?'pending':x.approval_status);
-    const statusDetail=x.awaiting_signup?'aguardando primeiro acesso':(when?new Date(when).toLocaleString('pt-BR'):'acesso ativo');
     return '<div class="approval-card '+cls+'">'+
       '<div class="approval-person"><span class="approval-dot"></span><div><b>'+esc(x.display_name||'Usuário')+'</b><small>'+esc(x.email||'E-mail não informado')+(x.role?' • '+esc(x.role):'')+'</small></div></div>'+
-      '<div class="approval-meta"><span>'+esc(statusText)+'</span><small>'+esc(statusDetail)+'</small></div>'+
+      '<div class="approval-meta"><span>'+approvalLabel(isPending?'pending':x.approval_status)+'</span><small>'+(when?new Date(when).toLocaleString('pt-BR'):'acesso ativo')+'</small></div>'+
       '<div class="approval-actions">'+
-      (x.awaiting_signup
-        ?'<span class="approval-awaiting">Aguardando cadastro</span>'
-        :isPending
-          ?'<button class="approve" data-approve="'+x.user_id+'">Aprovar</button><button class="reject" data-reject="'+x.user_id+'">Recusar</button>'
-          :x.active
-            ?'<button data-pass="'+x.user_id+'" data-pass-name="'+esc(x.display_name||'usuário')+'">Alterar senha</button><button class="reject" data-revoke="'+x.user_id+'">Bloquear</button>'
-            :'<button class="approve" data-approve="'+x.user_id+'">Reaprovar</button>')+
+      (isPending
+        ?'<button class="approve" data-approve="'+x.user_id+'">Aprovar</button><button class="reject" data-reject="'+x.user_id+'">Recusar</button>'
+        :x.active
+          ?'<button data-pass="'+x.user_id+'" data-pass-name="'+esc(x.display_name||'usuário')+'">Alterar senha</button><button class="reject" data-revoke="'+x.user_id+'">Bloquear</button>'
+          :'<button class="approve" data-approve="'+x.user_id+'">Reaprovar</button>')+
       '</div></div>';
-  }).join(''):'<div class="approval-empty">Nenhuma solicitação de acesso encontrada.</div>';
+  }).join(''):'<div class="approval-empty">Nenhuma conta ou solicitação de acesso encontrada.</div>';
 
   document.querySelectorAll('[data-approve]').forEach(b=>b.onclick=()=>approveAccess(b.dataset.approve,true));
   document.querySelectorAll('[data-reject]').forEach(b=>b.onclick=()=>approveAccess(b.dataset.reject,false));
   document.querySelectorAll('[data-revoke]').forEach(b=>b.onclick=()=>revokeAccess(b.dataset.revoke));
   document.querySelectorAll('[data-pass]').forEach(b=>b.onclick=()=>resetPassword(b.dataset.pass,b.dataset.passName));
 }
+
 async function approveAccess(userId,approve){
   try{
     if(approve){
