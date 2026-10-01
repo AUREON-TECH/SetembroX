@@ -127,3 +127,11 @@ assert.match(ceo,/async function renderXiaOperation\(/,'XIA must analyze the ope
 assert.match(ceo,/function xiaPersonSignal\(/,'XIA must combine performance presence and leadership signals');
 assert.match(ceo,/function xiaFeedbackSummary\(/,'XIA must compare the last 7 days with the previous period');
 assert.match(ceoCss,/\.xia-command-center/,'unified XIA needs dedicated operation styling');
+
+assert.match(ceoHtml,/data-report-period=["']week["']/,'reports must support weekly Raio-X');
+assert.match(ceoHtml,/data-report-period=["']month["']/,'reports must support monthly Raio-X');
+assert.match(ceoHtml,/id=["']copyReportBtn["']/,'reports must be copyable for meetings');
+assert.match(ceo,/function reportDateRange\(/,'reports must calculate weekly and monthly date ranges');
+assert.match(ceo,/function reportAreaStats\(/,'reports must calculate performance by operational area');
+assert.match(ceo,/async function copyReport\(/,'reports must expose a ready-to-copy executive summary');
+assert.match(ceoCss,/\.report-period-switch/,'weekly/monthly switch must have dedicated styling');
