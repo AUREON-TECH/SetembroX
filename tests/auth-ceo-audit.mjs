@@ -149,3 +149,12 @@ assert.match(ceo,/function recentVolumeDrop\(/,'smart alerts must detect recent 
 assert.match(ceo,/function roleCostBenchmark\(/,'smart alerts must compare cost against the area benchmark');
 assert.match(ceo,/function goalPaceSignal\(/,'smart alerts must detect goal pace risk');
 assert.match(ceo,/function lastSevenPresenceCounts\(/,'smart alerts must detect recurring recent lateness');
+
+assert.match(ceoHtml,/data-profession-area=["']promotor["']/,'professional directory must expose Promotor filter');
+assert.match(ceoHtml,/data-profession-area=["']liner["']/,'professional directory must expose Liner filter');
+assert.match(ceoHtml,/data-profession-area=["']closer["']/,'professional directory must expose Closer filter');
+assert.match(ceo,/professionalArea:'promotor'/,'professional directory must default to Promotor');
+assert.match(ceo,/function professionalWorkingPeople\(/,'professional profile selector must be filtered by selected profession');
+assert.match(ceo,/function professionalListedPeople\(/,'professional directory must show one profession at a time');
+assert.match(ceo,/function professionalAreaKeyForRole\(/,'opening a professional from another module must switch to the correct profession');
+assert.match(ceoCss,/\.profession-switch/,'profession selector must have dedicated styling');
