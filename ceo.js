@@ -1510,18 +1510,9 @@ function lastSevenPresenceCounts(presenceRows,personId){
   };
 }
 
-function xiaPersonSignal(p,presenceRows=[]){
+function xiaPersonSignal(p,presenceRows=[],preferredRole=''){
   const perf=perfForPerson(p);
-  const roleOptions=(perf?.roles||[]).map(r=>r.role);
-  let selectedXiaRole=state.xiaRole;
-  if(!roleOptions.some(r=>norm(r)===norm(selectedXiaRole)))selectedXiaRole=roleOptions[0]||roleOf(p);
-  state.xiaRole=selectedXiaRole;
-  if($('xiaRole')){
-    $('xiaRole').hidden=roleOptions.length<2;
-    $('xiaRole').innerHTML=roleOptions.map(r=>'<option value="'+esc(r)+'">'+esc(r)+'</option>').join('');
-    if(roleOptions.length)$('xiaRole').value=selectedXiaRole;
-  }
-  const primary=choosePrimaryPerf(p,perf,selectedXiaRole);
+  const primary=choosePrimaryPerf(p,perf,preferredRole);
   const sameMonth=perfMonthMatches();
   const reasons=[];
   let level=0;
@@ -1632,13 +1623,14 @@ async function renderXiaOperation(){
 
   $('xiaOperationAlerts').innerHTML=signals.length?signals.slice(0,10).map(x=>{
     const sev=x.level===3?'critical':x.level===2?'warn':'info';
-    return '<button class="xia-operation-person '+sev+'" data-xia-operation-person="'+x.p.id+'">'+
+    return '<button class="xia-operation-person '+sev+'" data-xia-operation-person="'+x.p.id+'" data-xia-operation-role="'+esc(x.role||'')+'">'+
       '<div><span>'+ (x.level===3?'CRÍTICO':x.level===2?'ATENÇÃO':'ACOMPANHAR') +'</span><b>'+esc(x.p.full_name)+'</b><small>'+esc(x.role||roleOf(x.p))+'</small></div>'+
       '<p>'+x.reasons.map(esc).join(' • ')+'</p><strong>Ver Raio-X →</strong></button>';
   }).join(''):'<div class="xia-empty">Nenhum sinal relevante pelos critérios atuais.</div>';
 
   document.querySelectorAll('[data-xia-operation-person]').forEach(b=>b.onclick=()=>{
     $('xiaPerson').value=b.dataset.xiaOperationPerson;
+    state.xiaRole=b.dataset.xiaOperationRole||'';
     renderXIA();
     $('xiaIdentity')?.scrollIntoView({behavior:'smooth',block:'start'});
   });
@@ -1683,7 +1675,18 @@ async function renderXIA(){
   const tasks=state.tasks.filter(x=>x.person_id===personId);
   const agenda=state.agenda.filter(x=>x.person_id===personId);
   const perf=perfForPerson(p);
-  const primary=choosePrimaryPerf(p,perf);
+  const roleOptions=(perf?.roles||[]).map(r=>r.role);
+  let selectedXiaRole=state.xiaRole;
+  if(!roleOptions.some(r=>norm(r)===norm(selectedXiaRole))){
+    selectedXiaRole=roleOptions[0]||roleOf(p);
+  }
+  state.xiaRole=selectedXiaRole;
+  if($('xiaRole')){
+    $('xiaRole').hidden=roleOptions.length<2;
+    $('xiaRole').innerHTML=roleOptions.map(r=>'<option value="'+esc(r)+'">'+esc(r)+'</option>').join('');
+    if(roleOptions.length)$('xiaRole').value=selectedXiaRole;
+  }
+  const primary=choosePrimaryPerf(p,perf,selectedXiaRole);
   const sameMonth=perfMonthMatches();
   const consistency=dailyConsistency(primary);
 
