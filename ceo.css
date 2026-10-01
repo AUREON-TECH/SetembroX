@@ -333,3 +333,18 @@ textarea{font-size:12px}
   .profession-switch{display:grid;grid-template-columns:repeat(3,1fr);width:100%}
   .profession-switch button{padding:0 7px}
 }
+
+
+/* Outubro • metas, presença confirmada e multifunção */
+.month-goals-strip{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}
+.month-goal-card{padding:12px 14px;border:1px solid rgba(255,255,255,.07);border-radius:14px;background:rgba(255,255,255,.018)}
+.month-goal-head{display:flex;justify-content:space-between;gap:8px;align-items:center}.month-goal-head small{color:#8497ba;font-size:7px;font-weight:950;letter-spacing:.1em}.month-goal-head span{font-size:6px;font-weight:950;letter-spacing:.08em;color:#7e91b6}
+.month-goal-card>b{display:block;margin-top:8px;font-size:18px}.month-goal-card p{margin:4px 0 8px;color:#7d90b4;font-size:7px}
+.month-goal-progress{height:5px;border-radius:99px;background:rgba(255,255,255,.05);overflow:hidden}.month-goal-progress i{display:block;height:100%;background:linear-gradient(90deg,#18e7ff,#6b7cff)}
+.month-goal-card.hit{border-color:rgba(82,240,166,.18)}.month-goal-card.hit .month-goal-head span{color:#7ff0bb}
+.month-goal-card.super{border-color:rgba(255,212,119,.22);background:rgba(255,212,119,.025)}.month-goal-card.super .month-goal-head span{color:#ffd477}
+.month-goal-card.waiting .month-goal-head span{color:#94a4c3}
+.month-goal-modal-card{max-width:760px}.goal-form-section{padding:12px 0;border-top:1px solid rgba(255,255,255,.06)}.goal-form-title{display:flex;align-items:baseline;gap:8px;margin-bottom:10px}.goal-form-title b{font-size:10px;color:#18e7ff}.goal-form-title span{font-size:8px;color:#788bae}.goal-form-section.super .goal-form-title b{color:#ffd477}
+.presence-head-pills{display:flex;gap:6px;align-items:center}.pill.unsaved{color:#ffd17b;border-color:rgba(255,189,74,.2)}.pill.partial{color:#8fdfff;border-color:rgba(24,231,255,.18)}.pill.saved{color:#7ff0bb;border-color:rgba(82,240,166,.2)}
+.xia-controls #xiaRole{min-width:170px}
+@media(max-width:760px){.month-goals-strip{grid-template-columns:1fr}.month-box{flex-wrap:wrap}.month-box button{flex:1}}
