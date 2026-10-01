@@ -137,6 +137,15 @@
       });
     }
     if($('monthCurrentLabel'))$('monthCurrentLabel').textContent=month.label+(historical?' • fechado':'');
+    if(!historical){
+      const projectionHead=document.querySelector('#rank thead th:nth-child(10)');
+      if(projectionHead)projectionHead.textContent='Proj. '+month.label;
+      const weekTitle=$('radarWeekTitle');
+      const weekRange=weekTitle?.parentElement?.querySelector('span');
+      if(weekRange)weekRange.textContent=month.label;
+      const rankStatus=$('rankStatusHead');
+      if(rankStatus&&areaRole()!=='Promotor de Marketing')rankStatus.textContent='Dias ativos';
+    }
   }
 
   function fillMonthSelector(months,selectedRef){
