@@ -237,7 +237,6 @@
     };
     metric.onchange=render;render();
   }
-  function fmtMoneyFull(v){return 'R$ '+Intl.NumberFormat('pt-BR',{maximumFractionDigits:0}).format(num(v));}
   function dynamicIndividual(month,people){
     const sel=$('sel'),psel=$('psel'),dsel=$('dsel');if(!sel)return;
     const options=people.map(p=>'<option value="'+esc(p.n)+'">'+esc(p.n)+'</option>').join('');
