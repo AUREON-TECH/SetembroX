@@ -5,7 +5,7 @@ const $=id=>document.getElementById(id);
 const state={
   session:null,user:null,admin:null,
   months:[],month:null,people:[],teams:[],assignments:[],
-  presence:[],one:[],tasks:[],approvals:[],agenda:[],goals:[]
+  presence:[],one:[],tasks:[],approvals:[],agenda:[],goals:[],todayArea:'all'
 };
 const TITLES={
   today:['Hoje','Pulso executivo da operação: performance, presença e atenção.'],
@@ -158,28 +158,49 @@ function performanceUpdatedMonth(){
 function performanceAvailableForDate(date){
   return Boolean(date&&performanceUpdatedMonth()===String(date).slice(0,7));
 }
+const TODAY_AREA_ROLES={
+  promotor:'Promotor de Marketing',
+  liner:'Liner / Consultor',
+  closer:'Closer / Fechador'
+};
+function todayAreaRole(){return TODAY_AREA_ROLES[state.todayArea]||null;}
+function personMatchesTodayArea(p){
+  const role=todayAreaRole();
+  return !role||norm(roleOf(p))===norm(role);
+}
+function todayWorkingPeople(){return workingPeople().filter(personMatchesTodayArea);}
 function performanceRoles(roleName='Promotor de Marketing'){
   return (window.XIA_PERFORMANCE?.people||[])
     .flatMap(person=>(person.roles||[]).map(role=>({name:person.name,...role})))
     .filter(x=>norm(x.role)===norm(roleName));
 }
-function performanceDay(date){
+function areaPerformanceDay(date,roleName){
   if(!performanceAvailableForDate(date))return null;
   const day=Math.max(1,Number(String(date).slice(8,10)||1));
-  const roles=performanceRoles('Promotor de Marketing');
+  const roles=performanceRoles(roleName);
   const people=[];
   const total={c:0,s:0,v:0,q:0,nq:0,g:0};
   roles.forEach(r=>{
     const row=r.daily?.[day-1]||[0,0,0,0,0];
-    const item={name:r.name,c:Number(row[0]||0),s:Number(row[1]||0),v:Number(row[2]||0),q:Number(row[3]||0),nq:Number(row[4]||0),g:0,month:r};
+    const item={name:r.name,c:Number(row[0]||0),s:Number(row[1]||0),v:Number(row[2]||0),q:Number(row[3]||0),nq:Number(row[4]||0),g:0,month:r,role:r.role};
     people.push(item);
     total.c+=item.c; total.s+=item.s; total.v+=item.v; total.q+=item.q; total.nq+=item.nq;
   });
-  return {day,total,people,updated:window.XIA_PERFORMANCE?.updated||'—'};
+  return {day,total,people,role:roleName,updated:window.XIA_PERFORMANCE?.updated||'—'};
 }
-function performanceMonth(){
-  if(!state.month||performanceUpdatedMonth()!==state.month.ref_month.slice(0,7))return null;
-  const roles=performanceRoles('Promotor de Marketing');
+function performanceDay(date){
+  const role=todayAreaRole();
+  if(role)return areaPerformanceDay(date,role);
+  if(!performanceAvailableForDate(date))return null;
+  return {
+    mode:'all',
+    updated:window.XIA_PERFORMANCE?.updated||'—',
+    areas:Object.entries(TODAY_AREA_ROLES).map(([key,label])=>({key,label,data:areaPerformanceDay(date,label)}))
+  };
+}
+function performanceMonth(roleName=todayAreaRole()){
+  if(!roleName||!state.month||performanceUpdatedMonth()!==state.month.ref_month.slice(0,7))return null;
+  const roles=performanceRoles(roleName);
   return roles.reduce((a,r)=>{
     a.c+=Number(r.c||0);a.s+=Number(r.s||0);a.v+=Number(r.v||0);a.q+=Number(r.q||0);a.nq+=Number(r.nq||0);a.g+=Number(r.g||0);
     return a;
@@ -197,11 +218,14 @@ function todayAttention(perf){
     else if(status==='left_early')alerts.push({level:'warn',title:p.full_name,text:'Saiu antes do horário combinado.',tag:'HORÁRIO'});
     else if(status==='unavailable')alerts.push({level:'info',title:p.full_name,text:'Está marcado como indisponível.',tag:'DISPONIBILIDADE'});
   });
-  if(perf){
-    perf.people.filter(x=>x.c>=2&&x.s===0).sort((a,b)=>b.c-a.c).slice(0,4).forEach(x=>{
+  const perfPeople=perf?.mode==='all'
+    ? perf.areas.flatMap(a=>(a.data?.people||[]).map(x=>({...x,areaLabel:a.label})))
+    : (perf?.people||[]);
+  if(perfPeople.length){
+    perfPeople.filter(x=>x.c>=2&&x.s===0).sort((a,b)=>b.c-a.c).slice(0,4).forEach(x=>{
       alerts.push({level:'warn',title:x.name,text:x.c+' casais hoje e nenhuma venda registrada.',tag:'CONVERSÃO'});
     });
-    perf.people.filter(x=>x.c>=2&&x.q/Math.max(x.c,1)<.5).sort((a,b)=>b.c-a.c).slice(0,3).forEach(x=>{
+    perfPeople.filter(x=>x.c>=2&&x.q/Math.max(x.c,1)<.5).sort((a,b)=>b.c-a.c).slice(0,3).forEach(x=>{
       alerts.push({level:'info',title:x.name,text:'Qualificação de '+pct(x.q/Math.max(x.c,1)*100)+' hoje ('+x.q+' Q em '+x.c+').',tag:'QUALIFICAÇÃO'});
     });
   }
@@ -220,17 +244,27 @@ function renderTodayExecutive(){
   if($('todayPerformance')){
     if(!perf){
       $('todayPerformance').innerHTML='<div class="today-data-empty"><b>Performance do período ainda não carregada</b><span>Presença e gestão continuam disponíveis. Base XIA: '+esc(window.XIA_PERFORMANCE?.updated||'—')+'.</span></div>';
+    }else if(perf.mode==='all'){
+      const cards=perf.areas.map((a,i)=>{
+        const t=a.data?.total||{c:0,s:0,v:0};
+        const conv=t.c?t.s/t.c*100:0;
+        const volumeLabel=a.key==='promotor'?'casais':'atendimentos';
+        return [a.label,t.c+' / '+t.s,volumeLabel+' / vendas • '+pct(conv),['cyan','blue','violet'][i]||'cyan'];
+      });
+      cards.push(['Visão de gestão',todayWorkingPeople().length+' pessoas','Todas as áreas • base '+perf.updated,'gold']);
+      $('todayPerformance').innerHTML=cards.map(x=>'<div class="today-kpi '+x[3]+'"><small>'+x[0]+'</small><b>'+x[1]+'</b><span>'+x[2]+'</span></div>').join('');
     }else{
       const t=perf.total;
       const conv=t.c?t.s/t.c*100:0;
       const qual=t.c?t.q/t.c*100:0;
       const monthConv=month?.c?month.s/month.c*100:0;
+      const volumeLabel=state.todayArea==='promotor'?'Casais':'Atendimentos';
       $('todayPerformance').innerHTML=[
-        ['Casais hoje',t.c,'volume da captação','cyan'],
+        [volumeLabel+' hoje',t.c,'volume da área','cyan'],
         ['Vendas hoje',t.s,pct(conv)+' conversão','green'],
         ['VGV hoje',money(t.v),month?'Mês '+money(month.v):'base '+perf.updated,'violet'],
         ['Q / NQ',t.q+' / '+t.nq,pct(qual)+' qualificação','blue'],
-        ['Mês acumulado',month?month.c+' / '+month.s:'—',month?('casais / vendas • '+pct(monthConv)):'sem base','gold']
+        ['Mês acumulado',month?month.c+' / '+month.s:'—',month?(volumeLabel.toLowerCase()+' / vendas • '+pct(monthConv)):'sem base','gold']
       ].map(x=>'<div class="today-kpi '+x[3]+'"><small>'+x[0]+'</small><b>'+x[1]+'</b><span>'+x[2]+'</span></div>').join('');
     }
   }
@@ -264,8 +298,9 @@ function updateTodaySummaryFromRows(){
   renderTodayExecutive();
 }
 function renderToday(){
-  const people=workingPeople();
-  $('todayCount').textContent=people.length+' pessoas';
+  const people=todayWorkingPeople();
+  const areaLabel=state.todayArea==='all'?'Todas as áreas':(TODAY_AREA_ROLES[state.todayArea]||'Área');
+  $('todayCount').textContent=people.length+' pessoas • '+areaLabel;
   $('todayPeople').innerHTML=people.map(p=>{
     const rec=state.presence.find(x=>x.person_id===p.id)||{};
     const team=teamByPerson(p.id);
@@ -986,6 +1021,10 @@ function bind(){
   document.querySelectorAll('#ceoNav button').forEach(b=>b.onclick=()=>setTab(b.dataset.tab));
   $('monthSelect').onchange=()=>selectMonth($('monthSelect').value);
   $('todayDate').onchange=loadToday;
+  $('todayArea').onchange=()=>{
+    state.todayArea=$('todayArea').value||'all';
+    renderToday();
+  };
   $('reloadToday').onclick=loadToday;
   $('markAllPresentBtn').onclick=markAllPresent;
   $('saveDayBtn').onclick=saveDay;
@@ -1012,6 +1051,7 @@ async function init(){
     $('ceoUserName').textContent=state.admin.display_name||'CEO';
     $('ceoUserEmail').textContent=state.user.email||'';
     $('todayDate').value=localDate();
+    if($('todayArea')){$('todayArea').value=state.todayArea;}
     $('oneDate').value=localDate();
     if($('agendaDate'))$('agendaDate').value=localDate();
     bind(); await loadBase();
