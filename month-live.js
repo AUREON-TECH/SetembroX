@@ -59,7 +59,7 @@
         goalCard('violet-goal','↗','VGV',a.vgv,num(month.goal_vgv),fmtMoney,'barVgv');
     }
     const label=document.querySelector('.mission-label b');
-    if(label)label.textContent='META OFICIAL • '+month.label.toUpperCase();
+    if(label)label.textContent='META OFICIAL • '+month.label.toUpperCase()+(month.status==='closed'?' • FECHADO':'');
 
     const leader=[...prom].sort((x,y)=>num(y.week_volume)-num(x.week_volume)||num(y.week_sales)-num(x.week_sales))[0];
     const monthLeader=[...prom].sort((x,y)=>num(y.couples)-num(x.couples)||num(y.sales)-num(x.sales))[0];
@@ -81,7 +81,7 @@
   }
 
   function currentMonthEmpty(month){
-    const empty='<div class="current-month-empty"><b>'+esc(month.label)+' iniciou</b>Nenhum resultado de performance foi lançado neste mês ainda.</div>';
+    const empty='<div class="current-month-empty"><b>'+(month.status==='closed'?'Histórico de '+esc(month.label):esc(month.label)+' iniciou')+'</b>'+(month.status==='closed'?'Nenhum resultado foi encontrado para este mês.':'Nenhum resultado de performance foi lançado neste mês ainda.')+'</div>';
     const goalR=num(month.goal_research),goalC=num(month.goal_couples),goalS=num(month.goal_sales),goalV=num(month.goal_vgv);
 
     if($('dk'))$('dk').innerHTML=[
@@ -123,29 +123,55 @@
   }
 
   function updateCurrentMonthLabels(month){
+    const historical=month.status==='closed';
     const rankMini=document.querySelector('#rank .title .mini');
-    if(rankMini)rankMini.textContent='Base atual • '+month.label;
+    if(rankMini)rankMini.textContent=(historical?'Histórico':'Base atual')+' • '+month.label;
     const fxTitle=document.querySelector('.fx-daily-wrap .fx-title h3');
     if(fxTitle)fxTitle.textContent='Calendário de evidências • '+month.label;
     const foot=document.querySelector('aside .foot');
     if(foot){
-      [...foot.childNodes].forEach(n=>{if(n.nodeType===3&&/Base oficial/i.test(n.textContent||''))n.textContent='Base atual • '+month.label+' ';});
+      [...foot.childNodes].forEach(n=>{
+        if(n.nodeType===3&&/(Base oficial|Base atual|Histórico)/i.test(n.textContent||'')){
+          n.textContent=(historical?'Histórico':'Base atual')+' • '+month.label+' ';
+        }
+      });
     }
+    if($('monthCurrentLabel'))$('monthCurrentLabel').textContent=month.label+(historical?' • fechado':'');
+  }
+
+  function fillMonthSelector(months,selectedRef){
+    const select=$('monthCurrentSelect');
+    if(!select)return;
+    select.innerHTML=months.map(m=>'<option value="'+esc(m.ref_month)+'">'+esc(m.label)+(m.status==='closed'?' • fechado':'')+'</option>').join('');
+    select.value=selectedRef;
+    select.onchange=()=>{
+      try{sessionStorage.setItem('raiox.view.month.v1',select.value);}catch(_){}
+      location.reload();
+    };
   }
 
   async function load(ctx){
     if(!ctx?.session?.access_token||!cfg.url||!cfg.key)return;
     try{
       const token=ctx.session.access_token;
-      const months=await rest('ceo_months?select=ref_month,label,status,goal_research,goal_couples,goal_sales,goal_vgv,super_goal_research,super_goal_couples,super_goal_sales,super_goal_vgv&status=eq.open&order=ref_month.desc&limit=1',token);
-      const month=months?.[0]; if(!month)return;
+      const months=await rest('ceo_months?select=ref_month,label,status,goal_research,goal_couples,goal_sales,goal_vgv,super_goal_research,super_goal_couples,super_goal_sales,super_goal_vgv&order=ref_month.desc',token);
+      if(!months?.length)return;
+
+      let stored='';
+      try{stored=sessionStorage.getItem('raiox.view.month.v1')||'';}catch(_){}
+      const openMonth=months.find(m=>m.status==='open')||months[0];
+      const selectedRef=months.some(m=>m.ref_month===stored)?stored:openMonth.ref_month;
+      const month=months.find(m=>m.ref_month===selectedRef)||openMonth;
+
+      fillMonthSelector(months,month.ref_month);
+
       const rows=await rest('raiox_performance_records?select=professional_name,role,researches,couples,sales,vgv,q,nq,gifts,active_days,week_volume,week_sales,week_vgv,daily&ref_month=eq.'+encodeURIComponent(month.ref_month),token);
       updateGoalHero(month,rows||[]);
       updateCurrentMonthLabels(month);
       const selected=(rows||[]).filter(r=>r.role===areaRole());
       if(!selected.length)currentMonthEmpty(month);
     }catch(err){
-      console.error('RAIO X mês atual:',err);
+      console.error('RAIO X mês selecionado:',err);
     }
   }
 
