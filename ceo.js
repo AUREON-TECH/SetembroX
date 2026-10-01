@@ -1225,6 +1225,73 @@ async function answerRaioXQuestion(){
     'Os resultados usam apenas dados registrados no RAIO X'
   );
 }
+function xiaReferenceDate(){
+  const raw=window.XIA_PERFORMANCE?.updated||'';
+  const m=raw.match(/(\d{2})\/(\d{2})\/(\d{4})/);
+  return m?(m[3]+'-'+m[2]+'-'+m[1]):null;
+}
+function noSaleSequence(primary){
+  if(!primary?.daily?.length)return {volume:0,days:0};
+  const ref=Math.min(performanceReferenceDay()||primary.daily.length,primary.daily.length);
+  let volume=0,days=0;
+  for(let i=ref-1;i>=0;i--){
+    const row=primary.daily[i]||[0,0,0,0,0];
+    const c=Number(row[0]||0),s=Number(row[1]||0);
+    if(s>0)break;
+    if(c>0){volume+=c;days++;}
+  }
+  return {volume,days};
+}
+function recentVolumeDrop(primary){
+  const active=(primary?.daily||[])
+    .slice(0,performanceReferenceDay()||undefined)
+    .map((row,i)=>({day:i+1,c:Number(row?.[0]||0)}))
+    .filter(x=>x.c>0);
+  if(active.length<6)return null;
+  const recent=active.slice(-3);
+  const prior=active.slice(0,-3);
+  const recentAvg=recent.reduce((a,x)=>a+x.c,0)/recent.length;
+  const priorAvg=prior.reduce((a,x)=>a+x.c,0)/prior.length;
+  if(!priorAvg)return null;
+  return {recentAvg,priorAvg,ratio:recentAvg/priorAvg,recentDays:recent.map(x=>x.day)};
+}
+function roleCostBenchmark(roleName){
+  const rows=performanceRoles(roleName).filter(x=>Number(x.c||0)>=8&&Number(x.g||0)>0);
+  const c=rows.reduce((a,x)=>a+Number(x.c||0),0);
+  const g=rows.reduce((a,x)=>a+Number(x.g||0),0);
+  return c?g/c:0;
+}
+function goalPaceSignal(p,primary){
+  if(!primary||!perfMonthMatches())return null;
+  const goal=goalByPerson(p.id);
+  if(!goal)return null;
+  const ref=performanceReferenceDay()||1;
+  const [y,m]=state.month.ref_month.slice(0,7).split('-').map(Number);
+  const daysInMonth=new Date(y,m,0).getDate();
+  const elapsed=Math.min(1,ref/daysInMonth);
+  const checks=[
+    {label:'volume',current:Number(primary.c||0),target:Number(goal.couples_goal||0)},
+    {label:'vendas',current:Number(primary.s||0),target:Number(goal.sales_goal||0)},
+    {label:'VGV',current:Number(primary.v||0),target:Number(goal.vgv_goal||0)}
+  ].filter(x=>x.target>0);
+  const risks=checks.map(x=>({...x,actual:x.current/x.target,expected:elapsed}))
+    .filter(x=>x.actual<x.expected*.72)
+    .sort((a,b)=>(a.actual/a.expected)-(b.actual/b.expected));
+  return risks[0]||null;
+}
+function lastSevenPresenceCounts(presenceRows,personId){
+  const ref=xiaReferenceDate();
+  if(!ref)return {late:0,absent:0};
+  const end=new Date(ref+'T12:00:00');
+  const start=new Date(end);start.setDate(start.getDate()-6);
+  const from=localDate(start),to=localDate(end);
+  const rows=presenceRows.filter(x=>x.person_id===personId&&x.work_date>=from&&x.work_date<=to);
+  return {
+    late:rows.filter(x=>x.status==='late').length,
+    absent:rows.filter(x=>x.status==='absent').length
+  };
+}
+
 function xiaPersonSignal(p,presenceRows=[]){
   const perf=perfForPerson(p);
   const primary=choosePrimaryPerf(p,perf);
@@ -1236,26 +1303,83 @@ function xiaPersonSignal(p,presenceRows=[]){
     const conv=primary.c?primary.s/primary.c*100:0;
     const qual=primary.c?primary.q/primary.c*100:0;
     const consistency=dailyConsistency(primary);
-    if(primary.c>=8&&primary.s===0){reasons.push('0 vendas em '+primary.c+' oportunidades');level=Math.max(level,3);}
-    else if(primary.c>=8&&conv<10){reasons.push('conversão '+pct(conv));level=Math.max(level,3);}
-    else if(primary.c>=8&&conv<15){reasons.push('conversão abaixo do esperado: '+pct(conv));level=Math.max(level,2);}
-    if(primary.c>=8&&qual<50){reasons.push('qualificação '+pct(qual));level=Math.max(level,2);}
-    if(consistency.label==='Baixa'){reasons.push('baixa consistência diária');level=Math.max(level,2);}
-    const goal=goalByPerson(p.id);
-    if(goal?.sales_goal>0&&primary.s<goal.sales_goal*.7){reasons.push('vendas abaixo de 70% da meta');level=Math.max(level,1);}
-    if(goal?.couples_goal>0&&primary.c<goal.couples_goal*.7){reasons.push('volume abaixo de 70% da meta');level=Math.max(level,1);}
+
+    if(primary.c>=8&&primary.s===0){
+      reasons.push('nenhuma venda em '+primary.c+' oportunidades');
+      level=Math.max(level,3);
+    }else if(primary.c>=8&&conv<10){
+      reasons.push('conversão crítica: '+pct(conv));
+      level=Math.max(level,3);
+    }else if(primary.c>=8&&conv<15){
+      reasons.push('conversão abaixo do esperado: '+pct(conv));
+      level=Math.max(level,2);
+    }
+
+    if(primary.c>=8&&qual<50){
+      reasons.push('qualificação baixa: '+pct(qual));
+      level=Math.max(level,2);
+    }
+
+    const noSale=noSaleSequence(primary);
+    if(noSale.volume>=10){
+      reasons.push(noSale.volume+' oportunidades desde a última venda');
+      level=Math.max(level,3);
+    }else if(noSale.volume>=7){
+      reasons.push(noSale.volume+' oportunidades seguidas sem venda');
+      level=Math.max(level,2);
+    }
+
+    const drop=recentVolumeDrop(primary);
+    if(drop&&drop.ratio<.65){
+      reasons.push('queda recente de volume: média '+num(drop.recentAvg,1)+' vs '+num(drop.priorAvg,1));
+      level=Math.max(level,2);
+    }
+
+    if(consistency.label==='Baixa'&&primary.d>=8){
+      reasons.push('baixa consistência diária');
+      level=Math.max(level,2);
+    }
+
+    if(norm(primary.role)===norm('Promotor de Marketing')&&primary.c>=8){
+      const cost=Number(primary.g||0)/Math.max(Number(primary.c||0),1);
+      const bench=roleCostBenchmark(primary.role);
+      if(bench&&cost>bench*1.3){
+        reasons.push('custo por casal '+money(cost)+' vs média '+money(bench));
+        level=Math.max(level,2);
+      }
+    }
+
+    const paceRisk=goalPaceSignal(p,primary);
+    if(paceRisk){
+      reasons.push(paceRisk.label+' abaixo do ritmo da meta');
+      level=Math.max(level,1);
+    }
   }
 
   const personalPresence=presenceRows.filter(x=>x.person_id===p.id);
   const absent=personalPresence.filter(x=>x.status==='absent').length;
   const late=personalPresence.filter(x=>x.status==='late').length;
-  if(absent){reasons.push(absent+' não comparecimento'+(absent>1?'s':''));level=Math.max(level,2);}
-  if(late>=2){reasons.push(late+' atrasos registrados');level=Math.max(level,1);}
+  const recentPresence=lastSevenPresenceCounts(presenceRows,p.id);
+
+  if(absent){
+    reasons.push(absent+' não comparecimento'+(absent>1?'s':'')+' no período');
+    level=Math.max(level,2);
+  }
+  if(recentPresence.late>=2){
+    reasons.push(recentPresence.late+' atrasos nos últimos 7 dias');
+    level=Math.max(level,2);
+  }else if(late>=2){
+    reasons.push(late+' atrasos registrados no mês');
+    level=Math.max(level,1);
+  }
 
   const urgent=state.tasks.filter(t=>t.person_id===p.id&&t.status==='open'&&(t.priority==='high'||t.priority==='critical')).length;
-  if(urgent){reasons.push(urgent+' pendência'+(urgent>1?'s':'')+' prioritária'+(urgent>1?'s':''));level=Math.max(level,2);}
+  if(urgent){
+    reasons.push(urgent+' pendência'+(urgent>1?'s':'')+' prioritária'+(urgent>1?'s':''));
+    level=Math.max(level,2);
+  }
 
-  return {p,primary,sameMonth,reasons,level};
+  return {p,primary,sameMonth,reasons:[...new Set(reasons)],level};
 }
 async function renderXiaOperation(){
   if(!$('xiaOperationSummary')||!state.month)return;
