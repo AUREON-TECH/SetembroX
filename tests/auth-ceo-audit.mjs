@@ -94,3 +94,11 @@ assert.match(ceo,/function performanceDay\(/,'CEO portal must calculate daily pe
 assert.match(ceo,/function renderTodayExecutive\(/,'CEO portal must render the executive Today view');
 assert.match(ceo,/function todayAttention\(/,'CEO portal must combine performance and presence attention signals');
 assert.match(ceoCss,/\.today-performance-grid/,'executive Today KPIs need dedicated styling');
+
+assert.match(ceoHtml,/id=["']todayArea["']/,'Today must let management filter by operational area');
+assert.match(ceoHtml,/Promotor de Marketing/,'Today area filter must include Promotor');
+assert.match(ceoHtml,/Liner \/ Consultor/,'Today area filter must include Liner');
+assert.match(ceoHtml,/Closer \/ Fechador/,'Today area filter must include Closer');
+assert.match(ceo,/TODAY_AREA_ROLES/,'Today filter must map operational roles');
+assert.match(ceo,/function todayWorkingPeople\(/,'Today presence must respect selected area');
+assert.match(ceo,/todayArea.*onchange|\$\(['"]todayArea['"]\)\.onchange/,'Today area selector must rerender on change');
