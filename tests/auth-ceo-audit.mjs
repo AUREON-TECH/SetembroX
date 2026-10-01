@@ -85,3 +85,5 @@ console.log('RAIO X auth + CEO audit passed');
 
 assert.match(html,/id=["']entryCeoPortal["'][^>]*hidden/,'CEO portal CTA must exist on the operation entry and start hidden');
 assert.match(auth,/entryCeoPortal/,'auth must reveal the CEO entry CTA only for CEO sessions');
+
+assert.match(auth,/const ctx=await signIn\(email,password\);[\s\S]*?reveal\(ctx\);[\s\S]*?return;/,'approved preauthorized signup must enter RAIO X immediately');
