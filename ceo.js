@@ -10,7 +10,7 @@ const state={
 const TITLES={
   today:['Hoje','Pulso executivo da operação: performance, presença e atenção.'],
   teams:['Equipes','Defina equipes, horários e vínculos do mês.'],
-  people:['Pessoas','Cadastro PJ completo, cargos, metas e histórico.'],
+  people:['Profissionais','Raio-X individual, metas, presença, performance e acompanhamento.'],
   one:['Olho no Olho','Conversa 1:1, compromissos e acompanhamento.'],
   xia:['XIA','Inteligência analítica 360° de cada profissional.'],
   agenda:['Agenda','Treinamentos, meetings, reuniões e compromissos.'],
@@ -121,7 +121,7 @@ async function selectMonth(id){
   await Promise.all([loadTeams(),loadTasks(),loadOne(),loadGoals(),loadAgenda()]);
   await loadToday();
   fillPeopleSelects();
-  renderTeams(); renderPeople(); renderOneHistory(); renderTasks(); renderAgenda(); await renderReports();
+  renderTeams(); renderPeople(); renderOneHistory(); renderTasks(); renderAgenda(); await renderReports(); await renderProfessionalProfile();
   if(document.getElementById('xia')?.classList.contains('on'))await renderXIA();
 }
 async function loadTeams(){
@@ -411,11 +411,132 @@ function personTable(rows,ended=false){
     }).join('')+'</tbody></table></div>';
 }
 function bindPeopleActions(){
+  document.querySelectorAll('[data-profile-person]').forEach(b=>b.onclick=()=>openProfessionalProfile(b.dataset.profilePerson));
   document.querySelectorAll('[data-edit-person]').forEach(b=>b.onclick=()=>openPersonModal(personById(b.dataset.editPerson)));
   document.querySelectorAll('[data-access-person]').forEach(b=>b.onclick=()=>openAccessForPerson(b.dataset.accessPerson));
   document.querySelectorAll('[data-end-person]').forEach(b=>b.onclick=()=>endPerson(b.dataset.endPerson));
   document.querySelectorAll('[data-delete-person]').forEach(b=>b.onclick=()=>deletePerson(b.dataset.deletePerson));
 }
+function performanceReferenceDay(){
+  const raw=window.XIA_PERFORMANCE?.updated||'';
+  const m=raw.match(/(\d{2})\/(\d{2})\/(\d{4})/);
+  return m?Number(m[1]):null;
+}
+function roleDay(role,day){
+  const row=role?.daily?.[Math.max(0,day-1)]||[0,0,0,0,0];
+  return {c:Number(row[0]||0),s:Number(row[1]||0),v:Number(row[2]||0),q:Number(row[3]||0),nq:Number(row[4]||0),day};
+}
+function roleRange(role,startDay,endDay){
+  const total={c:0,s:0,v:0,q:0,nq:0,start:startDay,end:endDay,rows:[]};
+  for(let d=Math.max(1,startDay);d<=Math.max(startDay,endDay);d++){
+    const r=roleDay(role,d);total.rows.push(r);
+    total.c+=r.c;total.s+=r.s;total.v+=r.v;total.q+=r.q;total.nq+=r.nq;
+  }
+  return total;
+}
+function profileScopeCard(label,data,volumeLabel,sub=''){
+  const conv=data?.c?data.s/data.c*100:0;
+  return '<div class="profile-scope-card"><small>'+esc(label)+'</small>'+
+    '<div class="profile-scope-main"><b>'+num(data?.c||0)+'</b><span>'+esc(volumeLabel)+'</span></div>'+
+    '<div class="profile-scope-foot"><strong>'+num(data?.s||0)+' vendas</strong><span>'+pct(conv)+' conversão</span></div>'+
+    '<em>'+money(data?.v||0)+' VGV'+(sub?' • '+esc(sub):'')+'</em></div>';
+}
+function goalProgress(label,current,target,formatter=(v)=>num(v)){
+  const t=Number(target||0),c=Number(current||0);
+  const p=t?Math.min(100,c/t*100):0;
+  return '<div class="profile-goal"><div><span>'+esc(label)+'</span><b>'+formatter(c)+' / '+formatter(t)+'</b></div>'+
+    '<div class="profile-goal-bar"><i style="width:'+p.toFixed(1)+'%"></i></div><small>'+(t?pct(c/t*100):'sem meta definida')+'</small></div>';
+}
+async function renderProfessionalProfile(){
+  if(!$('profilePerson')||!state.month)return;
+  const personId=$('profilePerson').value||workingPeople()[0]?.id;
+  if(!personId){
+    $('professionalIdentity').innerHTML='<div class="xia-empty">Nenhum profissional ativo.</div>';
+    return;
+  }
+  $('profilePerson').value=personId;
+  const p=personById(personId);if(!p)return;
+  const team=teamByPerson(personId);
+  const goal=goalByPerson(personId);
+  const perf=perfForPerson(p);
+  const primary=choosePrimaryPerf(p,perf);
+  const sameMonth=perfMonthMatches();
+  const referenceDay=performanceReferenceDay()||31;
+  const selectedDate=$('todayDate')?.value||localDate();
+  const selectedDay=Number(String(selectedDate).slice(8,10)||referenceDay);
+  const dayData=primary&&sameMonth?roleDay(primary,selectedDay):null;
+  const week=primary&&sameMonth?roleRange(primary,Math.max(1,referenceDay-6),referenceDay):null;
+  const month=primary&&sameMonth?{c:primary.c||0,s:primary.s||0,v:primary.v||0,q:primary.q||0,nq:primary.nq||0}:null;
+  const volumeLabel=roleOf(p)==='Promotor de Marketing'?'casais':'atendimentos';
+
+  $('professionalIdentity').innerHTML=
+    '<div class="professional-person"><div class="professional-avatar">'+esc((p.full_name||'?').split(/\s+/).slice(0,2).map(x=>x[0]||'').join('').toUpperCase())+'</div>'+
+    '<div><span class="eyebrow">PROFISSIONAL</span><h3>'+esc(p.full_name)+'</h3><p>'+esc(roleOf(p))+' • '+esc(team?.name||'sem equipe')+' • '+esc(effectiveStart(p))+' • '+esc(statusLabel(p.status))+'</p></div></div>'+
+    '<div class="professional-base"><b>'+esc(state.month.label)+'</b><span>Performance: '+esc(window.XIA_PERFORMANCE?.updated||'sem base')+'</span></div>';
+
+  if(primary&&sameMonth){
+    $('professionalScope').innerHTML=
+      profileScopeCard('DIA '+String(selectedDay).padStart(2,'0'),dayData,volumeLabel)+
+      profileScopeCard('ÚLTIMOS 7 DIAS',week,volumeLabel,'dias '+week.start+'–'+week.end)+
+      profileScopeCard('MÊS',month,volumeLabel,'Q '+month.q+' / NQ '+month.nq);
+  }else{
+    $('professionalScope').innerHTML='<div class="profile-data-empty"><b>Performance ainda não ligada a este mês/cadastro.</b><span>Os registros de presença, metas e liderança abaixo continuam disponíveis.</span></div>';
+  }
+
+  const current=month||{c:0,s:0,v:0};
+  $('professionalGoals').innerHTML=
+    goalProgress('Volume',current.c,goal?.couples_goal||0)+
+    goalProgress('Vendas',current.s,goal?.sales_goal||0)+
+    goalProgress('VGV',current.v,goal?.vgv_goal||0,money);
+
+  let presence=[];
+  try{
+    presence=await rest('ceo_daily_presence?select=*&month_id=eq.'+state.month.id+'&person_id=eq.'+personId+'&order=work_date.asc');
+  }catch(_){presence=[];}
+  const pc={present:0,absent:0,late:0,other:0};
+  presence.forEach(x=>{
+    if(x.status==='present')pc.present++;
+    else if(x.status==='absent')pc.absent++;
+    else if(x.status==='late')pc.late++;
+    else pc.other++;
+  });
+  const incidents=presence.filter(x=>['absent','late','left_early','unavailable'].includes(x.status)).slice(-3).reverse();
+  $('professionalPresence').innerHTML=
+    '<div class="profile-mini-stats"><div><b>'+pc.present+'</b><span>presentes</span></div><div><b>'+pc.absent+'</b><span>ausências</span></div><div><b>'+pc.late+'</b><span>atrasos</span></div><div><b>'+pc.other+'</b><span>outros</span></div></div>'+
+    '<div class="profile-note-list">'+(incidents.length?incidents.map(x=>'<span>'+dateBr(x.work_date)+' • '+esc(STATUS[x.status]||x.status)+(x.note?' • '+esc(x.note):'')+'</span>').join(''):'<span>Sem ocorrência de presença para destacar.</span>')+'</div>';
+
+  const one=state.one.filter(x=>x.person_id===personId);
+  const openTasks=state.tasks.filter(x=>x.person_id===personId&&x.status==='open');
+  const future=state.agenda.filter(x=>x.person_id===personId&&x.status==='scheduled').sort((a,b)=>String(a.event_date).localeCompare(String(b.event_date)));
+  const lastOne=one[0];
+  $('professionalLeadership').innerHTML=
+    '<div class="profile-lead-row"><span>Último Olho no Olho</span><b>'+(lastOne?dateBr(lastOne.meeting_date):'Nenhum')+'</b></div>'+
+    '<div class="profile-lead-row"><span>Pendências abertas</span><b>'+openTasks.length+'</b></div>'+
+    '<div class="profile-lead-row"><span>Próximo compromisso</span><b>'+(future[0]?dateBr(future[0].event_date):'Nenhum')+'</b></div>'+
+    '<div class="profile-lead-copy">'+(lastOne?esc(lastOne.commitments||lastOne.improvement||lastOne.topic||'Registro salvo.'):'Nenhum compromisso de 1:1 registrado neste mês.')+'</div>';
+
+  if(primary&&sameMonth){
+    const start=Math.max(1,referenceDay-13);
+    const rows=roleRange(primary,start,referenceDay).rows;
+    const max=Math.max(1,...rows.map(x=>x.c));
+    $('professionalDaily').innerHTML=rows.map(x=>{
+      const h=Math.max(5,Math.round(x.c/max*100));
+      return '<div class="profile-day" title="Dia '+x.day+': '+x.c+' '+volumeLabel+', '+x.s+' vendas">'+
+        '<div class="profile-day-bar"><i style="height:'+h+'%"></i>'+(x.s?'<strong>'+x.s+'</strong>':'')+'</div>'+
+        '<span>'+String(x.day).padStart(2,'0')+'</span></div>';
+    }).join('');
+  }else{
+    $('professionalDaily').innerHTML='<div class="profile-data-empty"><span>Sem série diária de performance para o mês selecionado.</span></div>';
+  }
+}
+function openProfessionalProfile(personId){
+  if(!$('profilePerson'))return;
+  $('profilePerson').value=personId;
+  setTab('people');
+  renderProfessionalProfile();
+  document.querySelector('.professional-profile-panel')?.scrollIntoView({behavior:'smooth',block:'start'});
+}
+
 function renderPeople(){
   const active=state.people.filter(p=>p.status!=='ended');
   const ended=state.people.filter(p=>p.status==='ended');
@@ -516,7 +637,7 @@ async function savePerson(){
     }
 
     state.people=await rest('ceo_people?select=*&order=full_name.asc');
-    await loadGoals(); await loadApprovals(); fillPeopleSelects(); renderPeople(); renderToday(); closePersonModal();
+    await loadGoals(); await loadApprovals(); fillPeopleSelects(); renderPeople(); renderToday(); await renderProfessionalProfile(); closePersonModal();
     toast('Cadastro salvo.');
   }catch(err){toast(err.message,true);}
   finally{$('savePersonBtn').disabled=false;}
@@ -530,7 +651,7 @@ async function endPerson(id){
     await rest('ceo_people?id=eq.'+id,{method:'PATCH',headers:{Prefer:'return=minimal'},body:JSON.stringify({status:'ended',ended_on:localDate(),end_reason:reason||null,updated_at:new Date().toISOString()})});
     await rest('raiox_app_users?person_id=eq.'+id,{method:'PATCH',headers:{Prefer:'return=minimal'},body:JSON.stringify({active:false,approval_status:'rejected',updated_at:new Date().toISOString()})});
     state.people=await rest('ceo_people?select=*&order=full_name.asc');
-    await loadApprovals(); fillPeopleSelects(); renderPeople(); renderToday();
+    await loadApprovals(); fillPeopleSelects(); renderPeople(); renderToday(); await renderProfessionalProfile();
     toast('Profissional movido para Distratados.');
   }catch(err){toast(err.message,true);}
 }
@@ -541,7 +662,7 @@ async function deletePerson(id){
     await rest('raiox_app_users?person_id=eq.'+id,{method:'PATCH',headers:{Prefer:'return=minimal'},body:JSON.stringify({active:false,approval_status:'rejected',person_id:null,updated_at:new Date().toISOString()})});
     await rest('ceo_people?id=eq.'+id,{method:'DELETE',headers:{Prefer:'return=minimal'}});
     state.people=await rest('ceo_people?select=*&order=full_name.asc');
-    await loadGoals(); await loadApprovals(); fillPeopleSelects(); renderPeople(); renderToday();
+    await loadGoals(); await loadApprovals(); fillPeopleSelects(); renderPeople(); renderToday(); await renderProfessionalProfile();
     toast('Cadastro excluído.');
   }catch(err){toast(err.message,true);}
 }
@@ -644,6 +765,11 @@ function fillPeopleSelects(){
   if($('onePerson'))$('onePerson').innerHTML=opts;
   if($('taskPerson'))$('taskPerson').innerHTML='<option value="">Sem pessoa específica</option>'+opts;
   if($('agendaPerson'))$('agendaPerson').innerHTML='<option value="">Toda a operação / sem pessoa</option>'+opts;
+  if($('profilePerson')){
+    const prior=$('profilePerson').value;
+    $('profilePerson').innerHTML=opts;
+    if(prior&&current.some(p=>p.id===prior))$('profilePerson').value=prior;
+  }
   if($('xiaPerson')){
     const prior=$('xiaPerson').value;
     $('xiaPerson').innerHTML=current.map(p=>'<option value="'+p.id+'">'+esc(p.full_name)+' • '+esc(roleOf(p))+'</option>').join('');
@@ -792,7 +918,19 @@ async function renderReports(){
 
 function perfForPerson(p){
   const base=window.XIA_PERFORMANCE?.people||[];
-  return base.find(x=>norm(x.name)===norm(p.full_name))||null;
+  const full=norm(p?.full_name);
+  if(!full)return null;
+  const exact=base.find(x=>norm(x.name)===full);
+  if(exact)return exact;
+  const tokens=full.split(/\s+/).filter(Boolean);
+  const firstTwo=tokens.slice(0,2).join(' ');
+  if(firstTwo){
+    const byTwo=base.filter(x=>norm(x.name).startsWith(firstTwo)||firstTwo.startsWith(norm(x.name)));
+    if(byTwo.length===1)return byTwo[0];
+  }
+  const first=tokens[0];
+  const byFirst=base.filter(x=>norm(x.name).split(/\s+/)[0]===first);
+  return byFirst.length===1?byFirst[0]:null;
 }
 function perfMonthMatches(){
   const updated=window.XIA_PERFORMANCE?.updated||'';
@@ -1045,6 +1183,7 @@ function setTab(id){
   $('ceoTitle').textContent=TITLES[id]?.[0]||id;
   $('ceoSubtitle').textContent=TITLES[id]?.[1]||'';
   if(id==='today')renderTodayExecutive();
+  if(id==='people')renderProfessionalProfile();
   if(id==='reports')renderReports();
   if(id==='approvals')loadApprovals();
   if(id==='agenda')renderAgenda();
@@ -1067,6 +1206,18 @@ function bind(){
   $('cancelPersonModal').onclick=closePersonModal;
   $('savePersonBtn').onclick=savePerson;
   $('personModal').addEventListener('click',e=>{if(e.target===$('personModal'))closePersonModal();});
+  $('profilePerson').onchange=renderProfessionalProfile;
+  $('profileOpenXia').onclick=()=>{
+    const id=$('profilePerson').value;if(!id)return;
+    $('xiaPerson').value=id;setTab('xia');renderXIA();
+  };
+  $('profileOpenOne').onclick=()=>{
+    const id=$('profilePerson').value;if(!id)return;
+    $('onePerson').value=id;setTab('one');
+  };
+  $('profileEdit').onclick=()=>{
+    const id=$('profilePerson').value;if(id)openPersonModal(personById(id));
+  };
   $('saveOneBtn').onclick=saveOne;
   $('saveAgendaBtn').onclick=saveAgenda;
   $('saveTaskBtn').onclick=saveTask;
