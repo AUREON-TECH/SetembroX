@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#060a18">
 <title>RAIO X • Portal de Gestão</title>
 <link rel="icon" href="./icon.svg">
-<link rel="stylesheet" href="./ceo.css?v=12">
+<link rel="stylesheet" href="./ceo.css?v=13">
 </head>
 <body>
 <div id="ceoLoading" class="ceo-loading"><div class="loader-mark">RX</div><b>Validando acesso de gestão...</b></div>
@@ -32,7 +32,7 @@
   <main class="ceo-main">
     <header class="ceo-top">
       <div><span class="eyebrow">CENTRAL PRIVADA</span><h1 id="ceoTitle">Hoje</h1><p id="ceoSubtitle">Registro operacional diário da sua equipe.</p></div>
-      <div class="month-box"><label>MÊS DE REFERÊNCIA<select id="monthSelect"></select></label><button id="newMonthBtn" class="ghost">+ Novo mês</button></div>
+      <div class="month-box"><label>MÊS DE REFERÊNCIA<select id="monthSelect"></select></label><button id="monthGoalsBtn" class="ghost">Metas do mês</button><button id="newMonthBtn" class="ghost">+ Novo mês</button></div>
     </header>
 
     <section id="today" class="ceo-tab on">
@@ -45,7 +45,6 @@
         <div class="toolbar today-toolbar">
           <label>Data<input id="todayDate" type="date"></label>
           <label>Área<select id="todayArea">
-            <option value="all">Todos</option>
             <option value="promotor">Promotor de Marketing</option>
             <option value="liner">Liner / Consultor</option>
             <option value="closer">Closer / Fechador</option>
@@ -56,11 +55,12 @@
         </div>
       </div>
 
+      <div id="monthGoalsStrip" class="month-goals-strip"></div>
       <div id="todayPerformance" class="today-performance-grid"></div>
 
       <div class="today-executive-grid">
         <div class="panel today-status-panel">
-          <div class="panel-head"><div><span class="eyebrow">PRESENÇA</span><h2>Equipe do dia</h2></div><span id="todayCount" class="pill"></span></div>
+          <div class="panel-head"><div><span class="eyebrow">PRESENÇA</span><h2>Equipe do dia</h2></div><div class="presence-head-pills"><span id="todaySaveState" class="pill unsaved">não salvo</span><span id="todayCount" class="pill"></span></div></div>
           <div id="todaySummary" class="summary-grid today-summary"></div>
         </div>
         <div class="panel today-alert-panel">
@@ -194,7 +194,7 @@
       <div class="panel xia-hero">
         <div class="panel-head">
           <div><span class="eyebrow">X INTELLIGENCE ANALYSIS</span><h2>XIA • Inteligência Analítica do Profissional</h2><p>Uma leitura 360° baseada em evidências do RAIO X. Fato é separado de hipótese; decisões continuam humanas.</p></div>
-          <div class="xia-controls"><select id="xiaPerson"></select><button id="refreshXia" class="ghost">Atualizar análise</button><button id="copyXiaBtn" class="primary">Copiar para IA</button></div>
+          <div class="xia-controls"><select id="xiaPerson"></select><select id="xiaRole" aria-label="Função analisada" hidden></select><button id="refreshXia" class="ghost">Atualizar análise</button><button id="copyXiaBtn" class="primary">Copiar para IA</button></div>
         </div>
         <div id="xiaIdentity" class="xia-identity"></div>
         <div id="xiaMetrics" class="summary-grid"></div>
@@ -285,6 +285,29 @@
   </main>
 </div>
 
+<div id="monthGoalModal" class="modal" hidden>
+  <div class="modal-card month-goal-modal-card">
+    <div class="modal-head"><div><span class="eyebrow">META DA OPERAÇÃO</span><h2 id="monthGoalModalTitle">Metas do mês</h2></div><button id="closeMonthGoalModal" class="modal-close" type="button">×</button></div>
+    <div class="goal-form-section">
+      <div class="goal-form-title"><b>META</b><span>Objetivo oficial do mês</span></div>
+      <div class="form-grid compact">
+        <label>Casais / Atendimentos<input id="monthGoalCouples" type="number" min="0" step="1"></label>
+        <label>Vendas<input id="monthGoalSales" type="number" min="0" step="1"></label>
+        <label>VGV (R$)<input id="monthGoalVgv" type="number" min="0" step="0.01"></label>
+      </div>
+    </div>
+    <div class="goal-form-section super">
+      <div class="goal-form-title"><b>SUPER META</b><span>Segundo nível de conquista do mês</span></div>
+      <div class="form-grid compact">
+        <label>Casais / Atendimentos<input id="monthSuperGoalCouples" type="number" min="0" step="1"></label>
+        <label>Vendas<input id="monthSuperGoalSales" type="number" min="0" step="1"></label>
+        <label>VGV (R$)<input id="monthSuperGoalVgv" type="number" min="0" step="0.01"></label>
+      </div>
+    </div>
+    <div class="form-actions"><button id="cancelMonthGoalModal" class="ghost">Cancelar</button><button id="saveMonthGoalsBtn" class="primary">Salvar metas do mês</button></div>
+  </div>
+</div>
+
 <div id="personModal" class="modal" hidden>
   <div class="modal-card">
     <div class="modal-head"><div><span class="eyebrow">CADASTRO DE PESSOA</span><h2 id="personModalTitle">Adicionar pessoa</h2></div><button id="closePersonModal" class="modal-close" type="button">×</button></div>
@@ -316,6 +339,6 @@
 <script src="./area-data.js"></script>
 <script src="./fx-data.js"></script>
 <script src="./xia-performance.js?v=2"></script>
-<script src="./ceo.js?v=14"></script>
+<script src="./ceo.js?v=15"></script>
 </body>
 </html>
