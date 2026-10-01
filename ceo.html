@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#060a18">
 <title>RAIO X • Portal de Gestão</title>
 <link rel="icon" href="./icon.svg">
-<link rel="stylesheet" href="./ceo.css?v=14">
+<link rel="stylesheet" href="./ceo.css?v=15">
 </head>
 <body>
 <div id="ceoLoading" class="ceo-loading"><div class="loader-mark">RX</div><b>Validando acesso de gestão...</b></div>
@@ -17,6 +17,7 @@
     <div class="ceo-user"><small>ACESSO DE GESTÃO</small><b id="ceoUserName">Gestão</b><span id="ceoUserEmail"></span></div>
     <nav id="ceoNav">
       <button class="active" data-tab="today">Hoje</button>
+      <button data-tab="goals">Livro de Metas</button>
       <button data-tab="teams">Equipes</button>
       <button data-tab="people">Profissionais</button>
       <button data-tab="one">Olho no Olho</button>
@@ -33,7 +34,7 @@
   <main class="ceo-main">
     <header class="ceo-top">
       <div><span class="eyebrow">CENTRAL PRIVADA</span><h1 id="ceoTitle">Hoje</h1><p id="ceoSubtitle">Registro operacional diário da sua equipe.</p></div>
-      <div class="month-box"><label>MÊS DE REFERÊNCIA<select id="monthSelect"></select></label><button id="monthGoalsBtn" class="ghost">Metas do mês</button><button id="newMonthBtn" class="ghost">+ Novo mês</button></div>
+      <div class="month-box"><label>MÊS DE REFERÊNCIA<select id="monthSelect"></select></label><button id="monthGoalsBtn" class="ghost">Livro de Metas</button><button id="newMonthBtn" class="ghost">+ Novo mês</button></div>
     </header>
 
     <section id="today" class="ceo-tab on">
@@ -53,6 +54,44 @@
           <button id="reloadToday" class="ghost">Atualizar</button>
           <button id="markAllPresentBtn" class="ghost success">Todos presentes</button>
           <button id="saveDayBtn" class="primary">Salvar o dia</button>
+        </div>
+      </div>
+
+
+      <div class="panel quick-presence-panel">
+        <div class="panel-head">
+          <div>
+            <span class="eyebrow">LANÇAMENTO RÁPIDO</span>
+            <h2>Registrar presença por nome</h2>
+            <p>Digite o nome, escolha o status e salve. O registro entra na hora no dia selecionado.</p>
+          </div>
+          <span class="pill">uso diário</span>
+        </div>
+        <div class="quick-presence-search">
+          <input id="quickPresenceSearch" autocomplete="off" placeholder="Digite o nome do profissional...">
+          <button id="quickPresenceClear" class="ghost small" type="button">Limpar</button>
+        </div>
+        <div id="quickPresenceResults" class="quick-presence-results"></div>
+        <div id="quickPresenceCard" class="quick-presence-card" hidden>
+          <input id="quickPresencePersonId" type="hidden">
+          <div class="quick-presence-person">
+            <small>PROFISSIONAL</small>
+            <b id="quickPresenceName">—</b>
+            <span id="quickPresenceMeta">—</span>
+          </div>
+          <label>Status<select id="quickPresenceStatus">
+            <option value="present">Presente</option>
+            <option value="absent">Falta</option>
+            <option value="late">Atraso</option>
+            <option value="agreed_off">Folga combinada</option>
+            <option value="unavailable">Indisponível</option>
+            <option value="left_early">Saiu antes</option>
+            <option value="training">Treinamento</option>
+            <option value="remote">Remoto</option>
+          </select></label>
+          <label id="quickArrivalWrap">Chegada<input id="quickPresenceArrival" type="time"></label>
+          <label class="quick-presence-note-label">Observação<input id="quickPresenceNote" placeholder="Opcional"></label>
+          <button id="saveQuickPresenceBtn" class="primary" type="button">Salvar presença</button>
         </div>
       </div>
 
@@ -77,23 +116,36 @@
       </div>
     </section>
 
-    <section id="teams" class="ceo-tab">
-      <div class="panel">
-        <div class="panel-head"><div><span class="eyebrow">ESTRUTURA</span><h2>Equipes e horários</h2><p>Defina o horário combinado de cada equipe, por exemplo 10:00 ou 13:00.</p></div><button id="addTeamBtn" class="primary small">+ Nova equipe</button></div>
-        <div id="teamsGrid" class="team-grid"></div>
+    <section id="goals" class="ceo-tab">
+      <div class="goal-book-hero panel">
+        <div>
+          <span class="eyebrow">LIVRO DE METAS</span>
+          <h2>Objetivos oficiais da operação</h2>
+          <p>Pesquisas, Casais, Vendas e VGV em um só lugar. Defina a Meta, a Super Meta e depois distribua entre as equipes.</p>
+        </div>
+        <button id="openMonthGoalsFromBook" class="primary">Editar Meta Geral</button>
       </div>
+
+      <div id="goalBookCards" class="month-goals-strip goal-book-cards"></div>
 
       <div class="panel team-goals-panel">
         <div class="panel-head">
           <div>
-            <span class="eyebrow">DISTRIBUIÇÃO DA META</span>
-            <h2>Meta por equipe</h2>
-            <p>Divida a meta geral do mês entre os times. O RAIO X mostra quanto já foi distribuído e quanto ainda falta.</p>
+            <span class="eyebrow">DISTRIBUIÇÃO POR EQUIPE</span>
+            <h2>Dividir a meta do mês</h2>
+            <p>O RAIO X soma o que já foi distribuído e mostra quanto falta para completar a meta geral.</p>
           </div>
-          <button id="openMonthGoalsFromTeams" class="ghost small">Editar meta geral</button>
+          <span class="pill">Meta + Super Meta</span>
         </div>
         <div id="teamGoalSummary" class="team-goal-summary"></div>
         <div id="teamGoalsEditor" class="team-goals-editor"></div>
+      </div>
+    </section>
+
+    <section id="teams" class="ceo-tab">
+      <div class="panel">
+        <div class="panel-head"><div><span class="eyebrow">ESTRUTURA</span><h2>Equipes e horários</h2><p>Defina o horário combinado de cada equipe, por exemplo 10:00 ou 13:00.</p></div><button id="addTeamBtn" class="primary small">+ Nova equipe</button></div>
+        <div id="teamsGrid" class="team-grid"></div>
       </div>
 
       <div class="panel">
@@ -262,7 +314,7 @@
           <div><span class="eyebrow">NOVO REGISTRO</span><h2>Pauta, estratégia ou mudança</h2><p>Transforme uma conversa em decisão registrada e acompanhável.</p></div>
           <span class="pill">gestão</span>
         </div>
-        <div class="form-grid compact">
+        <div class="form-grid strategy-form-grid">
           <label>Tipo<select id="strategyType">
             <option value="meeting">Reunião</option>
             <option value="agenda_item">Pauta</option>
@@ -294,9 +346,9 @@
           </select></label>
           <label>Revisar em<input id="strategyReviewDate" type="date"></label>
           <label class="wide">Participantes<input id="strategyParticipants" placeholder="Ex.: Raphael, Felipe, Luis Neto"></label>
-          <label class="wide">Pauta / contexto<textarea id="strategyAgendaText" rows="3" placeholder="O que foi discutido ou qual problema estamos tentando resolver?"></textarea></label>
-          <label class="wide">Decisão tomada<textarea id="strategyDecisionText" rows="3" placeholder="O que ficou decidido?"></textarea></label>
-          <label class="wide">Próximos passos<textarea id="strategyNextSteps" rows="3" placeholder="Quem faz o quê e qual é o próximo movimento?"></textarea></label>
+          <label class="wide strategy-long-field">Pauta / contexto<textarea id="strategyAgendaText" rows="6" placeholder="O que foi discutido ou qual problema estamos tentando resolver?"></textarea></label>
+          <label class="wide strategy-long-field">Decisão tomada<textarea id="strategyDecisionText" rows="5" placeholder="O que ficou decidido?"></textarea></label>
+          <label class="wide strategy-long-field">Próximos passos<textarea id="strategyNextSteps" rows="5" placeholder="Quem faz o quê e qual é o próximo movimento?"></textarea></label>
         </div>
         <div class="form-actions"><button id="saveStrategyBtn" class="primary">Salvar registro</button></div>
       </div>
@@ -437,6 +489,6 @@
 <script src="./area-data.js"></script>
 <script src="./fx-data.js"></script>
 <script src="./xia-performance.js?v=2"></script>
-<script src="./ceo.js?v=16"></script>
+<script src="./ceo.js?v=17"></script>
 </body>
 </html>
