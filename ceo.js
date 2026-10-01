@@ -1074,15 +1074,29 @@ async function loadApprovals(){
       }
     });
     state.approvals=[...byEmail.values()];
+    state.approvalsLoadError='';
   }catch(err){
     state.approvals=[];
+    state.approvalsLoadError=err?.message||'Não foi possível carregar as aprovações.';
     toast('Não foi possível carregar as aprovações.',true);
   }
+  if(!state.approvalsLoadError)state.approvalsLoadError='';
   renderApprovals();
 }
 function approvalLabel(status){return status==='approved'?'Aprovado':status==='rejected'?'Recusado':'Aguardando';}
 function renderApprovals(){
   const rows=state.approvals||[];
+  if(state.approvalsLoadError){
+    const badge=$('approvalBadge');
+    if(badge){badge.textContent='!';badge.hidden=false;}
+    if($('approvalSummary'))$('approvalSummary').innerHTML=[
+      ['Aguardando','—','não foi possível carregar'],
+      ['Aprovados','—','não foi possível carregar'],
+      ['Recusados/Bloqueados','—','não foi possível carregar']
+    ].map(x=>'<div class="summary-card error"><small>'+x[0]+'</small><b>'+x[1]+'</b><span>'+x[2]+'</span></div>').join('');
+    if($('approvalsList'))$('approvalsList').innerHTML='<div class="approval-empty error">Falha ao carregar os acessos. Clique em <b>Atualizar</b> para tentar novamente.</div>';
+    return;
+  }
   const pending=rows.filter(x=>!x.awaiting_signup&&(x.approval_status==='pending'||(!x.active&&x.approval_status!=='rejected')));
   const approved=rows.filter(x=>(x.approval_status==='approved'&&x.active)||x.awaiting_signup);
   const rejected=rows.filter(x=>x.approval_status==='rejected');
@@ -1090,7 +1104,7 @@ function renderApprovals(){
   if(badge){badge.textContent=pending.length;badge.hidden=pending.length===0;}
   if($('approvalSummary'))$('approvalSummary').innerHTML=[
     ['Aguardando',pending.length,'precisam da sua decisão'],
-    ['Aprovados',approved.length,'podem entrar'],
+    ['Aprovados',approved.length,'ativos ou pré-aprovados'],
     ['Recusados/Bloqueados',rejected.length,'sem acesso']
   ].map(x=>'<div class="summary-card"><small>'+x[0]+'</small><b>'+x[1]+'</b><span>'+x[2]+'</span></div>').join('');
 
