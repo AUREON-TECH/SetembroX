@@ -218,13 +218,13 @@
           if(password.length<6)throw Object.assign(new Error('A senha precisa ter pelo menos 6 caracteres.'),{code:'form'});
           await signUp(email,password);
           try{
-            await signIn(email,password);
+            const ctx=await signIn(email,password);
+            reveal(ctx);
+            return;
           }catch(err){
             if(err?.code==='not_allowed'){location.href='./pending.html';return;}
             throw err;
           }
-          location.href='./pending.html';
-          return;
         }
         const ctx=await signIn($('authEmail').value,$('authPassword').value);
         reveal(ctx);
