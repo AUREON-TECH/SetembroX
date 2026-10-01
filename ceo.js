@@ -226,12 +226,13 @@ function operationMonthTotals(){
 }
 function goalStatus(current,goal,superGoal){
   goal=Number(goal||0);superGoal=Number(superGoal||0);
+  if(goal<=0&&superGoal<=0)return {label:'META NÃO DEFINIDA',cls:'empty',pct:0};
   if(current==null)return {label:'AGUARDANDO DADOS',cls:'waiting',pct:0};
   current=Number(current||0);
   if(superGoal>0&&current>=superGoal)return {label:'SUPER META',cls:'super',pct:100};
   if(goal>0&&current>=goal)return {label:'META BATIDA',cls:'hit',pct:100};
   if(goal>0)return {label:pct(current/goal*100),cls:'progress',pct:Math.min(100,current/goal*100)};
-  return {label:'SEM META',cls:'empty',pct:0};
+  return {label:'META NÃO DEFINIDA',cls:'empty',pct:0};
 }
 function monthGoalCardsHtml(){
   if(!state.month)return '';
