@@ -143,3 +143,9 @@ assert.match(ceo,/function findPersonFromQuestion\(/,'question engine must resol
 assert.match(ceo,/async function answerRaioXQuestion\(/,'question engine must answer from RAIO X data');
 assert.match(ceo,/function personTrend\(/,'question engine must compare seven-day professional performance');
 assert.match(ceoCss,/\.xia-ask-panel/,'question experience must have dedicated styling');
+
+assert.match(ceo,/function noSaleSequence\(/,'smart alerts must detect opportunity streaks without sales');
+assert.match(ceo,/function recentVolumeDrop\(/,'smart alerts must detect recent volume drops');
+assert.match(ceo,/function roleCostBenchmark\(/,'smart alerts must compare cost against the area benchmark');
+assert.match(ceo,/function goalPaceSignal\(/,'smart alerts must detect goal pace risk');
+assert.match(ceo,/function lastSevenPresenceCounts\(/,'smart alerts must detect recurring recent lateness');
