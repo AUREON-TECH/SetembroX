@@ -215,7 +215,7 @@
         if(mode==='signup'){
           const email=$('authEmail').value;
           const password=$('authPassword').value;
-          if(password.length<6)throw Object.assign(new Error('A senha precisa ter pelo menos 6 caracteres.'),{code:'form'});
+          if(password.length<8)throw Object.assign(new Error('A senha precisa ter pelo menos 8 caracteres.'),{code:'form'});
           await signUp(email,password);
           try{
             const ctx=await signIn(email,password);
