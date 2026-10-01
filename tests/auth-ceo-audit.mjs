@@ -229,3 +229,13 @@ assert.match(monthLive,/sessionStorage\.setItem\('raiox\.view\.month\.v1'/,'Mont
 assert.match(monthLive,/order=ref_month\.desc/,'Month selector must load current and historical months');
 assert.doesNotMatch(monthLive,/status=eq\.open&order=ref_month/,'Month selector must not be restricted to the open month');
 assert.match(monthLive,/month\.status===['"]closed['"]/,'Historical months must be marked as closed');
+
+assert.match(monthLive,/function renderDynamicMonth\(/,'Non-September months must render from monthly database records');
+assert.match(monthLive,/month\.ref_month===['"]2026-09-01['"]/,'September must remain isolated as the closed legacy history');
+assert.match(monthLive,/function dynamicRank\(/,'Current months must render Ranking dynamically');
+assert.match(monthLive,/function dynamicIndividual\(/,'Current months must render Individual dynamically');
+assert.match(monthLive,/function dynamicFx\(/,'Current months must render FX dynamically');
+assert.match(monthLive,/function dynamicDiagnosis\(/,'Current months must render Diagnosis dynamically');
+assert.match(monthLive,/function dynamicProfile\(/,'Current months must explicitly handle profile data availability');
+assert.match(monthLive,/function dynamicProjection\(/,'Current months must render projections dynamically');
+assert.match(monthLive,/function dynamicCosts\(/,'Current months must render costs dynamically');
