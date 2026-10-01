@@ -173,7 +173,7 @@
 .goal-grid{
   width:min(1040px,100%);
   display:grid;
-  grid-template-columns:repeat(3,1fr);
+  grid-template-columns:repeat(4,minmax(0,1fr));
   gap:14px;
   margin:0 auto 14px;
 }
@@ -549,4 +549,21 @@
   .entry-command-dock .enter.entry-primary,.entry-management{min-height:66px}
   .entry-command-dock .entry-install.entry-install-compact{grid-column:auto}
   .entry-action-copy em{font-size:7px}
+}
+
+
+/* v58 • metas mensais dinâmicas */
+.goal-grid.live-month-goals{width:min(1320px,100%)}
+.goal-grid.live-month-goals .goal-card{min-width:0}
+.goal-grid.live-month-goals .goal-copy strong{font-size:clamp(25px,2.25vw,39px)}
+.goal-grid.live-month-goals .research-goal{border-color:rgba(59,235,196,.26)}
+.goal-grid.live-month-goals .research-goal .goal-icon{color:#8fffe5;background:linear-gradient(145deg,rgba(22,91,76,.5),rgba(7,39,39,.42))}
+.goal-grid.live-month-goals .research-goal .goal-track i{background:linear-gradient(90deg,#39e7c6,#18e7ff,#6a8cff)}
+.current-month-empty{padding:18px;border:1px dashed rgba(120,160,220,.22);border-radius:14px;color:#8fa3c7;text-align:center;font-size:11px;line-height:1.6}
+.current-month-empty b{display:block;color:#eaf4ff;font-size:14px;margin-bottom:4px}
+@media(max-width:1180px){
+  .goal-grid.live-month-goals{grid-template-columns:repeat(2,minmax(0,1fr));max-width:900px}
+}
+@media(max-width:760px){
+  .goal-grid.live-month-goals{grid-template-columns:1fr}
 }
