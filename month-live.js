@@ -419,12 +419,12 @@
       fillMonthSelector(months,month.ref_month);
 
       const rows=await rest('raiox_performance_records?select=professional_name,role,researches,couples,sales,vgv,q,nq,gifts,active_days,week_volume,week_sales,week_vgv,daily&ref_month=eq.'+encodeURIComponent(month.ref_month),token);
-      updateGoalHero(month,rows||[]);
       updateCurrentMonthLabels(month);
       if(month.ref_month==='2026-09-01'){
         const selected=(rows||[]).filter(r=>r.role===areaRole());
         if(!selected.length)currentMonthEmpty(month);
       }else{
+        updateGoalHero(month,rows||[]);
         renderDynamicMonth(month,rows||[]);
       }
     }catch(err){
