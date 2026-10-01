@@ -192,3 +192,10 @@ textarea{font-size:12px}
   .today-kpi{min-height:92px}
   .today-alert{grid-template-columns:1fr}
 }
+
+.today-toolbar label{min-width:150px}
+.today-toolbar label:has(#todayArea){min-width:205px}
+#todayArea{min-width:205px}
+@media(max-width:760px){
+  .today-toolbar label,.today-toolbar label:has(#todayArea),#todayArea{min-width:0;width:100%}
+}
