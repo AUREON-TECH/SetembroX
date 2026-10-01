@@ -135,3 +135,11 @@ assert.match(ceo,/function reportDateRange\(/,'reports must calculate weekly and
 assert.match(ceo,/function reportAreaStats\(/,'reports must calculate performance by operational area');
 assert.match(ceo,/async function copyReport\(/,'reports must expose a ready-to-copy executive summary');
 assert.match(ceoCss,/\.report-period-switch/,'weekly/monthly switch must have dedicated styling');
+
+assert.match(ceoHtml,/id=["']raioQuestion["']/,'XIA must provide a natural-language RAIO X question field');
+assert.match(ceoHtml,/id=["']askRaioBtn["']/,'XIA must provide a question action');
+assert.match(ceoHtml,/id=["']raioAnswer["']/,'XIA must render a grounded answer area');
+assert.match(ceo,/function findPersonFromQuestion\(/,'question engine must resolve professionals by name');
+assert.match(ceo,/async function answerRaioXQuestion\(/,'question engine must answer from RAIO X data');
+assert.match(ceo,/function personTrend\(/,'question engine must compare seven-day professional performance');
+assert.match(ceoCss,/\.xia-ask-panel/,'question experience must have dedicated styling');
