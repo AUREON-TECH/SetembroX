@@ -154,6 +154,7 @@ async function loadToday(){
   const date=$('todayDate').value||localDate(); $('todayDate').value=date;
   state.presence=await rest('ceo_daily_presence?select=*&work_date=eq.'+date);
   renderToday();
+  if($('quickPresenceSearch')?.value)renderQuickPresenceSearch();
 }
 function activePeople(){return state.people.filter(p=>p.status!=='ended');}
 function workingPeople(){return state.people.filter(p=>p.status==='active');}
@@ -231,8 +232,8 @@ function goalStatus(current,goal,superGoal){
   if(goal>0)return {label:pct(current/goal*100),cls:'progress',pct:Math.min(100,current/goal*100)};
   return {label:'SEM META',cls:'empty',pct:0};
 }
-function renderMonthGoals(){
-  if(!$('monthGoalsStrip')||!state.month)return;
+function monthGoalCardsHtml(){
+  if(!state.month)return '';
   const m=state.month,total=operationMonthTotals();
   const items=[
     {label:'Pesquisas',current:total?.r??null,goal:m.goal_research,superGoal:m.super_goal_research,fmt:v=>num(v)},
@@ -240,7 +241,7 @@ function renderMonthGoals(){
     {label:'Vendas',current:total?.s??null,goal:m.goal_sales,superGoal:m.super_goal_sales,fmt:v=>num(v)},
     {label:'VGV',current:total?.v??null,goal:m.goal_vgv,superGoal:m.super_goal_vgv,fmt:v=>money(v)}
   ];
-  $('monthGoalsStrip').innerHTML=items.map(x=>{
+  return items.map(x=>{
     const s=goalStatus(x.current,x.goal,x.superGoal);
     return '<div class="month-goal-card '+s.cls+'"><div class="month-goal-head"><small>'+x.label+'</small><span>'+s.label+'</span></div>'+
       '<b>'+(x.current==null?'—':x.fmt(x.current))+'</b>'+
@@ -248,10 +249,16 @@ function renderMonthGoals(){
       '<div class="month-goal-progress"><i style="width:'+s.pct.toFixed(1)+'%"></i></div></div>';
   }).join('');
 }
+function renderMonthGoals(){
+  if(!state.month)return;
+  const html=monthGoalCardsHtml();
+  if($('monthGoalsStrip'))$('monthGoalsStrip').innerHTML=html;
+  if($('goalBookCards'))$('goalBookCards').innerHTML=html;
+}
 function openMonthGoals(){
   if(!state.month)return;
   const m=state.month;
-  $('monthGoalModalTitle').textContent='Metas • '+m.label;
+  $('monthGoalModalTitle').textContent='Livro de Metas • '+m.label;
   $('monthGoalResearch').value=Number(m.goal_research||0)||'';
   $('monthGoalCouples').value=Number(m.goal_couples||0)||'';
   $('monthGoalSales').value=Number(m.goal_sales||0)||'';
@@ -474,6 +481,89 @@ function updateTodaySummaryFromRows(){
   if($('todaySummary'))$('todaySummary').innerHTML=cards.map(x=>'<div class="summary-card"><small>'+x[0]+'</small><b>'+x[1]+'</b><span>'+x[2]+'</span></div>').join('');
   renderTodayExecutive();
 }
+function quickPresenceStatusLabel(status){return STATUS[status]||status||'—';}
+function quickPresenceClear(){
+  if($('quickPresenceSearch'))$('quickPresenceSearch').value='';
+  if($('quickPresenceResults'))$('quickPresenceResults').innerHTML='';
+  if($('quickPresenceCard'))$('quickPresenceCard').hidden=true;
+  if($('quickPresencePersonId'))$('quickPresencePersonId').value='';
+}
+function renderQuickPresenceSearch(){
+  if(!$('quickPresenceSearch')||!$('quickPresenceResults'))return;
+  const q=norm($('quickPresenceSearch').value);
+  if(!q){$('quickPresenceResults').innerHTML='';return;}
+  const rows=workingPeople()
+    .filter(p=>norm(p.full_name).includes(q))
+    .sort((a,b)=>a.full_name.localeCompare(b.full_name,'pt-BR'))
+    .slice(0,8);
+  $('quickPresenceResults').innerHTML=rows.length?rows.map(p=>{
+    const rec=state.presence.find(x=>x.person_id===p.id);
+    const team=teamByPerson(p.id);
+    return '<button type="button" class="quick-presence-result" data-quick-person="'+p.id+'">'+
+      '<span><b>'+esc(p.full_name)+'</b><small>'+esc(personRoles(p).join(' • '))+(team?' • '+esc(team.name):'')+'</small></span>'+
+      '<em>'+esc(rec?quickPresenceStatusLabel(rec.status):'não salvo')+'</em>'+
+    '</button>';
+  }).join(''):'<div class="quick-presence-empty">Nenhum profissional ativo encontrado.</div>';
+  document.querySelectorAll('[data-quick-person]').forEach(b=>b.onclick=()=>selectQuickPresencePerson(b.dataset.quickPerson));
+}
+function syncQuickPresenceArrival(){
+  if(!$('quickPresenceStatus')||!$('quickArrivalWrap'))return;
+  const status=$('quickPresenceStatus').value;
+  const show=status==='late'||status==='present';
+  $('quickArrivalWrap').hidden=!show;
+  if(!show&&$('quickPresenceArrival'))$('quickPresenceArrival').value='';
+}
+function selectQuickPresencePerson(personId){
+  const p=personById(personId);
+  if(!p)return;
+  const rec=state.presence.find(x=>x.person_id===personId)||{};
+  const team=teamByPerson(personId);
+  $('quickPresencePersonId').value=personId;
+  $('quickPresenceName').textContent=p.full_name;
+  $('quickPresenceMeta').textContent=personRoles(p).join(' • ')+(team?' • '+team.name:' • sem equipe');
+  $('quickPresenceStatus').value=rec.status||'present';
+  $('quickPresenceArrival').value=time5(rec.arrival_time)||'';
+  $('quickPresenceNote').value=rec.note||'';
+  $('quickPresenceCard').hidden=false;
+  $('quickPresenceResults').innerHTML='';
+  $('quickPresenceSearch').value=p.full_name;
+  syncQuickPresenceArrival();
+}
+async function saveQuickPresence(){
+  const personId=$('quickPresencePersonId')?.value;
+  if(!personId){toast('Escolha um profissional.',true);return;}
+  const workDate=$('todayDate').value;
+  if(workDate.slice(0,7)!==state.month.ref_month.slice(0,7)){
+    toast('A data escolhida não pertence ao mês selecionado.',true);return;
+  }
+  const p=personById(personId);
+  const body={
+    person_id:personId,
+    month_id:state.month.id,
+    work_date:workDate,
+    status:$('quickPresenceStatus').value||'present',
+    arrival_time:$('quickPresenceArrival').value||null,
+    note:$('quickPresenceNote').value.trim()||null,
+    updated_at:new Date().toISOString()
+  };
+  try{
+    $('saveQuickPresenceBtn').disabled=true;
+    $('saveQuickPresenceBtn').textContent='Salvando...';
+    await rest('ceo_daily_presence?on_conflict=person_id,work_date',{
+      method:'POST',
+      headers:{Prefer:'resolution=merge-duplicates,return=minimal'},
+      body:JSON.stringify(body)
+    });
+    toast((p?.full_name||'Profissional')+' • '+quickPresenceStatusLabel(body.status)+' salvo.');
+    await loadToday();
+    quickPresenceClear();
+  }catch(err){toast(err.message,true);}
+  finally{
+    $('saveQuickPresenceBtn').disabled=false;
+    $('saveQuickPresenceBtn').textContent='Salvar presença';
+  }
+}
+
 function renderToday(){
   const people=todayWorkingPeople();
   const areaLabel=TODAY_AREA_ROLES[state.todayArea]||'Promotor de Marketing';
@@ -2058,6 +2148,7 @@ function setTab(id){
   $('ceoTitle').textContent=TITLES[id]?.[0]||id;
   $('ceoSubtitle').textContent=TITLES[id]?.[1]||'';
   if(id==='today')renderTodayExecutive();
+  if(id==='goals'){renderMonthGoals();renderTeamGoalDistribution();}
   if(id==='people')renderProfessionalProfile();
   if(id==='reports')renderReports();
   if(id==='approvals')loadApprovals();
@@ -2074,10 +2165,14 @@ function bind(){
     renderToday();
   };
   $('reloadToday').onclick=loadToday;
+  $('quickPresenceSearch').oninput=renderQuickPresenceSearch;
+  $('quickPresenceSearch').onfocus=renderQuickPresenceSearch;
+  $('quickPresenceClear').onclick=quickPresenceClear;
+  $('quickPresenceStatus').onchange=syncQuickPresenceArrival;
+  $('saveQuickPresenceBtn').onclick=saveQuickPresence;
   $('markAllPresentBtn').onclick=markAllPresent;
   $('saveDayBtn').onclick=saveDay;
   $('addTeamBtn').onclick=addTeam;
-  $('openMonthGoalsFromTeams').onclick=openMonthGoals;
   $('addPersonBtn').onclick=()=>openPersonModal();
   $('closePersonModal').onclick=closePersonModal;
   $('cancelPersonModal').onclick=closePersonModal;
@@ -2114,7 +2209,8 @@ function bind(){
     renderReports();
   });
   $('refreshApprovals').onclick=loadApprovals;
-  $('monthGoalsBtn').onclick=openMonthGoals;
+  $('monthGoalsBtn').onclick=()=>setTab('goals');
+  $('openMonthGoalsFromBook').onclick=openMonthGoals;
   $('closeMonthGoalModal').onclick=closeMonthGoals;
   $('cancelMonthGoalModal').onclick=closeMonthGoals;
   $('saveMonthGoalsBtn').onclick=saveMonthGoals;
