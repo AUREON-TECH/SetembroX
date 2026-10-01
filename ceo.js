@@ -9,6 +9,7 @@ const state={
 };
 const TITLES={
   today:['Hoje','Pulso executivo da operação: performance, presença e atenção.'],
+  goals:['Livro de Metas','Pesquisas, Casais, Vendas e VGV: Meta, Super Meta e divisão por equipe.'],
   teams:['Equipes','Defina equipes, horários e vínculos do mês.'],
   people:['Profissionais','Raio-X individual, metas, presença, performance e acompanhamento.'],
   one:['Olho no Olho','Conversa 1:1, compromissos e acompanhamento.'],
