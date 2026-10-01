@@ -5,7 +5,7 @@ const $=id=>document.getElementById(id);
 const state={
   session:null,user:null,admin:null,
   months:[],month:null,people:[],teams:[],assignments:[],
-  presence:[],one:[],tasks:[],approvals:[],agenda:[],goals:[],todayArea:'all',reportPeriod:'month',reportText:''
+  presence:[],one:[],tasks:[],approvals:[],agenda:[],goals:[],todayArea:'all',professionalArea:'promotor',reportPeriod:'month',reportText:''
 };
 const TITLES={
   today:['Hoje','Pulso executivo da operação: performance, presença e atenção.'],
@@ -163,6 +163,24 @@ const TODAY_AREA_ROLES={
   liner:'Liner / Consultor',
   closer:'Closer / Fechador'
 };
+const PROFESSIONAL_AREA_LABELS={
+  promotor:'Promotores de Marketing',
+  liner:'Liners / Consultores',
+  closer:'Closers / Fechadores'
+};
+function professionalAreaRole(){return TODAY_AREA_ROLES[state.professionalArea]||TODAY_AREA_ROLES.promotor;}
+function matchesProfessionalArea(p){return norm(roleOf(p))===norm(professionalAreaRole());}
+function professionalWorkingPeople(){return workingPeople().filter(matchesProfessionalArea);}
+function professionalListedPeople(){return state.people.filter(p=>p.status!=='ended'&&matchesProfessionalArea(p));}
+function professionalEndedPeople(){return state.people.filter(p=>p.status==='ended'&&matchesProfessionalArea(p));}
+function professionalAreaKeyForRole(role){
+  const n=norm(role);
+  return Object.entries(TODAY_AREA_ROLES).find(([,label])=>norm(label)===n)?.[0]||'promotor';
+}
+function syncProfessionalAreaUi(){
+  document.querySelectorAll('[data-profession-area]').forEach(b=>b.classList.toggle('active',b.dataset.professionArea===state.professionalArea));
+  if($('peopleDirectoryTitle'))$('peopleDirectoryTitle').textContent=PROFESSIONAL_AREA_LABELS[state.professionalArea]||'Profissionais';
+}
 function todayAreaRole(){return TODAY_AREA_ROLES[state.todayArea]||null;}
 function personMatchesTodayArea(p){
   const role=todayAreaRole();
@@ -449,7 +467,10 @@ function goalProgress(label,current,target,formatter=(v)=>num(v)){
 }
 async function renderProfessionalProfile(){
   if(!$('profilePerson')||!state.month)return;
-  const personId=$('profilePerson').value||workingPeople()[0]?.id;
+  const filtered=professionalWorkingPeople();
+  let personId=$('profilePerson').value;
+  if(!filtered.some(p=>p.id===personId))personId=filtered[0]?.id||'';
+  if(personId)$('profilePerson').value=personId;
   if(!personId){
     $('professionalIdentity').innerHTML='<div class="xia-empty">Nenhum profissional ativo.</div>';
     return;
@@ -531,6 +552,10 @@ async function renderProfessionalProfile(){
 }
 function openProfessionalProfile(personId){
   if(!$('profilePerson'))return;
+  const p=personById(personId);
+  if(p)state.professionalArea=professionalAreaKeyForRole(roleOf(p));
+  fillPeopleSelects();
+  renderPeople();
   $('profilePerson').value=personId;
   setTab('people');
   renderProfessionalProfile();
@@ -538,20 +563,18 @@ function openProfessionalProfile(personId){
 }
 
 function renderPeople(){
-  const active=state.people.filter(p=>p.status!=='ended');
-  const ended=state.people.filter(p=>p.status==='ended');
-  $('activePeopleCount').textContent=active.length+' ativos/cadastrados';
-  $('endedPeopleCount').textContent=ended.length+' distratados';
-
-  const grouped={};
-  active.forEach(p=>{
-    const roles=(p.roles&&p.roles.length?p.roles:[roleOf(p)]).map(r=>ROLE_ORDER.includes(r)?r:'Outros');
-    [...new Set(roles)].forEach(role=>(grouped[role]??=[]).push(p));
-  });
-  $('peopleTable').innerHTML=ROLE_ORDER.filter(r=>grouped[r]?.length).map(role=>
-    '<div class="role-group"><div class="role-group-head"><h3>'+esc(role)+'</h3><span>'+grouped[role].length+' pessoas</span></div>'+personTable(grouped[role])+'</div>'
-  ).join('');
+  const active=professionalListedPeople();
+  const ended=professionalEndedPeople();
+  const role=professionalAreaRole();
+  $('activePeopleCount').textContent=active.length+' '+(active.length===1?'profissional':'profissionais');
+  $('endedPeopleCount').textContent=ended.length+' distratado'+(ended.length===1?'':'s');
+  if($('peopleDirectoryTitle'))$('peopleDirectoryTitle').textContent=PROFESSIONAL_AREA_LABELS[state.professionalArea]||role;
+  if($('peopleDirectorySubtitle'))$('peopleDirectorySubtitle').textContent='Mostrando somente '+role+'. Troque a área acima para ver os demais.';
+  $('peopleTable').innerHTML=active.length
+    ?'<div class="role-group single-role"><div class="role-group-head"><h3>'+esc(role)+'</h3><span>'+active.length+' pessoas</span></div>'+personTable(active)+'</div>'
+    :'<div class="approval-empty">Nenhum profissional cadastrado nesta função.</div>';
   $('endedPeopleTable').innerHTML=personTable(ended,true);
+  syncProfessionalAreaUi();
   bindPeopleActions();
 }
 
@@ -767,14 +790,17 @@ function fillPeopleSelects(){
   if($('agendaPerson'))$('agendaPerson').innerHTML='<option value="">Toda a operação / sem pessoa</option>'+opts;
   if($('profilePerson')){
     const prior=$('profilePerson').value;
-    $('profilePerson').innerHTML=opts;
-    if(prior&&current.some(p=>p.id===prior))$('profilePerson').value=prior;
+    const filtered=professionalWorkingPeople();
+    $('profilePerson').innerHTML=filtered.map(p=>'<option value="'+p.id+'">'+esc(p.full_name)+'</option>').join('');
+    if(prior&&filtered.some(p=>p.id===prior))$('profilePerson').value=prior;
+    else if(filtered[0])$('profilePerson').value=filtered[0].id;
   }
   if($('xiaPerson')){
     const prior=$('xiaPerson').value;
     $('xiaPerson').innerHTML=current.map(p=>'<option value="'+p.id+'">'+esc(p.full_name)+' • '+esc(roleOf(p))+'</option>').join('');
     if(prior&&current.some(p=>p.id===prior))$('xiaPerson').value=prior;
   }
+  syncProfessionalAreaUi();
 }
 function fillAgendaTeams(){
   if(!$('agendaTeam'))return;
@@ -1689,6 +1715,12 @@ function bind(){
   $('savePersonBtn').onclick=savePerson;
   $('personModal').addEventListener('click',e=>{if(e.target===$('personModal'))closePersonModal();});
   $('profilePerson').onchange=renderProfessionalProfile;
+  document.querySelectorAll('[data-profession-area]').forEach(b=>b.onclick=async()=>{
+    state.professionalArea=b.dataset.professionArea||'promotor';
+    fillPeopleSelects();
+    renderPeople();
+    await renderProfessionalProfile();
+  });
   $('profileOpenXia').onclick=()=>{
     const id=$('profilePerson').value;if(!id)return;
     $('xiaPerson').value=id;setTab('xia');renderXIA();
@@ -1729,6 +1761,7 @@ async function init(){
     $('ceoUserEmail').textContent=state.user.email||'';
     $('todayDate').value=localDate();
     if($('todayArea')){$('todayArea').value=state.todayArea;}
+    syncProfessionalAreaUi();
     $('oneDate').value=localDate();
     if($('agendaDate'))$('agendaDate').value=localDate();
     bind(); await loadBase();
