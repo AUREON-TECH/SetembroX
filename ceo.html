@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#060a18">
 <title>RAIO X • Portal de Gestão</title>
 <link rel="icon" href="./icon.svg">
-<link rel="stylesheet" href="./ceo.css?v=7">
+<link rel="stylesheet" href="./ceo.css?v=8">
 </head>
 <body>
 <div id="ceoLoading" class="ceo-loading"><div class="loader-mark">RX</div><b>Validando acesso de gestão...</b></div>
@@ -18,7 +18,7 @@
     <nav id="ceoNav">
       <button class="active" data-tab="today">Hoje</button>
       <button data-tab="teams">Equipes</button>
-      <button data-tab="people">Pessoas</button>
+      <button data-tab="people">Profissionais</button>
       <button data-tab="one">Olho no Olho</button>
       <button data-tab="xia">XIA</button>
       <button data-tab="agenda">Agenda</button>
@@ -88,9 +88,44 @@
     </section>
 
     <section id="people" class="ceo-tab">
+      <div class="panel professional-profile-panel">
+        <div class="panel-head professional-profile-head">
+          <div><span class="eyebrow">RAIO-X DO PROFISSIONAL</span><h2>Visão completa individual</h2><p>Hoje, últimos 7 dias, mês, metas, presença e acompanhamento de liderança em um só lugar.</p></div>
+          <div class="profile-controls">
+            <select id="profilePerson" aria-label="Escolher profissional"></select>
+            <button id="profileOpenXia" class="ghost">Abrir XIA</button>
+            <button id="profileOpenOne" class="ghost">Olho no Olho</button>
+            <button id="profileEdit" class="primary small">Editar</button>
+          </div>
+        </div>
+
+        <div id="professionalIdentity" class="professional-identity"></div>
+        <div id="professionalScope" class="profile-scope-grid"></div>
+
+        <div class="profile-detail-grid">
+          <div class="profile-block">
+            <div class="profile-block-head"><span>METAS</span><b>Progresso do mês</b></div>
+            <div id="professionalGoals"></div>
+          </div>
+          <div class="profile-block">
+            <div class="profile-block-head"><span>PRESENÇA</span><b>Registro operacional</b></div>
+            <div id="professionalPresence"></div>
+          </div>
+          <div class="profile-block">
+            <div class="profile-block-head"><span>LIDERANÇA</span><b>Acompanhamento</b></div>
+            <div id="professionalLeadership"></div>
+          </div>
+        </div>
+
+        <div class="profile-block profile-daily-block">
+          <div class="profile-block-head"><span>EVOLUÇÃO</span><b>Produção diária</b></div>
+          <div id="professionalDaily" class="professional-daily"></div>
+        </div>
+      </div>
+
       <div class="panel">
-        <div class="panel-head"><div><span class="eyebrow">CADASTRO PJ</span><h2>Pessoas da operação</h2><p>Cadastro completo com CNPJ, contato, função, horário, equipe, status e acesso ao RAIO X.</p></div><button id="addPersonBtn" class="primary small">+ Adicionar pessoa</button></div>
-        <div class="people-counter-row"><span id="activePeopleCount" class="pill">0 ativos</span><span class="people-hint">Ao distratar, a pessoa sai daqui e vai para o histórico abaixo.</span></div>
+        <div class="panel-head"><div><span class="eyebrow">DIRETÓRIO DA OPERAÇÃO</span><h2>Profissionais</h2><p>Cadastro PJ, função, horário, equipe, metas e acesso ao RAIO X.</p></div><button id="addPersonBtn" class="primary small">+ Adicionar pessoa</button></div>
+        <div class="people-counter-row"><span id="activePeopleCount" class="pill">0 ativos</span><span class="people-hint">Use “Raio-X” para abrir a leitura completa de qualquer profissional.</span></div>
         <div id="peopleTable" class="table-wrap"></div>
       </div>
       <div class="panel ended-panel">
@@ -229,6 +264,6 @@
 <script src="./area-data.js"></script>
 <script src="./fx-data.js"></script>
 <script src="./xia-performance.js?v=2"></script>
-<script src="./ceo.js?v=9"></script>
+<script src="./ceo.js?v=10"></script>
 </body>
 </html>
