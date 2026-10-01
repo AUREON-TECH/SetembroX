@@ -348,3 +348,59 @@ textarea{font-size:12px}
 .presence-head-pills{display:flex;gap:6px;align-items:center}.pill.unsaved{color:#ffd17b;border-color:rgba(255,189,74,.2)}.pill.partial{color:#8fdfff;border-color:rgba(24,231,255,.18)}.pill.saved{color:#7ff0bb;border-color:rgba(82,240,166,.2)}
 .xia-controls #xiaRole{min-width:170px}
 @media(max-width:760px){.month-goals-strip{grid-template-columns:1fr}.month-box{flex-wrap:wrap}.month-box button{flex:1}}
+
+
+/* Metas por equipe • Pesquisas • Reuniões & Estratégia */
+.month-goals-strip{grid-template-columns:repeat(4,minmax(0,1fr))}
+.goal-four-grid{grid-template-columns:repeat(4,minmax(0,1fr))}
+.team-goal-summary{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px;margin-bottom:14px}
+.distribution-card{padding:12px 14px;border:1px solid rgba(255,255,255,.07);border-radius:14px;background:rgba(255,255,255,.018)}
+.distribution-card small{display:block;color:#8194b8;font-size:7px;font-weight:950;letter-spacing:.1em;text-transform:uppercase}
+.distribution-card b{display:block;margin-top:7px;font-size:14px;color:#e9f0ff}
+.distribution-card span{display:block;margin:4px 0 8px;color:#8496b8;font-size:7px}
+.team-goals-editor{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.team-goal-card{padding:14px;border:1px solid rgba(255,255,255,.07);border-radius:16px;background:linear-gradient(180deg,rgba(14,28,56,.56),rgba(6,13,29,.56))}
+.team-goal-title{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:12px}
+.team-goal-title small{color:#18e7ff;font-size:7px;font-weight:950;letter-spacing:.12em}
+.team-goal-title h3{margin:4px 0 0;font-size:15px}
+.team-goal-title>span{font-size:8px;color:#7f92b5}
+.team-goal-section{border-top:1px solid rgba(255,255,255,.06);padding-top:10px;margin-top:8px}
+.team-goal-section>b{display:block;margin-bottom:8px;font-size:8px;color:#18e7ff;letter-spacing:.1em}
+.team-goal-section.super>b{color:#ffd477}
+.team-goal-inputs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px}
+.team-goal-inputs label{font-size:7px;color:#7f91b3}
+.team-goal-inputs input{width:100%;margin-top:4px}
+.team-goal-card>button{margin-top:12px}
+
+.strategy-command{display:flex;justify-content:space-between;gap:18px;align-items:flex-end}
+.strategy-command h2{margin:4px 0 5px}
+.strategy-command p{margin:0;max-width:720px;color:#8495b6;font-size:9px;line-height:1.5}
+.strategy-filters{display:flex;gap:8px;flex-wrap:wrap}
+.strategy-list{display:grid;gap:10px}
+.strategy-card{border:1px solid rgba(255,255,255,.07);border-radius:16px;padding:14px;background:linear-gradient(180deg,rgba(11,23,47,.66),rgba(5,12,27,.66))}
+.strategy-card.in_progress{border-color:rgba(24,231,255,.18)}
+.strategy-card.done{border-color:rgba(82,240,166,.16)}
+.strategy-card.archived{opacity:.66}
+.strategy-card-head{display:flex;justify-content:space-between;gap:16px;align-items:flex-start}
+.strategy-card-head span{font-size:7px;font-weight:950;letter-spacing:.09em;color:#18e7ff;text-transform:uppercase}
+.strategy-card-head h3{margin:5px 0 0;font-size:14px}
+.strategy-card-head>div:last-child{text-align:right}
+.strategy-card-head>div:last-child b{display:block;font-size:9px}
+.strategy-card-head>div:last-child small{display:block;margin-top:4px;font-size:7px;color:#8a9bbb}
+.strategy-meta{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}
+.strategy-meta span{padding:5px 7px;border:1px solid rgba(255,255,255,.06);border-radius:999px;font-size:7px;color:#8da0c1}
+.strategy-block{margin-top:8px;padding:9px 10px;border-radius:10px;background:rgba(255,255,255,.018);border:1px solid rgba(255,255,255,.05)}
+.strategy-block small{font-size:6px;font-weight:950;letter-spacing:.1em;color:#7e91b7}
+.strategy-block p{margin:5px 0 0;font-size:8px;line-height:1.55;color:#c8d3e9}
+.strategy-block.decision{border-color:rgba(82,240,166,.13);background:rgba(82,240,166,.018)}
+.strategy-actions{display:flex;gap:7px;justify-content:flex-end;margin-top:10px;flex-wrap:wrap}
+
+@media(max-width:1000px){
+  .team-goals-editor{grid-template-columns:1fr}
+  .team-goal-summary,.month-goals-strip{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .goal-four-grid,.team-goal-inputs{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .strategy-command{align-items:flex-start;flex-direction:column}
+}
+@media(max-width:620px){
+  .team-goal-summary,.month-goals-strip,.goal-four-grid,.team-goal-inputs{grid-template-columns:1fr}
+}
