@@ -206,9 +206,10 @@ assert.match(ceoHtml,/class=["'][^"']*strategy-form-grid/,'Strategy form must us
 assert.match(ceoHtml,/id=["']strategyAgendaText["'][^>]*rows=["']6["']/,'Strategy agenda textarea must be larger');
 
 assert.match(ceo,/approved_users\?select=email,name,role,approved/,'Approvals must include pre-approved users');
-assert.match(ceo,/awaiting_signup/,'Approvals must distinguish pre-approved users awaiting first access');
 assert.match(ceo,/META NÃO DEFINIDA/,'Zero goals must be shown as not defined, not as a real target');
 assert.match(auth,/password\.length<8/,'New signups must require at least 8 password characters');
 
 assert.match(ceo,/approvalsLoadError/,'Approval load errors must not be rendered as zero counts');
-assert.match(ceo,/ativos ou pré-aprovados/,'Approval summary must explain pre-approved access');
+
+assert.doesNotMatch(ceo,/awaiting_signup|Aguardando cadastro|Pré-aprovado/,'Aprovações must not show pre-approved users without real accounts');
+assert.match(ceo,/raiox_app_users\?select=user_id,person_id,display_name,email,role,active,approval_status/,'Aprovações must load real RAIO X accounts');
