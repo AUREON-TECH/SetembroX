@@ -218,3 +218,17 @@ select{min-height:38px;padding:8px 34px 8px 10px}
 .area-switch select{min-width:150px;height:34px;min-height:34px;padding:5px 28px 5px 8px;border-color:rgba(24,231,255,.18);background-color:rgba(4,9,23,.86);font-size:9px;font-weight:800;color:#86efff}
 @media(max-width:1180px){.top-actions .leaders{display:none}.area-switch{min-width:290px}}
 @media(max-width:740px){.top{align-items:stretch;flex-direction:column}.top-actions{width:100%}.area-switch{width:100%;min-width:0}.area-switch select{min-width:145px}}
+
+
+/* v59 • histórico mensal na Central */
+.month-switch{min-width:230px}
+.month-switch select{min-width:132px}
+.top-actions{display:flex;align-items:center;gap:10px}
+@media(max-width:1380px){
+  .month-switch{min-width:210px}
+  .top-actions .leaders{display:none}
+}
+@media(max-width:960px){
+  .top-actions{align-items:stretch;flex-direction:column}
+  .month-switch,.area-switch{width:100%;min-width:0}
+}
