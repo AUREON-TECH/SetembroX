@@ -448,3 +448,105 @@
 .entry-install:hover{border-color:rgba(139,92,255,.28);color:#eaf1ff}.entry-install span{font-size:14px}.entry-install b{font-size:9px;letter-spacing:.08em}.entry-install small{justify-self:start;color:#7183a8;font-size:8px}
 .install-status{padding:9px 11px;border:1px solid rgba(255,255,255,.07);border-radius:11px;background:rgba(255,255,255,.02);color:#8fa0c1;font-size:8px;line-height:1.5}
 @media(max-width:640px){.entry-actions{width:100%}.entry-ceo{grid-template-columns:auto 1fr auto}.entry-install{grid-template-columns:auto 1fr}.entry-install small{grid-column:2;justify-self:start;margin-top:-6px}}
+
+
+/* RAIO X v40 • command dock de entrada */
+.entry-actions{width:min(100%,880px);margin:18px auto 0;gap:8px}
+.entry-command-dock{
+  display:grid;
+  grid-template-columns:minmax(0,1.34fr) minmax(0,1fr) 132px;
+  gap:9px;
+  padding:8px;
+  border:1px solid rgba(255,255,255,.09);
+  border-radius:21px;
+  background:linear-gradient(180deg,rgba(10,15,33,.88),rgba(5,8,20,.78));
+  box-shadow:0 24px 64px rgba(0,0,0,.34),inset 0 1px 0 rgba(255,255,255,.035);
+  backdrop-filter:blur(18px);
+}
+.entry-command-dock .enter.entry-primary,
+.entry-management{
+  min-height:72px;
+  display:grid;
+  grid-template-columns:auto minmax(0,1fr) auto;
+  align-items:center;
+  gap:11px;
+  margin:0;
+  padding:10px 13px;
+  border-radius:15px;
+  text-align:left;
+  text-decoration:none;
+  color:#f7fbff;
+  transition:.2s ease;
+}
+.entry-command-dock .enter.entry-primary{
+  width:100%;
+  border:1px solid rgba(24,231,255,.24);
+  background:
+    radial-gradient(circle at 12% 20%,rgba(24,231,255,.13),transparent 42%),
+    linear-gradient(115deg,rgba(14,31,61,.92),rgba(10,19,40,.92));
+  box-shadow:inset 0 0 0 1px rgba(24,231,255,.025);
+}
+.entry-management{
+  border:1px solid rgba(151,110,255,.25);
+  background:
+    radial-gradient(circle at 12% 20%,rgba(139,92,255,.14),transparent 44%),
+    linear-gradient(115deg,rgba(28,20,56,.92),rgba(12,16,36,.92));
+  box-shadow:inset 0 0 0 1px rgba(139,92,255,.025);
+}
+.entry-management[hidden]{display:none!important}
+.entry-command-dock .enter.entry-primary:hover,
+.entry-management:hover{
+  transform:translateY(-1px);
+  border-color:rgba(24,231,255,.46);
+  box-shadow:0 13px 30px rgba(0,0,0,.22),inset 0 0 24px rgba(24,231,255,.04);
+}
+.entry-management:hover{border-color:rgba(159,122,255,.5)}
+.entry-action-icon{
+  width:40px;height:40px;
+  display:grid;place-items:center;
+  border-radius:12px;
+  border:1px solid rgba(255,255,255,.1);
+  background:linear-gradient(145deg,rgba(255,255,255,.075),rgba(255,255,255,.02));
+  color:#bff8ff;
+  font-size:11px;font-weight:1000;letter-spacing:.08em;
+}
+.entry-management .entry-action-icon{color:#d8c7ff}
+.entry-action-copy{min-width:0;display:grid;gap:2px}
+.entry-action-copy small{font-size:7px;font-weight:950;letter-spacing:.16em;color:#18e7ff}
+.entry-management .entry-action-copy small{color:#bba5ff}
+.entry-action-copy b{font-size:11px;line-height:1.1;letter-spacing:.055em;color:#f7fbff}
+.entry-action-copy em{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-style:normal;font-size:7.5px;color:#7f91b5}
+.entry-command-dock .enter.entry-primary>strong,
+.entry-management>strong{font-size:17px;color:#8fefff}
+.entry-management>strong{color:#c5b3ff}
+.entry-command-dock .entry-install.entry-install-compact{
+  min-height:72px;
+  display:grid;
+  grid-template-columns:1fr;
+  place-items:center;
+  align-content:center;
+  gap:2px;
+  width:100%;
+  padding:8px;
+  border-radius:15px;
+  background:rgba(255,255,255,.022);
+}
+.entry-install-compact span{font-size:15px}
+.entry-install-compact b{font-size:8px}
+.entry-install-compact small{justify-self:center!important;margin:0!important;font-size:7px}
+.install-status{width:min(100%,860px);margin:0 auto}
+@media(max-width:760px){
+  .entry-command-dock{grid-template-columns:1fr 1fr}
+  .entry-command-dock .entry-install.entry-install-compact{
+    grid-column:1/-1;
+    min-height:42px;
+    grid-template-columns:auto auto auto;
+    gap:8px;
+  }
+}
+@media(max-width:560px){
+  .entry-command-dock{grid-template-columns:1fr;padding:7px;border-radius:18px}
+  .entry-command-dock .enter.entry-primary,.entry-management{min-height:66px}
+  .entry-command-dock .entry-install.entry-install-compact{grid-column:auto}
+  .entry-action-copy em{font-size:7px}
+}
