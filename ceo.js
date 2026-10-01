@@ -5,7 +5,7 @@ const $=id=>document.getElementById(id);
 const state={
   session:null,user:null,admin:null,
   months:[],month:null,people:[],teams:[],assignments:[],
-  presence:[],one:[],tasks:[],approvals:[],agenda:[],goals:[],todayArea:'all',professionalArea:'promotor',reportPeriod:'month',reportText:''
+  presence:[],one:[],tasks:[],approvals:[],agenda:[],goals:[],todayArea:'promotor',professionalArea:'promotor',xiaRole:'',reportPeriod:'month',reportText:''
 };
 const TITLES={
   today:['Hoje','Pulso executivo da operação: performance, presença e atenção.'],
@@ -45,7 +45,12 @@ function pct(v){return num(v,1)+'%';}
 function esc(v){return String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}
 function norm(v){return String(v||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').trim().toLowerCase();}
 function time5(v){return v?String(v).slice(0,5):'';}
-function roleOf(p){return (p.roles&&p.roles[0])||p.area||'Outros';}
+function personRoles(p){
+  const roles=Array.isArray(p?.roles)?p.roles.filter(Boolean):[];
+  return roles.length?roles:[p?.area||'Outros'];
+}
+function roleOf(p){return personRoles(p)[0]||'Outros';}
+function hasRole(p,role){return personRoles(p).some(r=>norm(r)===norm(role));}
 function statusLabel(s){return s==='active'?'Ativo':s==='inactive'?'Inativo':s==='away'?'Indisponível':s==='ended'?'Distratado':s;}
 function dateBr(v){if(!v)return '—';const [y,m,d]=String(v).slice(0,10).split('-');return d+'/'+m+'/'+y;}
 function monthKeyFromDate(v){return String(v||'').slice(0,7)+'-01';}
@@ -72,9 +77,12 @@ async function validateCEO(){
   if(!s.expires_at||s.expires_at-Math.floor(Date.now()/1000)<90)s=await refresh(s);
   const user=await raw('/auth/v1/user',{method:'GET'},s.access_token);
   state.session=s; state.user=user;
-  const rows=await rest('ceo_admins?select=user_id,display_name&user_id=eq.'+encodeURIComponent(user.id));
-  if(!rows[0])throw new Error('Esta conta não possui acesso ao Portal CEO.');
-  state.admin=rows[0];
+  const rows=await rest('raiox_app_users?select=user_id,display_name,role,active,approval_status,email&user_id=eq.'+encodeURIComponent(user.id));
+  const access=rows[0];
+  if(!access||!access.active||access.approval_status!=='approved'||!['ceo','manager'].includes(access.role)){
+    throw new Error('Esta conta não possui acesso ao Portal de Gestão.');
+  }
+  state.admin=access;
 }
 async function signOut(){
   try{await raw('/auth/v1/logout',{method:'POST'});}catch(_){}
@@ -113,6 +121,7 @@ async function selectMonth(id){
   state.month=state.months.find(m=>m.id===id)||state.months[0];
   if(!state.month)return;
   $('monthSelect').value=state.month.id;
+  renderMonthGoals();
   const monthPrefix=state.month.ref_month.slice(0,7);
   const today=localDate();
   if(!$('todayDate').value||$('todayDate').value.slice(0,7)!==monthPrefix){
@@ -150,6 +159,74 @@ function effectiveStart(p){
   return time5(p.default_start_time)||time5(team?.start_time)||'—';
 }
 
+function operationMonthTotals(){
+  if(!state.month||performanceUpdatedMonth()!==state.month.ref_month.slice(0,7))return null;
+  return performanceRoles('Promotor de Marketing').reduce((a,r)=>{
+    a.c+=Number(r.c||0);a.s+=Number(r.s||0);a.v+=Number(r.v||0);
+    return a;
+  },{c:0,s:0,v:0});
+}
+function goalStatus(current,goal,superGoal){
+  goal=Number(goal||0);superGoal=Number(superGoal||0);
+  if(current==null)return {label:'AGUARDANDO DADOS',cls:'waiting',pct:0};
+  current=Number(current||0);
+  if(superGoal>0&&current>=superGoal)return {label:'SUPER META',cls:'super',pct:100};
+  if(goal>0&&current>=goal)return {label:'META BATIDA',cls:'hit',pct:100};
+  if(goal>0)return {label:pct(current/goal*100),cls:'progress',pct:Math.min(100,current/goal*100)};
+  return {label:'SEM META',cls:'empty',pct:0};
+}
+function renderMonthGoals(){
+  if(!$('monthGoalsStrip')||!state.month)return;
+  const m=state.month,total=operationMonthTotals();
+  const items=[
+    {label:'Casais',current:total?.c??null,goal:m.goal_couples,superGoal:m.super_goal_couples,fmt:v=>num(v)},
+    {label:'Vendas',current:total?.s??null,goal:m.goal_sales,superGoal:m.super_goal_sales,fmt:v=>num(v)},
+    {label:'VGV',current:total?.v??null,goal:m.goal_vgv,superGoal:m.super_goal_vgv,fmt:v=>money(v)}
+  ];
+  $('monthGoalsStrip').innerHTML=items.map(x=>{
+    const s=goalStatus(x.current,x.goal,x.superGoal);
+    return '<div class="month-goal-card '+s.cls+'"><div class="month-goal-head"><small>'+x.label+'</small><span>'+s.label+'</span></div>'+
+      '<b>'+(x.current==null?'—':x.fmt(x.current))+'</b>'+
+      '<p>Meta '+(Number(x.goal||0)>0?x.fmt(x.goal):'—')+(Number(x.superGoal||0)>0?' • Super '+x.fmt(x.superGoal):'')+'</p>'+
+      '<div class="month-goal-progress"><i style="width:'+s.pct.toFixed(1)+'%"></i></div></div>';
+  }).join('');
+}
+function openMonthGoals(){
+  if(!state.month)return;
+  const m=state.month;
+  $('monthGoalModalTitle').textContent='Metas • '+m.label;
+  $('monthGoalCouples').value=Number(m.goal_couples||0)||'';
+  $('monthGoalSales').value=Number(m.goal_sales||0)||'';
+  $('monthGoalVgv').value=Number(m.goal_vgv||0)||'';
+  $('monthSuperGoalCouples').value=Number(m.super_goal_couples||0)||'';
+  $('monthSuperGoalSales').value=Number(m.super_goal_sales||0)||'';
+  $('monthSuperGoalVgv').value=Number(m.super_goal_vgv||0)||'';
+  $('monthGoalModal').hidden=false;
+}
+function closeMonthGoals(){if($('monthGoalModal'))$('monthGoalModal').hidden=true;}
+async function saveMonthGoals(){
+  if(!state.month)return;
+  const body={
+    goal_couples:Number($('monthGoalCouples').value||0),
+    goal_sales:Number($('monthGoalSales').value||0),
+    goal_vgv:Number($('monthGoalVgv').value||0),
+    super_goal_couples:Number($('monthSuperGoalCouples').value||0),
+    super_goal_sales:Number($('monthSuperGoalSales').value||0),
+    super_goal_vgv:Number($('monthSuperGoalVgv').value||0)
+  };
+  if(Object.values(body).some(v=>!Number.isFinite(v)||v<0)){toast('As metas precisam ser números válidos e positivos.',true);return;}
+  try{
+    $('saveMonthGoalsBtn').disabled=true;
+    await rest('ceo_months?id=eq.'+state.month.id,{method:'PATCH',headers:{Prefer:'return=minimal'},body:JSON.stringify(body)});
+    Object.assign(state.month,body);
+    const i=state.months.findIndex(x=>x.id===state.month.id);if(i>=0)Object.assign(state.months[i],body);
+    renderMonthGoals();await renderReports();
+    toast('Meta e Super Meta salvas para '+state.month.label+'.');
+    closeMonthGoals();
+  }catch(err){toast(err.message,true);}
+  finally{$('saveMonthGoalsBtn').disabled=false;}
+}
+
 function performanceUpdatedMonth(){
   const raw=window.XIA_PERFORMANCE?.updated||'';
   const m=raw.match(/(\d{2})\/(\d{2})\/(\d{4})/);
@@ -169,7 +246,7 @@ const PROFESSIONAL_AREA_LABELS={
   closer:'Closers / Fechadores'
 };
 function professionalAreaRole(){return TODAY_AREA_ROLES[state.professionalArea]||TODAY_AREA_ROLES.promotor;}
-function matchesProfessionalArea(p){return norm(roleOf(p))===norm(professionalAreaRole());}
+function matchesProfessionalArea(p){return hasRole(p,professionalAreaRole());}
 function professionalWorkingPeople(){return workingPeople().filter(matchesProfessionalArea);}
 function professionalListedPeople(){return state.people.filter(p=>p.status!=='ended'&&matchesProfessionalArea(p));}
 function professionalEndedPeople(){return state.people.filter(p=>p.status==='ended'&&matchesProfessionalArea(p));}
@@ -184,7 +261,7 @@ function syncProfessionalAreaUi(){
 function todayAreaRole(){return TODAY_AREA_ROLES[state.todayArea]||null;}
 function personMatchesTodayArea(p){
   const role=todayAreaRole();
-  return !role||norm(roleOf(p))===norm(role);
+  return !role||hasRole(p,role);
 }
 function todayWorkingPeople(){return workingPeople().filter(personMatchesTodayArea);}
 function performanceRoles(roleName='Promotor de Marketing'){
@@ -292,32 +369,53 @@ function renderTodayExecutive(){
     '<div class="today-alert '+a.level+'"><span>'+esc(a.tag)+'</span><div><b>'+esc(a.title)+'</b><p>'+esc(a.text)+'</p></div></div>'
   ).join(''):'<div class="today-alert-empty"><b>Nenhum sinal crítico agora.</b><span>Continue acompanhando performance e presença ao longo do dia.</span></div>';
 }
+function todayPresenceSaveState(){
+  const ids=new Set(todayWorkingPeople().map(p=>p.id));
+  const records=state.presence.filter(x=>ids.has(x.person_id));
+  const total=ids.size;
+  return {total,saved:records.length,records,complete:total>0&&records.length===total,partial:records.length>0&&records.length<total};
+}
+function renderTodaySaveState(){
+  const s=todayPresenceSaveState(),el=$('todaySaveState');
+  if(!el)return s;
+  el.className='pill '+(s.complete?'saved':s.partial?'partial':'unsaved');
+  el.textContent=s.complete?'dia salvo':s.partial?('parcial '+s.saved+'/'+s.total):'não salvo';
+  return s;
+}
 function effectiveTodayStatus(p){
   const rec=state.presence.find(x=>x.person_id===p.id);
   return rec?.status||'present';
 }
 function updateTodaySummaryFromRows(){
   const rows=[...document.querySelectorAll('.presence-row')];
+  const save=renderTodaySaveState();
   const counts={present:0,absent:0,late:0,other:0};
-  rows.forEach(row=>{
-    const s=row.querySelector('.presence-status')?.value||'present';
+  save.records.forEach(rec=>{
+    const s=rec.status||'present';
     if(s==='present')counts.present++;
     else if(s==='absent')counts.absent++;
     else if(s==='late')counts.late++;
     else counts.other++;
   });
-  if($('todaySummary'))$('todaySummary').innerHTML=[
+  const cards=save.complete?[
     ['Ativos',rows.length,'pessoas'],
-    ['Presentes',counts.present,'no dia'],
-    ['Ausências',counts.absent,'no dia'],
-    ['Atrasos',counts.late,'no dia'],
-    ['Outros',counts.other,'folga/indisponível/etc.']
-  ].map(x=>'<div class="summary-card"><small>'+x[0]+'</small><b>'+x[1]+'</b><span>'+x[2]+'</span></div>').join('');
+    ['Presentes',counts.present,'confirmados'],
+    ['Ausências',counts.absent,'confirmadas'],
+    ['Atrasos',counts.late,'confirmados'],
+    ['Outros',counts.other,'confirmados']
+  ]:[
+    ['Previstos',rows.length,'pessoas'],
+    ['Salvos',save.saved,'registros confirmados'],
+    ['Presentes',counts.present,'já salvos'],
+    ['Ausências',counts.absent,'já salvas'],
+    ['Atrasos',counts.late,'já salvos']
+  ];
+  if($('todaySummary'))$('todaySummary').innerHTML=cards.map(x=>'<div class="summary-card"><small>'+x[0]+'</small><b>'+x[1]+'</b><span>'+x[2]+'</span></div>').join('');
   renderTodayExecutive();
 }
 function renderToday(){
   const people=todayWorkingPeople();
-  const areaLabel=state.todayArea==='all'?'Todas as áreas':(TODAY_AREA_ROLES[state.todayArea]||'Área');
+  const areaLabel=TODAY_AREA_ROLES[state.todayArea]||'Promotor de Marketing';
   $('todayCount').textContent=people.length+' pessoas • '+areaLabel;
   $('todayPeople').innerHTML=people.map(p=>{
     const rec=state.presence.find(x=>x.person_id===p.id)||{};
@@ -327,7 +425,7 @@ function renderToday(){
     const schedule=time5(p.default_start_time)||time5(team?.start_time);
     const teamText=team?team.name:'sem equipe';
     return '<div class="presence-row" data-person="'+p.id+'">'+
-      '<div class="person-main"><b>'+esc(p.full_name)+'</b><span>'+esc(roleOf(p))+' • '+esc(teamText)+(schedule?' • '+schedule:'')+'</span></div>'+
+      '<div class="person-main"><b>'+esc(p.full_name)+'</b><span>'+esc(areaLabel)+(personRoles(p).length>1?' • multifunção':'')+' • '+esc(teamText)+(schedule?' • '+schedule:'')+'</span></div>'+
       '<select class="presence-status">'+opts+'</select>'+
       '<input class="arrival" type="time" title="Horário real de chegada" value="'+esc(time5(rec.arrival_time))+'">'+
       '<input class="presence-note" placeholder="Observação" value="'+esc(rec.note||'')+'">'+
@@ -416,7 +514,7 @@ function personTable(rows,ended=false){
       const status=p.status||'active';
       const actions=ended
         ?'<button data-edit-person="'+p.id+'">Ver / editar</button><button class="danger" data-delete-person="'+p.id+'">Excluir</button>'
-        :'<button data-edit-person="'+p.id+'">Editar</button><button data-access-person="'+p.id+'">Acesso</button><button class="danger" data-end-person="'+p.id+'">Distratar</button><button class="danger" data-delete-person="'+p.id+'">Excluir</button>';
+        :'<button class="profile-action" data-profile-person="'+p.id+'">Raio-X</button><button data-edit-person="'+p.id+'">Editar</button><button data-access-person="'+p.id+'">Acesso</button><button class="danger" data-end-person="'+p.id+'">Distratar</button><button class="danger" data-delete-person="'+p.id+'">Excluir</button>';
       return '<tr>'+
         '<td><b>'+esc(p.full_name)+'</b><small>'+esc((p.roles&&p.roles.length?p.roles:[roleOf(p)]).join(' • '))+(p.email?' • '+esc(p.email):'')+'</small></td>'+
         '<td>'+esc(p.cnpj||'—')+'<small>'+esc(p.phone||'sem telefone')+'</small></td>'+
@@ -480,7 +578,8 @@ async function renderProfessionalProfile(){
   const team=teamByPerson(personId);
   const goal=goalByPerson(personId);
   const perf=perfForPerson(p);
-  const primary=choosePrimaryPerf(p,perf);
+  const selectedRole=professionalAreaRole();
+  const primary=choosePrimaryPerf(p,perf,selectedRole);
   const sameMonth=perfMonthMatches();
   const referenceDay=performanceReferenceDay()||31;
   const selectedDate=$('todayDate')?.value||localDate();
@@ -488,11 +587,11 @@ async function renderProfessionalProfile(){
   const dayData=primary&&sameMonth?roleDay(primary,selectedDay):null;
   const week=primary&&sameMonth?roleRange(primary,Math.max(1,referenceDay-6),referenceDay):null;
   const month=primary&&sameMonth?{c:primary.c||0,s:primary.s||0,v:primary.v||0,q:primary.q||0,nq:primary.nq||0}:null;
-  const volumeLabel=roleOf(p)==='Promotor de Marketing'?'casais':'atendimentos';
+  const volumeLabel=selectedRole==='Promotor de Marketing'?'casais':'atendimentos';
 
   $('professionalIdentity').innerHTML=
     '<div class="professional-person"><div class="professional-avatar">'+esc((p.full_name||'?').split(/\s+/).slice(0,2).map(x=>x[0]||'').join('').toUpperCase())+'</div>'+
-    '<div><span class="eyebrow">PROFISSIONAL</span><h3>'+esc(p.full_name)+'</h3><p>'+esc(roleOf(p))+' • '+esc(team?.name||'sem equipe')+' • '+esc(effectiveStart(p))+' • '+esc(statusLabel(p.status))+'</p></div></div>'+
+    '<div><span class="eyebrow">PROFISSIONAL</span><h3>'+esc(p.full_name)+'</h3><p>'+esc(selectedRole)+(personRoles(p).length>1?' • multifunção: '+esc(personRoles(p).filter(r=>norm(r)!==norm(selectedRole)).join(' • ')):'')+' • '+esc(team?.name||'sem equipe')+' • '+esc(effectiveStart(p))+' • '+esc(statusLabel(p.status))+'</p></div></div>'+
     '<div class="professional-base"><b>'+esc(state.month.label)+'</b><span>Performance: '+esc(window.XIA_PERFORMANCE?.updated||'sem base')+'</span></div>';
 
   if(primary&&sameMonth){
@@ -553,7 +652,10 @@ async function renderProfessionalProfile(){
 function openProfessionalProfile(personId){
   if(!$('profilePerson'))return;
   const p=personById(personId);
-  if(p)state.professionalArea=professionalAreaKeyForRole(roleOf(p));
+  if(p&&!hasRole(p,professionalAreaRole())){
+    const commercial=personRoles(p).find(r=>Object.values(TODAY_AREA_ROLES).some(label=>norm(label)===norm(r)));
+    state.professionalArea=professionalAreaKeyForRole(commercial||roleOf(p));
+  }
   fillPeopleSelects();
   renderPeople();
   $('profilePerson').value=personId;
@@ -1045,9 +1147,9 @@ function perfMonthMatches(){
   if(!m||!state.month)return false;
   return state.month.ref_month.slice(0,7)===m[3]+'-'+m[2];
 }
-function choosePrimaryPerf(p,perf){
+function choosePrimaryPerf(p,perf,preferredRole=''){
   if(!perf?.roles?.length)return null;
-  const r=roleOf(p);
+  const r=preferredRole||roleOf(p);
   return perf.roles.find(x=>norm(x.role)===norm(r))||perf.roles[0];
 }
 function dailyConsistency(role){
@@ -1320,7 +1422,16 @@ function lastSevenPresenceCounts(presenceRows,personId){
 
 function xiaPersonSignal(p,presenceRows=[]){
   const perf=perfForPerson(p);
-  const primary=choosePrimaryPerf(p,perf);
+  const roleOptions=(perf?.roles||[]).map(r=>r.role);
+  let selectedXiaRole=state.xiaRole;
+  if(!roleOptions.some(r=>norm(r)===norm(selectedXiaRole)))selectedXiaRole=roleOptions[0]||roleOf(p);
+  state.xiaRole=selectedXiaRole;
+  if($('xiaRole')){
+    $('xiaRole').hidden=roleOptions.length<2;
+    $('xiaRole').innerHTML=roleOptions.map(r=>'<option value="'+esc(r)+'">'+esc(r)+'</option>').join('');
+    if(roleOptions.length)$('xiaRole').value=selectedXiaRole;
+  }
+  const primary=choosePrimaryPerf(p,perf,selectedXiaRole);
   const sameMonth=perfMonthMatches();
   const reasons=[];
   let level=0;
@@ -1537,7 +1648,7 @@ async function renderXIA(){
     return '<div class="xia-role-card"><small>'+esc(r.role)+'</small><b>'+r.c+' / '+r.s+'</b><span>volume / vendas • '+pct(rconv)+' conversão • '+money(r.v)+' VGV</span></div>';
   }).join('');
 
-  $('xiaIdentity').innerHTML='<div class="xia-person-head"><div><span class="eyebrow">PROFISSIONAL</span><h3>'+esc(p.full_name)+'</h3><p>'+esc(roleOf(p))+' • '+esc(team?.name||'sem equipe')+' • horário '+esc(effectiveStart(p))+' • status '+esc(statusLabel(p.status))+'</p></div><div class="xia-base">Performance: '+esc(window.XIA_PERFORMANCE?.updated||'sem base')+'<br>Gestão: '+esc(state.month.label)+'</div></div>'+
+  $('xiaIdentity').innerHTML='<div class="xia-person-head"><div><span class="eyebrow">PROFISSIONAL</span><h3>'+esc(p.full_name)+'</h3><p>'+esc(selectedXiaRole)+' • '+esc(team?.name||'sem equipe')+' • horário '+esc(effectiveStart(p))+' • status '+esc(statusLabel(p.status))+'</p></div><div class="xia-base">Performance: '+esc(window.XIA_PERFORMANCE?.updated||'sem base')+'<br>Gestão: '+esc(state.month.label)+'</div></div>'+
     '<div class="xia-role-grid">'+(roleCards||'<div class="xia-empty">Sem performance histórica ligada ao nome deste cadastro.</div>')+'</div>';
 
   $('xiaMetrics').innerHTML=[
@@ -1702,7 +1813,7 @@ function bind(){
   $('monthSelect').onchange=()=>selectMonth($('monthSelect').value);
   $('todayDate').onchange=loadToday;
   $('todayArea').onchange=()=>{
-    state.todayArea=$('todayArea').value||'all';
+    state.todayArea=$('todayArea').value||'promotor';
     renderToday();
   };
   $('reloadToday').onclick=loadToday;
@@ -1742,9 +1853,15 @@ function bind(){
     renderReports();
   });
   $('refreshApprovals').onclick=loadApprovals;
+  $('monthGoalsBtn').onclick=openMonthGoals;
+  $('closeMonthGoalModal').onclick=closeMonthGoals;
+  $('cancelMonthGoalModal').onclick=closeMonthGoals;
+  $('saveMonthGoalsBtn').onclick=saveMonthGoals;
+  $('monthGoalModal').addEventListener('click',e=>{if(e.target===$('monthGoalModal'))closeMonthGoals();});
   $('newMonthBtn').onclick=newMonth;
   $('ceoLogout').onclick=signOut;
-  $('xiaPerson').onchange=renderXIA;
+  $('xiaPerson').onchange=()=>{state.xiaRole='';renderXIA();};
+  $('xiaRole').onchange=()=>{state.xiaRole=$('xiaRole').value||'';renderXIA();};
   $('refreshXia').onclick=renderXIA;
   $('askRaioBtn').onclick=answerRaioXQuestion;
   $('raioQuestion').addEventListener('keydown',e=>{if(e.key==='Enter')answerRaioXQuestion();});
