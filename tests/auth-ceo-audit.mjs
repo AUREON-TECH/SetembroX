@@ -222,3 +222,10 @@ assert.match(monthLive,/goal_couples/,'Live month must include couples target');
 assert.match(monthLive,/goal_sales/,'Live month must include sales target');
 assert.match(monthLive,/goal_vgv/,'Live month must include VGV target');
 assert.match(monthLive,/currentMonthEmpty/,'Live month must clear stale previous-month data');
+
+assert.match(html,/id=["']monthCurrentSelect["']/,'Central must expose a month selector');
+assert.match(html,/id=["']monthCurrentLabel["']/,'Central must show the selected month label');
+assert.match(monthLive,/sessionStorage\.setItem\('raiox\.view\.month\.v1'/,'Month selection must persist within the session');
+assert.match(monthLive,/order=ref_month\.desc/,'Month selector must load current and historical months');
+assert.doesNotMatch(monthLive,/status=eq\.open&order=ref_month/,'Month selector must not be restricted to the open month');
+assert.match(monthLive,/month\.status===['"]closed['"]/,'Historical months must be marked as closed');
