@@ -239,3 +239,11 @@ assert.match(monthLive,/function dynamicDiagnosis\(/,'Current months must render
 assert.match(monthLive,/function dynamicProfile\(/,'Current months must explicitly handle profile data availability');
 assert.match(monthLive,/function dynamicProjection\(/,'Current months must render projections dynamically');
 assert.match(monthLive,/function dynamicCosts\(/,'Current months must render costs dynamically');
+
+assert.match(ceoHtml,/id=["']personGoalResearch["']/,'Professional goals must include Research');
+assert.match(ceo,/research_goal:Number\(\$\(['"]personGoalResearch['"]\)/,'Professional Research goal must be persisted');
+assert.match(ceo,/goalProgress\(['"]Pesquisas['"]/,'Professional Raio-X must render Research goal');
+assert.match(ceo,/syncAccessLinkForPerson/,'Professional save must link exact-email access records');
+assert.match(ceo,/disableAccessForPerson/,'Distrato must block linked access safely');
+assert.match(ceo,/password\.length<8/,'CEO user creation/reset UI must require at least 8 characters');
+assert.doesNotMatch(ceo,/mínimo 6 caracteres|pelo menos 6 caracteres/,'CEO UI must not advertise six-character passwords');
