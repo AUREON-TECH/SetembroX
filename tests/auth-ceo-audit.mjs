@@ -87,3 +87,10 @@ assert.match(html,/id=["']entryCeoPortal["'][^>]*hidden/,'CEO portal CTA must ex
 assert.match(auth,/entryCeoPortal/,'auth must reveal the CEO entry CTA only for CEO sessions');
 
 assert.match(auth,/const ctx=await signIn\(email,password\);[\s\S]*?reveal\(ctx\);[\s\S]*?return;/,'approved preauthorized signup must enter RAIO X immediately');
+
+assert.match(ceoHtml,/id=["']todayPerformance["']/,'Today must expose executive performance KPIs');
+assert.match(ceoHtml,/id=["']todayAlerts["']/,'Today must expose leadership attention signals');
+assert.match(ceo,/function performanceDay\(/,'CEO portal must calculate daily performance from XIA data');
+assert.match(ceo,/function renderTodayExecutive\(/,'CEO portal must render the executive Today view');
+assert.match(ceo,/function todayAttention\(/,'CEO portal must combine performance and presence attention signals');
+assert.match(ceoCss,/\.today-performance-grid/,'executive Today KPIs need dedicated styling');
