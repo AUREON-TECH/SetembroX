@@ -102,3 +102,7 @@ assert.match(ceoHtml,/Closer \/ Fechador/,'Today area filter must include Closer
 assert.match(ceo,/TODAY_AREA_ROLES/,'Today filter must map operational roles');
 assert.match(ceo,/function todayWorkingPeople\(/,'Today presence must respect selected area');
 assert.match(ceo,/todayArea.*onchange|\$\(['"]todayArea['"]\)\.onchange/,'Today area selector must rerender on change');
+
+assert.match(ceo,/ceo_months\?select=\*&ref_month=eq\./,'new month must check the database before inserting');
+assert.match(ceo,/já existe\. Abri o mês existente|já existia\. Abri o mês existente/,'duplicate month must resolve to the existing month without raw database error');
+assert.match(ceo,/duplicate key\|ceo_months_ref_month_key\|23505/,'new month must safely recover from race-condition duplicates');
