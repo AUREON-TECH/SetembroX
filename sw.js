@@ -1,5 +1,5 @@
 // Dados oficiais atualizados até 29/09/2026; alteração deste arquivo força atualização do shell.
-const CACHE = 'raiox-v40-management-entry';
+const CACHE = 'raiox-v41-manager-bootstrap';
 const CORE = ['./index.html', './styles.css', './entry-v2.css', './arena-x.css', './ops-dashboard.css', './diagnostic.css', './fx.css', './layout-premium.css', './area-data.js', './fx-data.js', './app.js', './fx-engine.js', './sales-count-fix.js', './auth-config.js', './install.js', './auth.js', './auth.css', './ceo.html', './ceo.js', './ceo.css', './xia-performance.js', './pending.html', './pending.js', './pending.css', './manifest.webmanifest', './icon.svg', './icon-192.png', './icon-512.png', './icon-maskable-512.png'];
 const SENSITIVE_PARAMS = /(^|_)(token|access_token|refresh_token|password|senha|secret|session|auth|authorization|code|credential|credentials|api_key|apikey)(_|$)/i;
 const PRIVATE_PATHS = /\/(api|auth|login|logout|session|sessions|account|profile|admin)(\/|$)/i;
