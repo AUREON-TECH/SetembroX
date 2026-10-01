@@ -30,7 +30,7 @@ assert.match(auth,/raiox_app_users/,'login must check access allowlist');
 assert.match(auth,/approval_status/,'login must enforce CEO approval');
 assert.match(auth,/pending\.html/,'pending users must be routed to approval status page');
 assert.match(auth,/raiox-request-access-v2/,'new access requests must use the safe v2 endpoint');
-assert.match(auth,/const isCeo=ctx\.access\.role===['"]ceo['"]/,'CEO portal visibility must be derived only from CEO role');
+assert.match(auth,/const canManage=\[['"]ceo['"],['"]manager['"]\]\.includes\(ctx\.access\.role\)/,'management portal visibility must be limited to CEO or manager roles');
 assert.doesNotMatch(auth,/sms|phone|otp/i,'main login must not depend on SMS/phone/OTP');
 
 assert.match(pendingHtml,/Aguardando aprovação/i,'pending status page must exist');
@@ -38,7 +38,7 @@ assert.match(pendingHtml,/id=["']checkApproval["']/,'pending page must let user 
 assert.match(pendingJs,/approval_status/,'pending page must verify approval status');
 assert.match(pendingJs,/location\.href=['"]\.\//,'approved user must be able to return to RAIO X');
 
-assert.match(ceoHtml,/Portal CEO/i,'private CEO page must exist');
+assert.match(ceoHtml,/Portal (CEO|de Gestão)/i,'private management page must exist');
 assert.match(ceoHtml,/Olho no Olho/i,'CEO portal must include one-on-one');
 assert.match(ceoHtml,/data-tab=["']xia["']/,'CEO portal must include XIA');
 assert.match(ceoHtml,/data-tab=["']agenda["']/,'CEO portal must include intelligent agenda');
