@@ -158,3 +158,17 @@ assert.match(ceo,/function professionalWorkingPeople\(/,'professional profile se
 assert.match(ceo,/function professionalListedPeople\(/,'professional directory must show one profession at a time');
 assert.match(ceo,/function professionalAreaKeyForRole\(/,'opening a professional from another module must switch to the correct profession');
 assert.match(ceoCss,/\.profession-switch/,'profession selector must have dedicated styling');
+
+assert.doesNotMatch(ceoHtml,/option value=["']all["']>Todos<\/option>/,'Today must show one operational profession at a time');
+assert.match(ceo,/todayArea:'promotor'/,'Today must default to Promotor for the new month');
+assert.match(ceo,/function personRoles\(/,'portal must preserve every role of multi-role professionals');
+assert.match(ceo,/function hasRole\(/,'area filters must include multi-role professionals');
+assert.match(ceo,/function choosePrimaryPerf\(p,perf,preferredRole=/,'professional analysis must choose the selected role');
+assert.match(ceo,/data-profile-person/,'professional directory must restore the Raio-X action');
+assert.match(ceoHtml,/id=["']todaySaveState["']/,'Today must distinguish saved attendance from prefilled attendance');
+assert.match(ceo,/function todayPresenceSaveState\(/,'presence summary must use persisted records');
+assert.match(ceoHtml,/id=["']monthGoalsBtn["']/,'management portal must expose monthly Meta and Super Meta');
+assert.match(ceoHtml,/id=["']monthSuperGoalVgv["']/,'Super Meta must support VGV');
+assert.match(ceo,/async function saveMonthGoals\(/,'monthly goals must be persisted in ceo_months');
+assert.match(ceoHtml,/id=["']xiaRole["']/,'XIA must let multi-role professionals be analyzed in the selected role');
+assert.match(ceo,/\['ceo','manager'\]\.includes\(access\.role\)/,'Portal de Gestão must authorize CEO and manager roles');
