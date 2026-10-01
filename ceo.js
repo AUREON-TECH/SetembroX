@@ -8,7 +8,7 @@ const state={
   presence:[],one:[],tasks:[],approvals:[],agenda:[],goals:[]
 };
 const TITLES={
-  today:['Hoje','Registro operacional diário da sua equipe.'],
+  today:['Hoje','Pulso executivo da operação: performance, presença e atenção.'],
   teams:['Equipes','Defina equipes, horários e vínculos do mês.'],
   people:['Pessoas','Cadastro PJ completo, cargos, metas e histórico.'],
   one:['Olho no Olho','Conversa 1:1, compromissos e acompanhamento.'],
@@ -150,6 +150,96 @@ function effectiveStart(p){
   return time5(p.default_start_time)||time5(team?.start_time)||'—';
 }
 
+function performanceUpdatedMonth(){
+  const raw=window.XIA_PERFORMANCE?.updated||'';
+  const m=raw.match(/(\d{2})\/(\d{2})\/(\d{4})/);
+  return m?m[3]+'-'+m[2]:null;
+}
+function performanceAvailableForDate(date){
+  return Boolean(date&&performanceUpdatedMonth()===String(date).slice(0,7));
+}
+function performanceRoles(roleName='Promotor de Marketing'){
+  return (window.XIA_PERFORMANCE?.people||[])
+    .flatMap(person=>(person.roles||[]).map(role=>({name:person.name,...role})))
+    .filter(x=>norm(x.role)===norm(roleName));
+}
+function performanceDay(date){
+  if(!performanceAvailableForDate(date))return null;
+  const day=Math.max(1,Number(String(date).slice(8,10)||1));
+  const roles=performanceRoles('Promotor de Marketing');
+  const people=[];
+  const total={c:0,s:0,v:0,q:0,nq:0,g:0};
+  roles.forEach(r=>{
+    const row=r.daily?.[day-1]||[0,0,0,0,0];
+    const item={name:r.name,c:Number(row[0]||0),s:Number(row[1]||0),v:Number(row[2]||0),q:Number(row[3]||0),nq:Number(row[4]||0),g:0,month:r};
+    people.push(item);
+    total.c+=item.c; total.s+=item.s; total.v+=item.v; total.q+=item.q; total.nq+=item.nq;
+  });
+  return {day,total,people,updated:window.XIA_PERFORMANCE?.updated||'—'};
+}
+function performanceMonth(){
+  if(!state.month||performanceUpdatedMonth()!==state.month.ref_month.slice(0,7))return null;
+  const roles=performanceRoles('Promotor de Marketing');
+  return roles.reduce((a,r)=>{
+    a.c+=Number(r.c||0);a.s+=Number(r.s||0);a.v+=Number(r.v||0);a.q+=Number(r.q||0);a.nq+=Number(r.nq||0);a.g+=Number(r.g||0);
+    return a;
+  },{c:0,s:0,v:0,q:0,nq:0,g:0});
+}
+function todayAttention(perf){
+  const alerts=[];
+  const rows=[...document.querySelectorAll('.presence-row')];
+  rows.forEach(row=>{
+    const p=personById(row.dataset.person);
+    const status=row.querySelector('.presence-status')?.value||'present';
+    if(!p)return;
+    if(status==='absent')alerts.push({level:'critical',title:p.full_name,text:'Não compareceu hoje.',tag:'PRESENÇA'});
+    else if(status==='late')alerts.push({level:'warn',title:p.full_name,text:'Chegou após o horário combinado.',tag:'HORÁRIO'});
+    else if(status==='left_early')alerts.push({level:'warn',title:p.full_name,text:'Saiu antes do horário combinado.',tag:'HORÁRIO'});
+    else if(status==='unavailable')alerts.push({level:'info',title:p.full_name,text:'Está marcado como indisponível.',tag:'DISPONIBILIDADE'});
+  });
+  if(perf){
+    perf.people.filter(x=>x.c>=2&&x.s===0).sort((a,b)=>b.c-a.c).slice(0,4).forEach(x=>{
+      alerts.push({level:'warn',title:x.name,text:x.c+' casais hoje e nenhuma venda registrada.',tag:'CONVERSÃO'});
+    });
+    perf.people.filter(x=>x.c>=2&&x.q/Math.max(x.c,1)<.5).sort((a,b)=>b.c-a.c).slice(0,3).forEach(x=>{
+      alerts.push({level:'info',title:x.name,text:'Qualificação de '+pct(x.q/Math.max(x.c,1)*100)+' hoje ('+x.q+' Q em '+x.c+').',tag:'QUALIFICAÇÃO'});
+    });
+  }
+  const unique=[];
+  const seen=new Set();
+  alerts.forEach(a=>{
+    const key=norm(a.title)+'|'+a.tag;
+    if(!seen.has(key)){seen.add(key);unique.push(a);}
+  });
+  return unique.slice(0,8);
+}
+function renderTodayExecutive(){
+  const date=$('todayDate')?.value||localDate();
+  const perf=performanceDay(date);
+  const month=performanceMonth();
+  if($('todayPerformance')){
+    if(!perf){
+      $('todayPerformance').innerHTML='<div class="today-data-empty"><b>Performance do período ainda não carregada</b><span>Presença e gestão continuam disponíveis. Base XIA: '+esc(window.XIA_PERFORMANCE?.updated||'—')+'.</span></div>';
+    }else{
+      const t=perf.total;
+      const conv=t.c?t.s/t.c*100:0;
+      const qual=t.c?t.q/t.c*100:0;
+      const monthConv=month?.c?month.s/month.c*100:0;
+      $('todayPerformance').innerHTML=[
+        ['Casais hoje',t.c,'volume da captação','cyan'],
+        ['Vendas hoje',t.s,pct(conv)+' conversão','green'],
+        ['VGV hoje',money(t.v),month?'Mês '+money(month.v):'base '+perf.updated,'violet'],
+        ['Q / NQ',t.q+' / '+t.nq,pct(qual)+' qualificação','blue'],
+        ['Mês acumulado',month?month.c+' / '+month.s:'—',month?('casais / vendas • '+pct(monthConv)):'sem base','gold']
+      ].map(x=>'<div class="today-kpi '+x[3]+'"><small>'+x[0]+'</small><b>'+x[1]+'</b><span>'+x[2]+'</span></div>').join('');
+    }
+  }
+  const alerts=todayAttention(perf);
+  if($('todayAlertCount'))$('todayAlertCount').textContent=alerts.length+' sinal'+(alerts.length===1?'':'s');
+  if($('todayAlerts'))$('todayAlerts').innerHTML=alerts.length?alerts.map(a=>
+    '<div class="today-alert '+a.level+'"><span>'+esc(a.tag)+'</span><div><b>'+esc(a.title)+'</b><p>'+esc(a.text)+'</p></div></div>'
+  ).join(''):'<div class="today-alert-empty"><b>Nenhum sinal crítico agora.</b><span>Continue acompanhando performance e presença ao longo do dia.</span></div>';
+}
 function effectiveTodayStatus(p){
   const rec=state.presence.find(x=>x.person_id===p.id);
   return rec?.status||'present';
@@ -166,11 +256,12 @@ function updateTodaySummaryFromRows(){
   });
   if($('todaySummary'))$('todaySummary').innerHTML=[
     ['Ativos',rows.length,'pessoas'],
-    ['Compareceram',counts.present,'no dia'],
-    ['Não compareceram',counts.absent,'no dia'],
-    ['Após combinado',counts.late,'no dia'],
+    ['Presentes',counts.present,'no dia'],
+    ['Ausências',counts.absent,'no dia'],
+    ['Atrasos',counts.late,'no dia'],
     ['Outros',counts.other,'folga/indisponível/etc.']
   ].map(x=>'<div class="summary-card"><small>'+x[0]+'</small><b>'+x[1]+'</b><span>'+x[2]+'</span></div>').join('');
+  renderTodayExecutive();
 }
 function renderToday(){
   const people=workingPeople();
@@ -885,6 +976,7 @@ function setTab(id){
   document.querySelectorAll('#ceoNav button').forEach(b=>b.classList.toggle('active',b.dataset.tab===id));
   $('ceoTitle').textContent=TITLES[id]?.[0]||id;
   $('ceoSubtitle').textContent=TITLES[id]?.[1]||'';
+  if(id==='today')renderTodayExecutive();
   if(id==='reports')renderReports();
   if(id==='approvals')loadApprovals();
   if(id==='agenda')renderAgenda();
