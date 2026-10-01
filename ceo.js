@@ -734,7 +734,7 @@ function personTable(rows,ended=false){
         '<td><b>'+esc(effectiveStart(p))+'</b><small>'+esc(time5(p.default_end_time)||'saída não definida')+'</small></td>'+
         '<td>'+esc(team?.name||'Sem equipe')+'</td>'+
         '<td><span class="status-badge status-'+esc(status)+'">'+esc(statusLabel(status))+'</span></td>'+
-        '<td><b>'+num(goal?.couples_goal||0)+' / '+num(goal?.sales_goal||0)+'</b><small>volume / vendas'+(goal?.vgv_goal?' • '+money(goal.vgv_goal):'')+'</small></td>'+
+        '<td><b>'+num(goal?.research_goal||0)+' / '+num(goal?.couples_goal||0)+' / '+num(goal?.sales_goal||0)+'</b><small>pesquisas / volume / vendas'+(goal?.vgv_goal?' • '+money(goal.vgv_goal):'')+'</small></td>'+
         '<td><div class="row-actions">'+actions+'</div></td>'+
       '</tr>';
     }).join('')+'</tbody></table></div>';
@@ -799,7 +799,7 @@ async function renderProfessionalProfile(){
   const selectedDay=Number(String(selectedDate).slice(8,10)||referenceDay);
   const dayData=primary&&sameMonth?roleDay(primary,selectedDay):null;
   const week=primary&&sameMonth?roleRange(primary,Math.max(1,referenceDay-6),referenceDay):null;
-  const month=primary&&sameMonth?{c:primary.c||0,s:primary.s||0,v:primary.v||0,q:primary.q||0,nq:primary.nq||0}:null;
+  const month=primary&&sameMonth?{r:primary.r||0,c:primary.c||0,s:primary.s||0,v:primary.v||0,q:primary.q||0,nq:primary.nq||0}:null;
   const volumeLabel=selectedRole==='Promotor de Marketing'?'casais':'atendimentos';
 
   $('professionalIdentity').innerHTML=
@@ -816,8 +816,9 @@ async function renderProfessionalProfile(){
     $('professionalScope').innerHTML='<div class="profile-data-empty"><b>Performance ainda não ligada a este mês/cadastro.</b><span>Os registros de presença, metas e liderança abaixo continuam disponíveis.</span></div>';
   }
 
-  const current=month||{c:0,s:0,v:0};
+  const current=month||{r:0,c:0,s:0,v:0};
   $('professionalGoals').innerHTML=
+    goalProgress('Pesquisas',current.r,goal?.research_goal||0)+
     goalProgress('Volume',current.c,goal?.couples_goal||0)+
     goalProgress('Vendas',current.s,goal?.sales_goal||0)+
     goalProgress('VGV',current.v,goal?.vgv_goal||0,money);
@@ -914,6 +915,7 @@ function openPersonModal(p=null){
   $('personNotes').value=p?.notes||'';
   $('personPassword').value='';
   const goal=p?goalByPerson(p.id):null;
+  $('personGoalResearch').value=goal?.research_goal||'';
   $('personGoalCouples').value=goal?.couples_goal||'';
   $('personGoalSales').value=goal?.sales_goal||'';
   $('personGoalVgv').value=goal?.vgv_goal||'';
@@ -955,6 +957,7 @@ async function savePerson(){
     const goalBody={
       month_id:state.month.id,
       person_id:personId,
+      research_goal:Number($('personGoalResearch').value||0),
       couples_goal:Number($('personGoalCouples').value||0),
       sales_goal:Number($('personGoalSales').value||0),
       vgv_goal:Number($('personGoalVgv').value||0),
@@ -1632,12 +1635,13 @@ async function answerRaioXQuestion(){
     }
 
     if(/meta/.test(q)){
+      const r=primary&&sameMonth?Number(primary.r||0):0;
       const c=primary&&sameMonth?Number(primary.c||0):0;
       const s=primary&&sameMonth?Number(primary.s||0):0;
       const v=primary&&sameMonth?Number(primary.v||0):0;
       answer.innerHTML=answerBlock(
         'METAS • '+person.full_name,
-        'Volume: <b>'+c+' / '+Number(goal?.couples_goal||0)+'</b> • Vendas: <b>'+s+' / '+Number(goal?.sales_goal||0)+'</b> • VGV: <b>'+money(v)+' / '+money(goal?.vgv_goal||0)+'</b>.',
+        'Pesquisas: <b>'+r+' / '+Number(goal?.research_goal||0)+'</b> • Volume: <b>'+c+' / '+Number(goal?.couples_goal||0)+'</b> • Vendas: <b>'+s+' / '+Number(goal?.sales_goal||0)+'</b> • VGV: <b>'+money(v)+' / '+money(goal?.vgv_goal||0)+'</b>.',
         state.month.label
       );
       return;
@@ -1797,6 +1801,7 @@ function goalPaceSignal(p,primary){
   const daysInMonth=new Date(y,m,0).getDate();
   const elapsed=Math.min(1,ref/daysInMonth);
   const checks=[
+    {label:'pesquisas',current:Number(primary.r||0),target:Number(goal.research_goal||0)},
     {label:'volume',current:Number(primary.c||0),target:Number(goal.couples_goal||0)},
     {label:'vendas',current:Number(primary.s||0),target:Number(goal.sales_goal||0)},
     {label:'VGV',current:Number(primary.v||0),target:Number(goal.vgv_goal||0)}
@@ -2016,7 +2021,8 @@ async function renderXIA(){
     if(primary.s>0&&conv>=20)strengths.push({title:'Boa conversão',text:'Conversão de '+pct(conv)+' em '+primary.c+' '+(primary.role==='Promotor de Marketing'?'casais':'atendimentos')+'.'});
     if(primary.c>=8&&qual>=65)strengths.push({title:'Qualificação consistente',text:'Taxa Q de '+pct(qual)+'.'});
     if(consistency.label==='Alta')strengths.push({title:'Execução consistente',text:'Variação diária baixa entre '+consistency.activeDays+' dias com produção.'});
-    if(goal?.sales_goal>0&&primary.s>=goal.sales_goal)strengths.push({title:'Meta de vendas atingida',text:primary.s+' vendas para meta de '+goal.sales_goal+'.'});
+    if(goal?.research_goal>0&&Number(primary.r||0)>=goal.research_goal)strengths.push({title:'Meta de pesquisas atingida',text:Number(primary.r||0)+' pesquisas para meta de '+goal.research_goal+'.'});
+  if(goal?.sales_goal>0&&primary.s>=goal.sales_goal)strengths.push({title:'Meta de vendas atingida',text:primary.s+' vendas para meta de '+goal.sales_goal+'.'});
     if(goal?.couples_goal>0&&primary.c>=goal.couples_goal)strengths.push({title:'Meta de volume atingida',text:primary.c+' para meta de '+goal.couples_goal+'.'});
 
     if(primary.c>=8&&primary.s===0)attention.push({level:'critical',title:'Conversão crítica',text:'Há '+primary.c+' oportunidades e nenhuma venda registrada.'});
@@ -2025,7 +2031,8 @@ async function renderXIA(){
     if(primary.c>=8&&qual<50)attention.push({level:'warn',title:'Qualificação baixa',text:'Taxa Q de '+pct(qual)+'.'});
     if(primary.role==='Promotor de Marketing'&&primary.c>=8&&cost>280)attention.push({level:'warn',title:'Custo por casal elevado',text:'Custo médio de '+money(cost)+' por casal.'});
     if(consistency.label==='Baixa')attention.push({level:'warn',title:'Baixa consistência diária',text:'O volume oscila bastante entre os dias com produção.'});
-    if(goal?.sales_goal>0&&primary.s<goal.sales_goal)attention.push({level:'info',title:'Meta de vendas ainda aberta',text:primary.s+' de '+goal.sales_goal+' vendas.'});
+    if(goal?.research_goal>0&&Number(primary.r||0)<goal.research_goal)attention.push({level:'info',title:'Meta de pesquisas ainda aberta',text:Number(primary.r||0)+' de '+goal.research_goal+' pesquisas.'});
+  if(goal?.sales_goal>0&&primary.s<goal.sales_goal)attention.push({level:'info',title:'Meta de vendas ainda aberta',text:primary.s+' de '+goal.sales_goal+' vendas.'});
     if(goal?.couples_goal>0&&primary.c<goal.couples_goal)attention.push({level:'info',title:'Meta de volume ainda aberta',text:primary.c+' de '+goal.couples_goal+'.'});
   }else{
     attention.push({level:'info',title:'Performance deste mês ainda não carregada',text:'A base de performance disponível no XIA está atualizada até '+(performanceData()?.updated||'—')+'. Os dados de gestão do mês selecionado continuam válidos.'});
@@ -2058,6 +2065,7 @@ async function renderXIA(){
     '<div class="xia-role-grid">'+(roleCards||'<div class="xia-empty">Sem performance histórica ligada ao nome deste cadastro.</div>')+'</div>';
 
   $('xiaMetrics').innerHTML=[
+    ['Pesquisas',primary&&sameMonth?Number(primary.r||0):'—',goal?.research_goal?'meta '+goal.research_goal:'sem meta'],
     ['Volume',primary&&sameMonth?primary.c:'—',primary?.role||'sem base'],
     ['Vendas',primary&&sameMonth?primary.s:'—',goal?.sales_goal?'meta '+goal.sales_goal:'sem meta'],
     ['Conversão',primary&&sameMonth?pct(conv):'—','base disponível'],
@@ -2102,6 +2110,7 @@ function buildXiaPrompt(ctx){
     'Base de performance disponível: '+(performanceData()?.updated||'não informada'),
     '',
     'METAS DO MÊS',
+    'Pesquisas: '+(goal?.research_goal||0),
     'Volume/casais/atendimentos: '+(goal?.couples_goal||0),
     'Vendas: '+(goal?.sales_goal||0),
     'VGV: '+money(goal?.vgv_goal||0),
