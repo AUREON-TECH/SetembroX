@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#060a18">
 <title>RAIO X • Portal de Gestão</title>
 <link rel="icon" href="./icon.svg">
-<link rel="stylesheet" href="./ceo.css?v=5">
+<link rel="stylesheet" href="./ceo.css?v=6">
 </head>
 <body>
 <div id="ceoLoading" class="ceo-loading"><div class="loader-mark">RX</div><b>Validando acesso de gestão...</b></div>
@@ -36,16 +36,36 @@
     </header>
 
     <section id="today" class="ceo-tab on">
-      <div class="toolbar">
-        <label>Data<input id="todayDate" type="date"></label>
-        <button id="reloadToday" class="ghost">Atualizar</button>
-        <button id="markAllPresentBtn" class="ghost success">Todos presentes</button>
-        <button id="saveDayBtn" class="primary">Salvar o dia</button>
+      <div class="today-command">
+        <div>
+          <span class="eyebrow">PULSO DA OPERAÇÃO</span>
+          <h2>O que está acontecendo hoje</h2>
+          <p>Performance, presença e sinais que merecem atenção em uma única leitura.</p>
+        </div>
+        <div class="toolbar today-toolbar">
+          <label>Data<input id="todayDate" type="date"></label>
+          <button id="reloadToday" class="ghost">Atualizar</button>
+          <button id="markAllPresentBtn" class="ghost success">Todos presentes</button>
+          <button id="saveDayBtn" class="primary">Salvar o dia</button>
+        </div>
       </div>
+
+      <div id="todayPerformance" class="today-performance-grid"></div>
+
+      <div class="today-executive-grid">
+        <div class="panel today-status-panel">
+          <div class="panel-head"><div><span class="eyebrow">PRESENÇA</span><h2>Equipe do dia</h2></div><span id="todayCount" class="pill"></span></div>
+          <div id="todaySummary" class="summary-grid today-summary"></div>
+        </div>
+        <div class="panel today-alert-panel">
+          <div class="panel-head"><div><span class="eyebrow">ATENÇÃO HOJE</span><h2>Sinais para a liderança</h2></div><span id="todayAlertCount" class="pill">0 sinais</span></div>
+          <div id="todayAlerts" class="today-alerts"></div>
+        </div>
+      </div>
+
       <div class="today-help">Padrão do dia: <b>todos começam como “Compareceu”</b>. Altere somente as exceções e depois clique em <b>Salvar o dia</b>.</div>
-      <div id="todaySummary" class="summary-grid"></div>
       <div class="panel">
-        <div class="panel-head"><div><span class="eyebrow">PRESENÇA NA OPERAÇÃO</span><h2>Equipe do dia</h2></div><span id="todayCount" class="pill"></span></div>
+        <div class="panel-head"><div><span class="eyebrow">REGISTRO OPERACIONAL</span><h2>Presença e observações</h2></div><span class="pill">salvar no fim do ajuste</span></div>
         <div id="todayPeople" class="presence-list"></div>
       </div>
     </section>
@@ -203,6 +223,6 @@
 <script src="./area-data.js"></script>
 <script src="./fx-data.js"></script>
 <script src="./xia-performance.js?v=2"></script>
-<script src="./ceo.js?v=7"></script>
+<script src="./ceo.js?v=8"></script>
 </body>
 </html>
