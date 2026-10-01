@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#060a18">
 <title>RAIO X • Portal de Gestão</title>
 <link rel="icon" href="./icon.svg">
-<link rel="stylesheet" href="./ceo.css?v=8">
+<link rel="stylesheet" href="./ceo.css?v=9">
 </head>
 <body>
 <div id="ceoLoading" class="ceo-loading"><div class="loader-mark">RX</div><b>Validando acesso de gestão...</b></div>
@@ -155,6 +155,15 @@
     </section>
 
     <section id="xia" class="ceo-tab">
+      <div class="panel xia-command-center">
+        <div class="panel-head">
+          <div><span class="eyebrow">XIA • CENTRAL DE INTELIGÊNCIA</span><h2>Diagnóstico da operação</h2><p>Uma única leitura para descobrir quem precisa de atenção, por qual evidência e qual deve ser o próximo acompanhamento.</p></div>
+          <span class="pill">fatos + contexto + ação</span>
+        </div>
+        <div id="xiaOperationSummary" class="summary-grid"></div>
+        <div id="xiaOperationAlerts" class="xia-operation-alerts"></div>
+      </div>
+
       <div class="panel xia-hero">
         <div class="panel-head">
           <div><span class="eyebrow">X INTELLIGENCE ANALYSIS</span><h2>XIA • Inteligência Analítica do Profissional</h2><p>Uma leitura 360° baseada em evidências do RAIO X. Fato é separado de hipótese; decisões continuam humanas.</p></div>
@@ -162,6 +171,7 @@
         </div>
         <div id="xiaIdentity" class="xia-identity"></div>
         <div id="xiaMetrics" class="summary-grid"></div>
+        <div id="xiaFeedback" class="xia-feedback"></div>
       </div>
       <div class="xia-grid">
         <div class="panel"><div class="panel-head"><div><span class="eyebrow">LEITURA XIA</span><h2>Acertos e forças</h2></div></div><div id="xiaStrengths" class="xia-list"></div></div>
@@ -264,6 +274,6 @@
 <script src="./area-data.js"></script>
 <script src="./fx-data.js"></script>
 <script src="./xia-performance.js?v=2"></script>
-<script src="./ceo.js?v=10"></script>
+<script src="./ceo.js?v=11"></script>
 </body>
 </html>
