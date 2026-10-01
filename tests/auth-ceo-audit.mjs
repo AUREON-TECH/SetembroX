@@ -209,3 +209,6 @@ assert.match(ceo,/approved_users\?select=email,name,role,approved/,'Approvals mu
 assert.match(ceo,/awaiting_signup/,'Approvals must distinguish pre-approved users awaiting first access');
 assert.match(ceo,/META NÃO DEFINIDA/,'Zero goals must be shown as not defined, not as a real target');
 assert.match(auth,/password\.length<8/,'New signups must require at least 8 password characters');
+
+assert.match(ceo,/approvalsLoadError/,'Approval load errors must not be rendered as zero counts');
+assert.match(ceo,/ativos ou pré-aprovados/,'Approval summary must explain pre-approved access');
