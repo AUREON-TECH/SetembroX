@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#060a18">
 <title>RAIO X • Portal de Gestão</title>
 <link rel="icon" href="./icon.svg">
-<link rel="stylesheet" href="./ceo.css?v=11">
+<link rel="stylesheet" href="./ceo.css?v=12">
 </head>
 <body>
 <div id="ceoLoading" class="ceo-loading"><div class="loader-mark">RX</div><b>Validando acesso de gestão...</b></div>
@@ -90,7 +90,16 @@
     <section id="people" class="ceo-tab">
       <div class="panel professional-profile-panel">
         <div class="panel-head professional-profile-head">
-          <div><span class="eyebrow">RAIO-X DO PROFISSIONAL</span><h2>Visão completa individual</h2><p>Hoje, últimos 7 dias, mês, metas, presença e acompanhamento de liderança em um só lugar.</p></div>
+          <div>
+            <span class="eyebrow">RAIO-X DO PROFISSIONAL</span>
+            <h2>Visão completa individual</h2>
+            <p>Hoje, últimos 7 dias, mês, metas, presença e acompanhamento de liderança em um só lugar.</p>
+            <div class="profession-switch" id="professionSwitch">
+              <button class="active" data-profession-area="promotor">Promotor</button>
+              <button data-profession-area="liner">Liner</button>
+              <button data-profession-area="closer">Closer</button>
+            </div>
+          </div>
           <div class="profile-controls">
             <select id="profilePerson" aria-label="Escolher profissional"></select>
             <button id="profileOpenXia" class="ghost">Abrir XIA</button>
@@ -124,7 +133,7 @@
       </div>
 
       <div class="panel">
-        <div class="panel-head"><div><span class="eyebrow">DIRETÓRIO DA OPERAÇÃO</span><h2>Profissionais</h2><p>Cadastro PJ, função, horário, equipe, metas e acesso ao RAIO X.</p></div><button id="addPersonBtn" class="primary small">+ Adicionar pessoa</button></div>
+        <div class="panel-head"><div><span class="eyebrow">DIRETÓRIO DA OPERAÇÃO</span><h2 id="peopleDirectoryTitle">Promotores de Marketing</h2><p id="peopleDirectorySubtitle">Mostrando somente os profissionais da área selecionada acima.</p></div><button id="addPersonBtn" class="primary small">+ Adicionar pessoa</button></div>
         <div class="people-counter-row"><span id="activePeopleCount" class="pill">0 ativos</span><span class="people-hint">Use “Raio-X” para abrir a leitura completa de qualquer profissional.</span></div>
         <div id="peopleTable" class="table-wrap"></div>
       </div>
@@ -307,6 +316,6 @@
 <script src="./area-data.js"></script>
 <script src="./fx-data.js"></script>
 <script src="./xia-performance.js?v=2"></script>
-<script src="./ceo.js?v=13"></script>
+<script src="./ceo.js?v=14"></script>
 </body>
 </html>
