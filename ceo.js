@@ -994,16 +994,49 @@ async function newMonth(){
   const now=new Date();now.setMonth(now.getMonth()+1,1);
   const suggested=localDate(now).slice(0,7);
   const ref=prompt('Novo mês no formato AAAA-MM:',suggested);
-  if(!/^\d{4}-\d{2}$/.test(ref||'')){if(ref)toast('Formato inválido.',true);return;}
-  const date=ref+'-01';const [y,m]=ref.split('-').map(Number);
+  if(!/^\d{4}-\d{2}$/.test(ref||'')){if(ref)toast('Formato inválido. Use AAAA-MM.',true);return;}
+  const [y,m]=ref.split('-').map(Number);
+  if(m<1||m>12){toast('Mês inválido. Escolha entre 01 e 12.',true);return;}
+  const date=ref+'-01';
   const label=new Date(y,m-1,1).toLocaleDateString('pt-BR',{month:'long',year:'numeric'}).replace(/^./,s=>s.toUpperCase());
+
   try{
-    await rest('ceo_months',{method:'POST',headers:{Prefer:'return=minimal'},body:JSON.stringify({ref_month:date,label,status:'open',created_by:state.user.id})});
-    toast('Novo mês criado.');
+    let existing=state.months.find(x=>x.ref_month===date);
+    if(!existing){
+      const rows=await rest('ceo_months?select=*&ref_month=eq.'+encodeURIComponent(date)+'&limit=1');
+      existing=rows[0]||null;
+    }
+    if(existing){
+      if(!state.months.some(x=>x.id===existing.id)){
+        state.months=await rest('ceo_months?select=*&order=ref_month.desc');
+        renderMonths(existing.id);
+      }
+      await selectMonth(existing.id);
+      toast(label+' já existe. Abri o mês existente.');
+      return;
+    }
+
+    await rest('ceo_months',{
+      method:'POST',
+      headers:{Prefer:'return=representation'},
+      body:JSON.stringify({ref_month:date,label,status:'open',created_by:state.user.id})
+    });
     state.months=await rest('ceo_months?select=*&order=ref_month.desc');
-    renderMonths();
-    const created=state.months.find(x=>x.ref_month===date); if(created)await selectMonth(created.id);
-  }catch(err){toast(err.message,true);}
+    const created=state.months.find(x=>x.ref_month===date);
+    renderMonths(created?.id);
+    if(created)await selectMonth(created.id);
+    toast('Novo mês criado: '+label+'.');
+  }catch(err){
+    if(/duplicate key|ceo_months_ref_month_key|23505/i.test(String(err?.message||err))){
+      state.months=await rest('ceo_months?select=*&order=ref_month.desc');
+      const existing=state.months.find(x=>x.ref_month===date);
+      renderMonths(existing?.id);
+      if(existing)await selectMonth(existing.id);
+      toast(label+' já existia. Abri o mês existente.');
+      return;
+    }
+    toast(err.message,true);
+  }
 }
 
 function setTab(id){
