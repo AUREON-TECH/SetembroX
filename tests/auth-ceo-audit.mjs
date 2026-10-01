@@ -106,3 +106,16 @@ assert.match(ceo,/todayArea.*onchange|\$\(['"]todayArea['"]\)\.onchange/,'Today 
 assert.match(ceo,/ceo_months\?select=\*&ref_month=eq\./,'new month must check the database before inserting');
 assert.match(ceo,/já existe\. Abri o mês existente|já existia\. Abri o mês existente/,'duplicate month must resolve to the existing month without raw database error');
 assert.match(ceo,/duplicate key\|ceo_months_ref_month_key\|23505/,'new month must safely recover from race-condition duplicates');
+
+assert.match(ceoHtml,/data-tab=["']people["']>Profissionais/,'management navigation must expose Profissionais');
+assert.match(ceoHtml,/id=["']profilePerson["']/,'professional profile must have a person selector');
+assert.match(ceoHtml,/id=["']professionalIdentity["']/,'professional profile must show identity');
+assert.match(ceoHtml,/id=["']professionalScope["']/,'professional profile must show day week and month scopes');
+assert.match(ceoHtml,/id=["']professionalGoals["']/,'professional profile must show goals');
+assert.match(ceoHtml,/id=["']professionalPresence["']/,'professional profile must show presence');
+assert.match(ceoHtml,/id=["']professionalLeadership["']/,'professional profile must show leadership follow-up');
+assert.match(ceoHtml,/id=["']professionalDaily["']/,'professional profile must show daily evolution');
+assert.match(ceo,/async function renderProfessionalProfile\(/,'portal must render a complete professional profile');
+assert.match(ceo,/function roleRange\(/,'professional profile must calculate rolling daily periods');
+assert.match(ceo,/function openProfessionalProfile\(/,'directory must open the selected professional Raio-X');
+assert.match(ceoCss,/\.professional-profile-panel/,'professional profile must have dedicated visual styling');
