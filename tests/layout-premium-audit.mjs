@@ -23,4 +23,4 @@ assert.match(css,/\.card\s*\{[^}]*min-width:0/s,'cards must be allowed to shrink
 assert.match(css,/@media\(max-width:740px\)/,'mobile layout must be defined');
 assert.doesNotMatch(css,/\.cin\s*\{|\.future-cin\s*\{/,'premium layout must not override the approved entrance');
 
-console.log('SETEMBRO X premium layout audit passed');
+console.log('RAIO X premium layout audit passed');
