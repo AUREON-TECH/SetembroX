@@ -4,7 +4,7 @@ const STORE='raiox.auth.session.v1';
 const $=id=>document.getElementById(id);
 const state={
   session:null,user:null,admin:null,
-  months:[],month:null,people:[],teams:[],assignments:[],
+  months:[],month:null,people:[],teams:[],assignments:[],performance:null,
   presence:[],one:[],tasks:[],approvals:[],agenda:[],goals:[],todayArea:'promotor',professionalArea:'promotor',xiaRole:'',reportPeriod:'month',reportText:''
 };
 const TITLES={
@@ -121,6 +121,7 @@ async function selectMonth(id){
   state.month=state.months.find(m=>m.id===id)||state.months[0];
   if(!state.month)return;
   $('monthSelect').value=state.month.id;
+  await loadPerformanceForMonth();
   renderMonthGoals();
   const monthPrefix=state.month.ref_month.slice(0,7);
   const today=localDate();
@@ -159,6 +160,46 @@ function effectiveStart(p){
   return time5(p.default_start_time)||time5(team?.start_time)||'—';
 }
 
+function legacyPerformanceMonth(data){
+  const raw=data?.updated||'';
+  const m=raw.match(/(\d{2})\/(\d{2})\/(\d{4})/);
+  return m?m[3]+'-'+m[2]:null;
+}
+function performanceData(){return state.performance||null;}
+async function loadPerformanceForMonth(){
+  state.performance=null;
+  if(!state.month)return;
+  try{
+    const rows=await rest(
+      'raiox_performance_records?select=professional_name,role,couples,sales,vgv,q,nq,gifts,active_days,week_volume,week_sales,week_vgv,daily,updated_on&ref_month=eq.'+
+      encodeURIComponent(state.month.ref_month)+'&order=professional_name.asc,role.asc'
+    );
+    if(rows.length){
+      const byName=new Map();
+      let updated='';
+      rows.forEach(r=>{
+        if(!byName.has(r.professional_name))byName.set(r.professional_name,[]);
+        byName.get(r.professional_name).push({
+          role:r.role,
+          c:Number(r.couples||0),s:Number(r.sales||0),v:Number(r.vgv||0),
+          q:Number(r.q||0),nq:Number(r.nq||0),g:Number(r.gifts||0),d:Number(r.active_days||0),
+          w:Number(r.week_volume||0),ws:Number(r.week_sales||0),wv:Number(r.week_vgv||0),
+          daily:Array.isArray(r.daily)?r.daily:[]
+        });
+        if(String(r.updated_on||'')>updated)updated=String(r.updated_on||'');
+      });
+      state.performance={
+        updated:updated?dateBr(updated):state.month.label,
+        people:[...byName.entries()].map(([name,roles])=>({name,roles}))
+      };
+      return;
+    }
+  }catch(err){
+    console.warn('RAIO X performance history unavailable',err);
+  }
+  const legacy=performanceData()||null;
+  if(legacy&&legacyPerformanceMonth(legacy)===state.month.ref_month.slice(0,7))state.performance=legacy;
+}
 function operationMonthTotals(){
   if(!state.month||performanceUpdatedMonth()!==state.month.ref_month.slice(0,7))return null;
   return performanceRoles('Promotor de Marketing').reduce((a,r)=>{
@@ -228,7 +269,7 @@ async function saveMonthGoals(){
 }
 
 function performanceUpdatedMonth(){
-  const raw=window.XIA_PERFORMANCE?.updated||'';
+  const raw=performanceData()?.updated||'';
   const m=raw.match(/(\d{2})\/(\d{2})\/(\d{4})/);
   return m?m[3]+'-'+m[2]:null;
 }
@@ -265,7 +306,7 @@ function personMatchesTodayArea(p){
 }
 function todayWorkingPeople(){return workingPeople().filter(personMatchesTodayArea);}
 function performanceRoles(roleName='Promotor de Marketing'){
-  return (window.XIA_PERFORMANCE?.people||[])
+  return (performanceData()?.people||[])
     .flatMap(person=>(person.roles||[]).map(role=>({name:person.name,...role})))
     .filter(x=>norm(x.role)===norm(roleName));
 }
@@ -281,7 +322,7 @@ function areaPerformanceDay(date,roleName){
     people.push(item);
     total.c+=item.c; total.s+=item.s; total.v+=item.v; total.q+=item.q; total.nq+=item.nq;
   });
-  return {day,total,people,role:roleName,updated:window.XIA_PERFORMANCE?.updated||'—'};
+  return {day,total,people,role:roleName,updated:performanceData()?.updated||'—'};
 }
 function performanceDay(date){
   const role=todayAreaRole();
@@ -289,7 +330,7 @@ function performanceDay(date){
   if(!performanceAvailableForDate(date))return null;
   return {
     mode:'all',
-    updated:window.XIA_PERFORMANCE?.updated||'—',
+    updated:performanceData()?.updated||'—',
     areas:Object.entries(TODAY_AREA_ROLES).map(([key,label])=>({key,label,data:areaPerformanceDay(date,label)}))
   };
 }
@@ -338,7 +379,7 @@ function renderTodayExecutive(){
   const month=performanceMonth();
   if($('todayPerformance')){
     if(!perf){
-      $('todayPerformance').innerHTML='<div class="today-data-empty"><b>Performance do período ainda não carregada</b><span>Presença e gestão continuam disponíveis. Base XIA: '+esc(window.XIA_PERFORMANCE?.updated||'—')+'.</span></div>';
+      $('todayPerformance').innerHTML='<div class="today-data-empty"><b>Performance do período ainda não carregada</b><span>Presença e gestão continuam disponíveis. Base XIA: '+esc(performanceData()?.updated||'—')+'.</span></div>';
     }else if(perf.mode==='all'){
       const cards=perf.areas.map((a,i)=>{
         const t=a.data?.total||{c:0,s:0,v:0};
@@ -534,7 +575,7 @@ function bindPeopleActions(){
   document.querySelectorAll('[data-delete-person]').forEach(b=>b.onclick=()=>deletePerson(b.dataset.deletePerson));
 }
 function performanceReferenceDay(){
-  const raw=window.XIA_PERFORMANCE?.updated||'';
+  const raw=performanceData()?.updated||'';
   const m=raw.match(/(\d{2})\/(\d{2})\/(\d{4})/);
   return m?Number(m[1]):null;
 }
@@ -592,7 +633,7 @@ async function renderProfessionalProfile(){
   $('professionalIdentity').innerHTML=
     '<div class="professional-person"><div class="professional-avatar">'+esc((p.full_name||'?').split(/\s+/).slice(0,2).map(x=>x[0]||'').join('').toUpperCase())+'</div>'+
     '<div><span class="eyebrow">PROFISSIONAL</span><h3>'+esc(p.full_name)+'</h3><p>'+esc(selectedRole)+(personRoles(p).length>1?' • multifunção: '+esc(personRoles(p).filter(r=>norm(r)!==norm(selectedRole)).join(' • ')):'')+' • '+esc(team?.name||'sem equipe')+' • '+esc(effectiveStart(p))+' • '+esc(statusLabel(p.status))+'</p></div></div>'+
-    '<div class="professional-base"><b>'+esc(state.month.label)+'</b><span>Performance: '+esc(window.XIA_PERFORMANCE?.updated||'sem base')+'</span></div>';
+    '<div class="professional-base"><b>'+esc(state.month.label)+'</b><span>Performance: '+esc(performanceData()?.updated||'sem base')+'</span></div>';
 
   if(primary&&sameMonth){
     $('professionalScope').innerHTML=
@@ -1046,6 +1087,12 @@ function reportAreaCard(key,label,stats){
   const volume=key==='promotor'?'casais':'atendimentos';
   return '<div class="report-area-card"><small>'+esc(label)+'</small><b>'+stats.c+' '+volume+'</b><span>'+stats.s+' vendas • '+pct(conv)+' conversão</span><em>'+money(stats.v)+' VGV • Q '+pct(qual)+'</em></div>';
 }
+function reportGoalCard(label,current,goal,superGoal,fmt){
+  const s=goalStatus(current,goal,superGoal);
+  return '<div class="report-area-card"><small>'+esc(label)+'</small><b>'+(current==null?'Aguardando dados':fmt(current))+'</b>'+
+    '<span>Meta '+(Number(goal||0)>0?fmt(goal):'—')+'</span>'+
+    '<em>'+(Number(superGoal||0)>0?'Super Meta '+fmt(superGoal):'Super Meta não definida')+' • '+s.label+'</em></div>';
+}
 async function renderReports(){
   if(!state.month)return;
   const range=reportDateRange();
@@ -1058,12 +1105,16 @@ async function renderReports(){
   const one=state.one.filter(x=>x.meeting_date>=range.start&&x.meeting_date<=range.end);
   const open=state.tasks.filter(t=>t.status==='open').length;
   const urgent=state.tasks.filter(t=>t.status==='open'&&(t.priority==='high'||t.priority==='critical')).length;
-  const signals=workingPeople().map(p=>xiaPersonSignal(p,presence)).filter(x=>x.reasons.length).sort((a,b)=>b.level-a.level||b.reasons.length-a.reasons.length);
+  const signals=workingPeople().flatMap(p=>{
+    const commercial=personRoles(p).filter(r=>Object.values(TODAY_AREA_ROLES).some(label=>norm(label)===norm(r)));
+    const roles=commercial.length?commercial:[roleOf(p)];
+    return roles.map(role=>xiaPersonSignal(p,presence,role));
+  }).filter(x=>x.reasons.length).sort((a,b)=>b.level-a.level||b.reasons.length-a.reasons.length);
   const areas=Object.entries(TODAY_AREA_ROLES).map(([key,label])=>({key,label,stats:reportAreaStats(label,range)}));
 
   $('reportMonthTitle').textContent=range.label;
   $('reportPeriodEyebrow').textContent=state.reportPeriod==='week'?'RAIO-X DA SEMANA':'RAIO-X DO MÊS';
-  $('reportBaseLabel').textContent='Base de performance '+(window.XIA_PERFORMANCE?.updated||'—');
+  $('reportBaseLabel').textContent='Base de performance '+(performanceData()?.updated||'—');
   document.querySelectorAll('[data-report-period]').forEach(b=>b.classList.toggle('active',b.dataset.reportPeriod===state.reportPeriod));
 
   $('reportSummary').innerHTML=[
@@ -1076,10 +1127,20 @@ async function renderReports(){
 
   const attentionHtml=signals.length?signals.slice(0,8).map(x=>
     '<button class="report-person-signal '+(x.level===3?'critical':x.level===2?'warn':'info')+'" data-report-person="'+x.p.id+'">'+
-      '<b>'+esc(x.p.full_name)+'</b><span>'+esc(roleOf(x.p))+'</span><p>'+x.reasons.map(esc).join(' • ')+'</p></button>'
+      '<b>'+esc(x.p.full_name)+'</b><span>'+esc(x.role||roleOf(x.p))+'</span><p>'+x.reasons.map(esc).join(' • ')+'</p></button>'
   ).join(''):'<div class="xia-empty">Nenhum sinal relevante pelos critérios atuais.</div>';
 
+  const opTotal=operationMonthTotals();
+  const meta=state.month;
+  const metaHtml='<div class="report-section"><div class="report-section-head"><div><span class="eyebrow">META DA OPERAÇÃO</span><h3>Meta e Super Meta • '+esc(state.month.label)+'</h3></div></div>'+
+    '<div class="report-area-grid">'+
+      reportGoalCard('Casais',opTotal?.c??null,meta.goal_couples,meta.super_goal_couples,v=>num(v))+
+      reportGoalCard('Vendas',opTotal?.s??null,meta.goal_sales,meta.super_goal_sales,v=>num(v))+
+      reportGoalCard('VGV',opTotal?.v??null,meta.goal_vgv,meta.super_goal_vgv,v=>money(v))+
+    '</div></div>';
+
   $('reportBody').innerHTML=
+    metaHtml+
     '<div class="report-section report-performance"><div class="report-section-head"><div><span class="eyebrow">PERFORMANCE</span><h3>Resultado por área</h3></div></div><div class="report-area-grid">'+areas.map(a=>reportAreaCard(a.key,a.label,a.stats)).join('')+'</div></div>'+
     '<div class="report-section"><div class="report-section-head"><div><span class="eyebrow">PESSOAS</span><h3>Quem merece acompanhamento</h3></div><span class="pill">'+signals.length+' sinais</span></div><div class="report-signal-grid">'+attentionHtml+'</div></div>'+
     '<div class="report-section report-management-grid">'+
@@ -1097,7 +1158,12 @@ async function renderReports(){
   const lines=[
     'RAIO X — '+(state.reportPeriod==='week'?'RELATÓRIO SEMANAL':'RELATÓRIO MENSAL'),
     'Período: '+range.label,
-    'Base de performance: '+(window.XIA_PERFORMANCE?.updated||'não informada'),
+    'Base de performance: '+(performanceData()?.updated||'não informada'),
+    '',
+    'META DA OPERAÇÃO',
+    'Casais: meta '+(Number(state.month.goal_couples||0)||'não definida')+' | super '+(Number(state.month.super_goal_couples||0)||'não definida'),
+    'Vendas: meta '+(Number(state.month.goal_sales||0)||'não definida')+' | super '+(Number(state.month.super_goal_sales||0)||'não definida'),
+    'VGV: meta '+(Number(state.month.goal_vgv||0)>0?money(state.month.goal_vgv):'não definida')+' | super '+(Number(state.month.super_goal_vgv||0)>0?money(state.month.super_goal_vgv):'não definida'),
     '',
     'PERFORMANCE POR ÁREA',
     ...areas.map(a=>{
@@ -1126,7 +1192,7 @@ async function copyReport(){
 }
 
 function perfForPerson(p){
-  const base=window.XIA_PERFORMANCE?.people||[];
+  const base=performanceData()?.people||[];
   const full=norm(p?.full_name);
   if(!full)return null;
   const exact=base.find(x=>norm(x.name)===full);
@@ -1142,7 +1208,7 @@ function perfForPerson(p){
   return byFirst.length===1?byFirst[0]:null;
 }
 function perfMonthMatches(){
-  const updated=window.XIA_PERFORMANCE?.updated||'';
+  const updated=performanceData()?.updated||'';
   const m=updated.match(/(\d{2})\/(\d{2})\/(\d{4})/);
   if(!m||!state.month)return false;
   return state.month.ref_month.slice(0,7)===m[3]+'-'+m[2];
@@ -1217,7 +1283,8 @@ async function answerRaioXQuestion(){
 
   if(person){
     const perf=perfForPerson(person);
-    const primary=choosePrimaryPerf(person,perf);
+    const askedRole=/closer|fechador/.test(q)?'Closer / Fechador':/liner|consultor/.test(q)?'Liner / Consultor':/promotor|captador|captação|captacao/.test(q)?'Promotor de Marketing':'';
+    const primary=choosePrimaryPerf(person,perf,askedRole);
     const sameMonth=perfMonthMatches();
     const goal=goalByPerson(person.id);
     const one=state.one.filter(x=>x.person_id===person.id);
@@ -1276,7 +1343,7 @@ async function answerRaioXQuestion(){
         'ÚLTIMOS 7 DIAS • '+person.full_name,
         '<b>'+trend.recent.c+'</b> '+volumeLabel+', <b>'+trend.recent.s+'</b> vendas, <b>'+pct(trend.recentConv)+'</b> de conversão e <b>'+money(trend.recent.v)+'</b> de VGV.<br><br>'+
         'Comparado aos 7 dias anteriores: volume <b>'+vd+'</b> • conversão <b>'+cd+'</b>.',
-        'Base até '+(window.XIA_PERFORMANCE?.updated||'—')
+        'Base até '+(performanceData()?.updated||'—')
       );
       return;
     }
@@ -1292,7 +1359,7 @@ async function answerRaioXQuestion(){
         'Consistência: <b>'+esc(consistency.label)+'</b>. Presença: '+counts.absent+' ausência(s) e '+counts.late+' atraso(s). '+
         'Pendências abertas: '+tasks.length+'.'+
         (last?'<br>Último Olho no Olho: '+dateBr(last.meeting_date)+' • compromisso: '+esc(last.commitments||'não registrado')+'.':''),
-        'Performance '+(window.XIA_PERFORMANCE?.updated||'—')+' • Gestão '+state.month.label
+        'Performance '+(performanceData()?.updated||'—')+' • Gestão '+state.month.label
       );
     }else{
       answer.innerHTML=answerBlock(
@@ -1304,7 +1371,26 @@ async function answerRaioXQuestion(){
     return;
   }
 
-  const signals=workingPeople().map(p=>xiaPersonSignal(p,monthPresence)).filter(x=>x.reasons.length).sort((a,b)=>b.level-a.level||b.reasons.length-a.reasons.length);
+  if(/meta|super meta/.test(q)&&!person){
+    const t=operationMonthTotals();
+    answer.innerHTML=answerBlock(
+      'META DA OPERAÇÃO • '+state.month.label,
+      'Casais: <b>'+(t?num(t.c):'—')+'</b> / meta <b>'+(Number(state.month.goal_couples||0)?num(state.month.goal_couples):'não definida')+'</b>'+
+      (Number(state.month.super_goal_couples||0)?' / super <b>'+num(state.month.super_goal_couples)+'</b>':'')+'<br>'+
+      'Vendas: <b>'+(t?num(t.s):'—')+'</b> / meta <b>'+(Number(state.month.goal_sales||0)?num(state.month.goal_sales):'não definida')+'</b>'+
+      (Number(state.month.super_goal_sales||0)?' / super <b>'+num(state.month.super_goal_sales)+'</b>':'')+'<br>'+
+      'VGV: <b>'+(t?money(t.v):'—')+'</b> / meta <b>'+(Number(state.month.goal_vgv||0)?money(state.month.goal_vgv):'não definida')+'</b>'+
+      (Number(state.month.super_goal_vgv||0)?' / super <b>'+money(state.month.super_goal_vgv)+'</b>':''),
+      t?'Base '+(performanceData()?.updated||'—'):'Aguardando dados de performance de '+state.month.label
+    );
+    return;
+  }
+
+  const signals=workingPeople().flatMap(p=>{
+    const commercial=personRoles(p).filter(r=>Object.values(TODAY_AREA_ROLES).some(label=>norm(label)===norm(r)));
+    const roles=commercial.length?commercial:[roleOf(p)];
+    return roles.map(role=>xiaPersonSignal(p,monthPresence,role));
+  }).filter(x=>x.reasons.length).sort((a,b)=>b.level-a.level||b.reasons.length-a.reasons.length);
 
   if(/baixa.*convers|convers.*baixa/.test(q)){
     const rows=workingPeople().map(p=>{const perf=perfForPerson(p),primary=choosePrimaryPerf(p,perf);return {p,primary,conv:primary?.c?primary.s/primary.c*100:null};})
@@ -1354,7 +1440,7 @@ async function answerRaioXQuestion(){
   );
 }
 function xiaReferenceDate(){
-  const raw=window.XIA_PERFORMANCE?.updated||'';
+  const raw=performanceData()?.updated||'';
   const m=raw.match(/(\d{2})\/(\d{2})\/(\d{4})/);
   return m?(m[3]+'-'+m[2]+'-'+m[1]):null;
 }
@@ -1516,13 +1602,17 @@ function xiaPersonSignal(p,presenceRows=[]){
     level=Math.max(level,2);
   }
 
-  return {p,primary,sameMonth,reasons:[...new Set(reasons)],level};
+  return {p,primary,sameMonth,reasons:[...new Set(reasons)],level,role:primary?.role||preferredRole||roleOf(p)};
 }
 async function renderXiaOperation(){
   if(!$('xiaOperationSummary')||!state.month)return;
   let presence=[];
   try{presence=await rest('ceo_daily_presence?select=person_id,status,work_date&month_id=eq.'+state.month.id);}catch(_){presence=[];}
-  const signals=workingPeople().map(p=>xiaPersonSignal(p,presence)).filter(x=>x.reasons.length).sort((a,b)=>b.level-a.level||b.reasons.length-a.reasons.length);
+  const signals=workingPeople().flatMap(p=>{
+    const commercial=personRoles(p).filter(r=>Object.values(TODAY_AREA_ROLES).some(label=>norm(label)===norm(r)));
+    const roles=commercial.length?commercial:[roleOf(p)];
+    return roles.map(role=>xiaPersonSignal(p,presence,role));
+  }).filter(x=>x.reasons.length).sort((a,b)=>b.level-a.level||b.reasons.length-a.reasons.length);
   const critical=signals.filter(x=>x.level===3).length;
   const warning=signals.filter(x=>x.level===2).length;
   const urgent=state.tasks.filter(t=>t.status==='open'&&(t.priority==='high'||t.priority==='critical')).length;
@@ -1539,7 +1629,7 @@ async function renderXiaOperation(){
   $('xiaOperationAlerts').innerHTML=signals.length?signals.slice(0,10).map(x=>{
     const sev=x.level===3?'critical':x.level===2?'warn':'info';
     return '<button class="xia-operation-person '+sev+'" data-xia-operation-person="'+x.p.id+'">'+
-      '<div><span>'+ (x.level===3?'CRÍTICO':x.level===2?'ATENÇÃO':'ACOMPANHAR') +'</span><b>'+esc(x.p.full_name)+'</b><small>'+esc(roleOf(x.p))+'</small></div>'+
+      '<div><span>'+ (x.level===3?'CRÍTICO':x.level===2?'ATENÇÃO':'ACOMPANHAR') +'</span><b>'+esc(x.p.full_name)+'</b><small>'+esc(x.role||roleOf(x.p))+'</small></div>'+
       '<p>'+x.reasons.map(esc).join(' • ')+'</p><strong>Ver Raio-X →</strong></button>';
   }).join(''):'<div class="xia-empty">Nenhum sinal relevante pelos critérios atuais.</div>';
 
@@ -1622,7 +1712,7 @@ async function renderXIA(){
     if(goal?.sales_goal>0&&primary.s<goal.sales_goal)attention.push({level:'info',title:'Meta de vendas ainda aberta',text:primary.s+' de '+goal.sales_goal+' vendas.'});
     if(goal?.couples_goal>0&&primary.c<goal.couples_goal)attention.push({level:'info',title:'Meta de volume ainda aberta',text:primary.c+' de '+goal.couples_goal+'.'});
   }else{
-    attention.push({level:'info',title:'Performance deste mês ainda não carregada',text:'A base de performance disponível no XIA está atualizada até '+(window.XIA_PERFORMANCE?.updated||'—')+'. Os dados de gestão do mês selecionado continuam válidos.'});
+    attention.push({level:'info',title:'Performance deste mês ainda não carregada',text:'A base de performance disponível no XIA está atualizada até '+(performanceData()?.updated||'—')+'. Os dados de gestão do mês selecionado continuam válidos.'});
   }
 
   if(presenceCounts.absent>0)attention.push({level:'warn',title:'Não comparecimentos registrados',text:presenceCounts.absent+' registro(s) no mês selecionado.'});
@@ -1648,7 +1738,7 @@ async function renderXIA(){
     return '<div class="xia-role-card"><small>'+esc(r.role)+'</small><b>'+r.c+' / '+r.s+'</b><span>volume / vendas • '+pct(rconv)+' conversão • '+money(r.v)+' VGV</span></div>';
   }).join('');
 
-  $('xiaIdentity').innerHTML='<div class="xia-person-head"><div><span class="eyebrow">PROFISSIONAL</span><h3>'+esc(p.full_name)+'</h3><p>'+esc(selectedXiaRole)+' • '+esc(team?.name||'sem equipe')+' • horário '+esc(effectiveStart(p))+' • status '+esc(statusLabel(p.status))+'</p></div><div class="xia-base">Performance: '+esc(window.XIA_PERFORMANCE?.updated||'sem base')+'<br>Gestão: '+esc(state.month.label)+'</div></div>'+
+  $('xiaIdentity').innerHTML='<div class="xia-person-head"><div><span class="eyebrow">PROFISSIONAL</span><h3>'+esc(p.full_name)+'</h3><p>'+esc(selectedXiaRole)+' • '+esc(team?.name||'sem equipe')+' • horário '+esc(effectiveStart(p))+' • status '+esc(statusLabel(p.status))+'</p></div><div class="xia-base">Performance: '+esc(performanceData()?.updated||'sem base')+'<br>Gestão: '+esc(state.month.label)+'</div></div>'+
     '<div class="xia-role-grid">'+(roleCards||'<div class="xia-empty">Sem performance histórica ligada ao nome deste cadastro.</div>')+'</div>';
 
   $('xiaMetrics').innerHTML=[
@@ -1693,7 +1783,7 @@ function buildXiaPrompt(ctx){
     'Horário combinado: '+effectiveStart(p),
     'Status: '+statusLabel(p.status),
     'Mês de referência da gestão: '+state.month.label,
-    'Base de performance disponível: '+(window.XIA_PERFORMANCE?.updated||'não informada'),
+    'Base de performance disponível: '+(performanceData()?.updated||'não informada'),
     '',
     'METAS DO MÊS',
     'Volume/casais/atendimentos: '+(goal?.couples_goal||0),
