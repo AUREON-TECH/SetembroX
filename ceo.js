@@ -9,16 +9,16 @@ const state={
 };
 const TITLES={
   today:['Hoje','Pulso executivo da operação: performance, presença e atenção.'],
-  goals:['Livro de Metas','Pesquisas, Casais, Vendas e VGV: Meta, Super Meta e divisão por equipe.'],
+  goals:['Metas','Meta geral, Super Meta, metas por equipe e metas individuais.'],
   teams:['Equipes','Defina equipes, horários e vínculos do mês.'],
   people:['Profissionais','Raio-X individual, metas, presença, performance e acompanhamento.'],
   one:['Olho no Olho','Conversa 1:1, compromissos e acompanhamento.'],
   xia:['XIA','Central única de inteligência: operação, profissional, feedback e próximos passos.'],
-  strategy:['Reuniões & Estratégia','Pautas, decisões, estratégias de captação e mudanças da operação.'],
+  strategy:['Estratégia','Pautas, decisões e estratégias da operação.'],
   agenda:['Agenda','Treinamentos, meetings, reuniões e compromissos.'],
   tasks:['Pendências','Tudo que você precisa revisar, conversar ou acompanhar.'],
   reports:['Relatórios','Resumo diário e mensal da gestão de pessoas.'],
-  approvals:['Aprovações','Controle quem pode ou não acessar o RAIO X.']
+  approvals:['Acessos','Controle quem pode ou não acessar o RAIO X.']
 };
 const STATUS={
   present:'Compareceu',
