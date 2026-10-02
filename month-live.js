@@ -60,6 +60,15 @@
     }
     const label=document.querySelector('.mission-label b');
     if(label)label.textContent='META OFICIAL • '+month.label.toUpperCase()+(month.status==='closed'?' • FECHADO':'');
+    if(grid && (num(month.super_goal_couples)>0 || num(month.super_goal_vgv)>0)){
+      const superBox=document.createElement('div');
+      superBox.className='super-goal-summary';
+      superBox.style.cssText='grid-column:1/-1;margin-top:10px;padding:14px 16px;border:1px solid rgba(255,215,0,.35);border-radius:14px;background:rgba(255,215,0,.06);display:flex;gap:18px;flex-wrap:wrap;align-items:center;justify-content:center;text-align:center';
+      superBox.innerHTML='<b style="color:#ffd86b">SUPER META</b>'+
+        '<span><strong>'+fmtInt(month.super_goal_couples)+'</strong> CASAIS <small>• 22 por dia</small></span>'+
+        '<span><strong>'+fmtMoneyFull(month.super_goal_vgv)+'</strong> VGV</span>';
+      grid.appendChild(superBox);
+    }
 
     const leader=[...prom].sort((x,y)=>num(y.week_volume)-num(x.week_volume)||num(y.week_sales)-num(x.week_sales))[0];
     const monthLeader=[...prom].sort((x,y)=>num(y.couples)-num(x.couples)||num(y.sales)-num(x.sales))[0];
