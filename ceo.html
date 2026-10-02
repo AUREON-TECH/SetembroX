@@ -17,16 +17,15 @@
     <div class="ceo-user"><small>ACESSO DE GESTÃO</small><b id="ceoUserName">Gestão</b><span id="ceoUserEmail"></span></div>
     <nav id="ceoNav">
       <button class="active" data-tab="today">Hoje</button>
-      <button data-tab="goals">Livro de Metas</button>
+      <button data-tab="goals">Metas</button>
       <button data-tab="teams">Equipes</button>
       <button data-tab="people">Profissionais</button>
-      <button data-tab="one">Olho no Olho</button>
       <button data-tab="xia">XIA</button>
-      <button data-tab="strategy">Reuniões & Estratégia</button>
+      <button data-tab="strategy">Estratégia</button>
       <button data-tab="agenda">Agenda</button>
-      <button data-tab="tasks">Pendências</button>
       <button data-tab="reports">Relatórios</button>
-      <button data-tab="approvals" class="nav-approval">Aprovações <span id="approvalBadge" class="nav-badge" hidden>0</span></button>
+      <div class="nav-admin-label">ADMINISTRAÇÃO</div>
+      <button data-tab="approvals" class="nav-approval">Acessos <span id="approvalBadge" class="nav-badge" hidden>0</span></button>
     </nav>
     <div class="ceo-side-bottom"><a href="./">← Voltar ao RAIO X</a><button id="ceoLogout">Sair</button></div>
   </aside>
@@ -34,7 +33,7 @@
   <main class="ceo-main">
     <header class="ceo-top">
       <div><span class="eyebrow">CENTRAL PRIVADA</span><h1 id="ceoTitle">Hoje</h1><p id="ceoSubtitle">Registro operacional diário da sua equipe.</p></div>
-      <div class="month-box"><label>MÊS DE REFERÊNCIA<select id="monthSelect"></select></label><button id="monthGoalsBtn" class="ghost">Livro de Metas</button><button id="newMonthBtn" class="ghost">+ Novo mês</button></div>
+      <div class="month-box"><label>MÊS DE REFERÊNCIA<select id="monthSelect"></select></label><button id="monthGoalsBtn" class="ghost">Metas</button><button id="newMonthBtn" class="ghost">+ Novo mês</button></div>
     </header>
 
     <section id="today" class="ceo-tab on">
