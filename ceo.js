@@ -680,6 +680,46 @@ async function saveTeamGoal(teamId){
   }catch(err){toast(err.message,true);}
 }
 
+function individualPerf(p){
+  const perf=perfForPerson(p)||[];
+  const primary=choosePrimaryPerf(p,perf,roleOf(p));
+  return primary&&perfMonthMatches()?{research:Number(primary.r||0),couples:Number(primary.c||0),sales:Number(primary.s||0),vgv:Number(primary.v||0)}:{research:0,couples:0,sales:0,vgv:0};
+}
+function renderIndividualGoals(){
+  if(!$('individualGoalsEditor')||!state.month)return;
+  const people=workingPeople();
+  const totalGoal=people.reduce((s,p)=>s+Number(goalByPerson(p.id)?.couples_goal||0),0);
+  const achieved=people.filter(p=>{const g=Number(goalByPerson(p.id)?.couples_goal||0);return g>0&&individualPerf(p).couples>=g;}).length;
+  const withGoal=people.filter(p=>Number(goalByPerson(p.id)?.couples_goal||0)>0).length;
+  if($('individualGoalSummary'))$('individualGoalSummary').innerHTML=[
+    distributionCard('Casais individuais',state.month.goal_couples,totalGoal,v=>num(v)),
+    '<div class="distribution-card"><small>Profissionais com meta</small><b>'+withGoal+' / '+people.length+'</b><span>'+achieved+' já atingiram</span></div>'
+  ].join('');
+  $('individualGoalsEditor').innerHTML=people.map(p=>{
+    const g=goalByPerson(p.id)||{}, perf=individualPerf(p), team=teamByPerson(p.id);
+    const target=Number(g.couples_goal||0), pctv=target?perf.couples/target*100:0, missing=Math.max(0,target-perf.couples);
+    return '<div class="assignment-row individual-goal-row" data-individual-goal="'+p.id+'">'+
+      '<div><b>'+esc(p.full_name)+'</b><span>'+esc(team?.name||'Sem equipe')+' • realizado '+num(perf.couples)+' casais'+(target?' • faltam '+num(missing)+' • '+pct(pctv):' • sem meta')+'</span></div>'+
+      '<div class="individual-goal-inputs">'+
+      '<label>Pesquisas<input data-pg="research_goal" type="number" min="0" step="1" value="'+Number(g.research_goal||0)+'"></label>'+
+      '<label>Casais<input data-pg="couples_goal" type="number" min="0" step="1" value="'+Number(g.couples_goal||0)+'"></label>'+
+      '<label>Vendas<input data-pg="sales_goal" type="number" min="0" step="1" value="'+Number(g.sales_goal||0)+'"></label>'+
+      '<label>VGV<input data-pg="vgv_goal" type="number" min="0" step="100" value="'+Number(g.vgv_goal||0)+'"></label>'+
+      '<button class="primary small" data-save-person-goal="'+p.id+'">Salvar</button></div></div>';
+  }).join('')||'<div class="approval-empty">Nenhum profissional ativo.</div>';
+  document.querySelectorAll('[data-save-person-goal]').forEach(b=>b.onclick=()=>saveIndividualGoal(b.dataset.savePersonGoal));
+}
+async function saveIndividualGoal(personId){
+  const row=document.querySelector('[data-individual-goal="'+personId+'"]');if(!row)return;
+  const body={month_id:state.month.id,person_id:personId,updated_at:new Date().toISOString()};
+  row.querySelectorAll('[data-pg]').forEach(i=>body[i.dataset.pg]=Number(i.value||0));
+  try{
+    await rest('ceo_person_goals?on_conflict=month_id,person_id',{method:'POST',headers:{Prefer:'resolution=merge-duplicates,return=minimal'},body:JSON.stringify(body)});
+    await loadGoals(); renderIndividualGoals(); renderPeople(); await renderProfessionalProfile();
+    toast('Meta individual salva.');
+  }catch(err){toast(err.message,true);}
+}
+
 function renderTeams(){
   $('teamsGrid').innerHTML=state.teams.length?state.teams.map(t=>
     '<div class="team-card"><small>EQUIPE</small><h3>'+esc(t.name)+'</h3><b>'+time5(t.start_time)+'</b><p>Tolerância '+t.tolerance_minutes+' min'+(t.end_time?' • saída '+time5(t.end_time):'')+'</p></div>'
@@ -692,6 +732,7 @@ function renderTeams(){
   }).join('');
   document.querySelectorAll('[data-assign]').forEach(sel=>sel.onchange=()=>assignTeam(sel.dataset.assign,sel.value));
   renderTeamGoalDistribution();
+  renderIndividualGoals();
   fillAgendaTeams();
 }
 async function addTeam(){
