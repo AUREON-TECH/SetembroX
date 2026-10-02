@@ -649,3 +649,5 @@ textarea{font-size:12px}
   font-size:10px;
   font-weight:800;
 }
+
+.individual-goal-row{align-items:center;gap:18px}.individual-goal-inputs{display:grid;grid-template-columns:repeat(4,minmax(90px,1fr)) auto;gap:10px;align-items:end;min-width:min(760px,65vw)}.individual-goal-inputs label{font-size:11px;color:#8fa5d3}.individual-goal-inputs input{width:100%;margin-top:5px}@media(max-width:900px){.individual-goal-row{display:block}.individual-goal-inputs{min-width:0;grid-template-columns:1fr 1fr;margin-top:12px}.individual-goal-inputs button{grid-column:1/-1}}
