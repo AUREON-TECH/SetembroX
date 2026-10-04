@@ -65,6 +65,13 @@
         <div id="xiaCommandHistory" class="xia-command-history" hidden></div>
       </div>
 
+      <div class="panel operational-history-panel">
+        <div class="panel-head"><div><span class="eyebrow">HISTÓRICO OPERACIONAL</span><h2>Visão geral de pessoas e ocorrências</h2><p>Consulte tudo que foi registrado manualmente ou pela XIA.</p></div><button id="refreshOperationalHistory" class="ghost small" type="button">Atualizar</button></div>
+        <div class="operational-history-filters"><input id="opHistorySearch" placeholder="Buscar profissional ou observação..."><select id="opHistoryStatus"><option value="">Todos os status</option><option value="present">Presente</option><option value="absent">Falta</option><option value="late">Atraso</option><option value="agreed_off">Folga / mini férias</option><option value="training">Treinamento</option><option value="unavailable">Indisponível</option></select></div>
+        <div id="operationalHistorySummary" class="summary-grid"></div>
+        <div id="operationalHistoryList"></div>
+      </div>
+
       <div class="panel quick-presence-panel">
         <div class="panel-head">
           <div>
