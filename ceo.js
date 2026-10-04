@@ -623,7 +623,7 @@ async function saveDay(){
 
 
 function xiaFindPeople(text){
-  const q=norm(text), people=(state.people||[]).filter(p=>p.active!==false);
+  let q=norm(text); if(q.split(/[^a-z0-9]+/).includes('nina'))q+=' weena'; const people=(state.people||[]).filter(p=>p.active!==false&&p.status!=='ended');
   return people.filter(p=>{const full=norm(p.full_name), first=full.split(/\s+/)[0];return (full&&q.includes(full))||(first&&first.length>=3&&q.split(/[^a-z0-9]+/).includes(first));});
 }
 function xiaDateISO(day,month,year){
