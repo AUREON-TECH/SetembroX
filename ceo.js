@@ -654,7 +654,9 @@ async function xiaInterpretCommand(){
 async function xiaLoadHistory(){
   const box=$('xiaCommandHistory'); if(!box)return; box.hidden=false;
   let rows=[];try{rows=await rest('ceo_daily_presence?select=*&month_id=eq.'+state.month.id+'&note=like.XIA%25&order=work_date.desc');}catch(e){box.innerHTML='<div class="empty">'+esc(e.message)+'</div>';return;}
-  box.innerHTML='<div class="panel-head"><div><b>Histórico XIA do mês</b><p>Registros usados também na leitura individual e no diagnóstico.</p></div></div>'+(rows.length?rows.map(r=>{const p=personById(r.person_id);return '<div class="xia-history-row"><b>'+esc(p?.full_name||'Profissional')+'</b><span>'+r.work_date.split('-').reverse().join('/')+' • '+esc(STATUS[r.status]||r.status)+'</span><small>'+esc((r.note||'').replace(/^XIA:\s*/,''))+'</small></div>';}).join(''):'<div class="empty">Nenhum comando registrado neste mês.</div>');
+  const groups=new Map();
+  rows.forEach(r=>{const key=(r.note||'')+'|'+r.status;if(!groups.has(key))groups.set(key,[]);groups.get(key).push(r);});
+  box.innerHTML='<div class="panel-head"><div><b>Histórico XIA do mês</b><p>Resumo operacional contínuo. Tudo aqui alimenta presença, histórico individual e diagnóstico.</p></div></div>'+(rows.length?[...groups.values()].map(g=>{const first=g[0],dates=g.map(x=>x.work_date).sort(),people=[...new Set(g.map(x=>personById(x.person_id)?.full_name||'Profissional'))],raw=(first.note||'').replace(/^XIA:\\s*/,'');const fmt=d=>d.split('-').reverse().join('/'),period=dates[0]===dates[dates.length-1]?fmt(dates[0]):fmt(dates[0])+' a '+fmt(dates[dates.length-1]);return '<div class="xia-history-row xia-history-summary"><b>Resumo</b><span>'+period+' • '+esc(STATUS[first.status]||first.status)+'</span><small>'+esc(raw)+'</small><em>'+people.length+' profissional(is): '+esc(people.join(', '))+'</em></div>';}).join(''):'<div class="empty">Nenhum comando registrado neste mês.</div>');
 }
 
 function teamGoalFor(teamId){return state.teamGoals.find(g=>g.team_id===teamId)||null;}
