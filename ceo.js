@@ -621,6 +621,42 @@ async function saveDay(){
   finally{$('saveDayBtn').disabled=false;$('saveDayBtn').textContent='Salvar o dia';}
 }
 
+
+function xiaFindPerson(text){
+  const q=norm(text); const people=(state.people||[]).filter(p=>p.active!==false);
+  return people.find(p=>q.includes(norm(p.full_name))) || people.find(p=>{const n=norm(p.full_name).split(/\s+/);return n[0]&&q.includes(n[0]);});
+}
+function xiaDateISO(day,month,year){
+  const y=year||Number(state.month.ref_month.slice(0,4)), m=month||Number(state.month.ref_month.slice(5,7));
+  return String(y)+'-'+String(m).padStart(2,'0')+'-'+String(day).padStart(2,'0');
+}
+function xiaParseCommand(raw){
+  const t=norm(raw), p=xiaFindPerson(raw); if(!p)return {error:'Não encontrei o profissional no cadastro.'};
+  let status='present', label='Presente';
+  if(/mini ferias|ferias|folga/.test(t)){status='agreed_off';label=/mini ferias|ferias/.test(t)?'Mini férias':'Folga combinada';}
+  else if(/atras/.test(t)){status='late';label='Atraso';}
+  else if(/falta|ausente/.test(t)){status='absent';label='Falta';}
+  else if(/trein/.test(t)){status='training';label='Treinamento';}
+  else if(/indispon/.test(t)){status='unavailable';label='Indisponível';}
+  let start=$('todayDate')?.value||new Date().toISOString().slice(0,10), end=start;
+  const range=t.match(/(?:dia\s*)?(\d{1,2})(?:\/(\d{1,2}))?\s*(?:ao|ate|a)\s*(?:dia\s*)?(\d{1,2})(?:\/(\d{1,2}))?/);
+  if(range){start=xiaDateISO(+range[1],range[2]?+range[2]:null);end=xiaDateISO(+range[3],range[4]?+range[4]:(range[2]?+range[2]:null));}
+  else {const one=t.match(/(?:dia\s+)(\d{1,2})(?:\/(\d{1,2}))?/); if(one)start=end=xiaDateISO(+one[1],one[2]?+one[2]:null);}
+  return {person:p,status,label,start,end,raw};
+}
+function xiaDays(a,b){const out=[];let d=new Date(a+'T12:00:00'),e=new Date(b+'T12:00:00');while(d<=e&&out.length<62){out.push(d.toISOString().slice(0,10));d.setDate(d.getDate()+1);}return out;}
+async function xiaInterpretCommand(){
+  const raw=$('xiaDayCommand').value.trim(); if(!raw)return toast('Escreva o comando primeiro.',true);
+  const x=xiaParseCommand(raw); if(x.error){$('xiaCommandPreview').innerHTML='<div class="empty">'+esc(x.error)+'</div>';return;}
+  const days=xiaDays(x.start,x.end); $('xiaCommandPreview').innerHTML='<div class="xia-preview-card"><b>'+esc(x.person.full_name)+'</b><span>'+esc(x.label)+' • '+x.start.split('-').reverse().join('/')+(x.end!==x.start?' até '+x.end.split('-').reverse().join('/'):'')+' • '+days.length+' dia(s)</span><button id="xiaConfirmCommand" class="primary" type="button">Confirmar e registrar</button></div>';
+  $('xiaConfirmCommand').onclick=async()=>{try{const body=days.map(date=>({person_id:x.person.id,month_id:state.month.id,work_date:date,status:x.status,note:'XIA: '+raw,updated_at:new Date().toISOString()}));await rest('ceo_daily_presence?on_conflict=person_id,work_date',{method:'POST',headers:{Prefer:'resolution=merge-duplicates,return=minimal'},body:JSON.stringify(body)});toast(days.length+' registro(s) salvos no histórico.');$('xiaDayCommand').value='';$('xiaCommandPreview').innerHTML='';await loadToday();await xiaLoadHistory();}catch(e){toast(e.message,true);}};
+}
+async function xiaLoadHistory(){
+  const box=$('xiaCommandHistory'); if(!box)return; box.hidden=false;
+  let rows=[];try{rows=await rest('ceo_daily_presence?select=*&month_id=eq.'+state.month.id+'&note=like.XIA%25&order=work_date.desc');}catch(e){box.innerHTML='<div class="empty">'+esc(e.message)+'</div>';return;}
+  box.innerHTML='<div class="panel-head"><div><b>Histórico XIA do mês</b><p>Registros usados também na leitura individual e no diagnóstico.</p></div></div>'+(rows.length?rows.map(r=>{const p=personById(r.person_id);return '<div class="xia-history-row"><b>'+esc(p?.full_name||'Profissional')+'</b><span>'+r.work_date.split('-').reverse().join('/')+' • '+esc(STATUS[r.status]||r.status)+'</span><small>'+esc((r.note||'').replace(/^XIA:\s*/,''))+'</small></div>';}).join(''):'<div class="empty">Nenhum comando registrado neste mês.</div>');
+}
+
 function teamGoalFor(teamId){return state.teamGoals.find(g=>g.team_id===teamId)||null;}
 function sumTeamGoal(field){return state.teamGoals.reduce((a,g)=>a+Number(g[field]||0),0);}
 function distributionCard(label,total,distributed,fmt){
@@ -2356,4 +2392,6 @@ async function init(){
   }
 }
 document.addEventListener('DOMContentLoaded',init);
+if($('xiaInterpretBtn'))$('xiaInterpretBtn').onclick=xiaInterpretCommand;
+if($('xiaHistoryBtn'))$('xiaHistoryBtn').onclick=xiaLoadHistory;
 })();
