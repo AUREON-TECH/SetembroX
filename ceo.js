@@ -131,7 +131,7 @@ async function selectMonth(id){
     $('todayDate').value=today.slice(0,7)===monthPrefix?today:state.month.ref_month;
   }
   await Promise.all([loadTeams(),loadTasks(),loadOne(),loadGoals(),loadAgenda(),loadStrategy()]);
-  await loadToday();
+  await loadToday(); await loadOperationalHistory();
   fillPeopleSelects();
   renderTeams(); renderPeople(); renderOneHistory(); renderTasks(); renderAgenda(); renderStrategy(); await renderReports(); await renderProfessionalProfile();
   if(document.getElementById('xia')?.classList.contains('on'))await renderXIA();
