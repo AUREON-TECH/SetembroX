@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#060a18">
 <title>RAIO X • Portal de Gestão</title>
 <link rel="icon" href="./icon.svg">
-<link rel="stylesheet" href="./ceo.css?v=23">
+<link rel="stylesheet" href="./ceo.css?build=20261004-clean1">
 </head>
 <body>
 <div id="ceoLoading" class="ceo-loading"><div class="loader-mark">RX</div><b>Validando acesso de gestão...</b></div>
@@ -502,10 +502,11 @@
 
 <div id="ceoToast" class="toast"></div>
 
-<script src="./auth-config.js"></script>
-<script src="./area-data.js"></script>
-<script src="./fx-data.js"></script>
-<script src="./xia-performance.js?v=2"></script>
-<script src="./ceo.js?v=26"></script>
+<script>if("serviceWorker" in navigator){navigator.serviceWorker.getRegistrations().then(rs=>rs.forEach(r=>r.update()));}</script>
+<script src="./auth-config.js?build=20261004-clean1"></script>
+<script src="./area-data.js?build=20261004-clean1"></script>
+<script src="./fx-data.js?build=20261004-clean1"></script>
+<script src="./xia-performance.js?build=20261004-clean1"></script>
+<script src="./ceo.js?build=20261004-clean1"></script>
 </body>
 </html>
