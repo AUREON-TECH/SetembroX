@@ -2423,5 +2423,4 @@ if($('xiaHistoryBtn'))$('xiaHistoryBtn').onclick=xiaLoadHistory;
 if($('refreshOperationalHistory'))$('refreshOperationalHistory').onclick=loadOperationalHistory;
 if($('opHistorySearch'))$('opHistorySearch').oninput=renderOperationalHistory;
 if($('opHistoryStatus'))$('opHistoryStatus').onchange=renderOperationalHistory;
-loadOperationalHistory();
 })();
