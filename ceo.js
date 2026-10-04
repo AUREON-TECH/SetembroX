@@ -2393,8 +2393,13 @@ function bind(){
   $('copyXiaBtn').onclick=copyXIA;
 }
 async function init(){
+  const loading=$('ceoLoading'), app=$('ceoApp');
+  const watchdog=setTimeout(()=>{if(loading&&loading.style.display!=='none')loading.innerHTML='<div class="loader-mark">RX</div><b>A validação demorou mais que o esperado.</b><button class="primary small" onclick="location.reload()">Tentar novamente</button><a href="./" style="color:#18e7ff;font-size:11px">Voltar ao RAIO X</a>';},8000);
   try{
     await validateCEO();
+    clearTimeout(watchdog);
+    if(loading)loading.style.display='none';
+    if(app)app.hidden=false;
     $('ceoUserName').textContent=state.admin.display_name||'CEO';
     $('ceoUserEmail').textContent=state.user.email||'';
     $('todayDate').value=localDate();
@@ -2404,10 +2409,12 @@ async function init(){
     if($('agendaDate'))$('agendaDate').value=localDate();
     if($('strategyDate'))$('strategyDate').value=localDate();
     bind();
-    $('ceoLoading').style.display='none'; $('ceoApp').hidden=false;
-    await loadBase();
+    loadBase().catch(err=>{console.error('Falha ao carregar dados do Portal',err);toast('Portal abriu, mas alguns dados não carregaram: '+err.message,true);});
   }catch(err){
-    $('ceoLoading').innerHTML='<div class="loader-mark">RX</div><b>'+esc(err.message)+'</b><a href="./" style="color:#18e7ff;font-size:11px">Voltar ao RAIO X</a>';
+    clearTimeout(watchdog);
+    if(app)app.hidden=true;
+    loading.style.display='';
+    loading.innerHTML='<div class="loader-mark">RX</div><b>'+esc(err.message)+'</b><a href="./" style="color:#18e7ff;font-size:11px">Voltar ao RAIO X</a>';
   }
 }
 document.addEventListener('DOMContentLoaded',init);
