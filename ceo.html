@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#060a18">
 <title>RAIO X • Portal de Gestão</title>
 <link rel="icon" href="./icon.svg">
-<link rel="stylesheet" href="./ceo.css?v=16">
+<link rel="stylesheet" href="./ceo.css?v=17">
 </head>
 <body>
 <div id="ceoLoading" class="ceo-loading"><div class="loader-mark">RX</div><b>Validando acesso de gestão...</b></div>
@@ -22,7 +22,6 @@
       <button data-tab="people">Profissionais</button>
       <button data-tab="xia">XIA</button>
       <button data-tab="strategy">Estratégia</button>
-      <button data-tab="agenda">Agenda</button>
       <button data-tab="reports">Relatórios</button>
       <div class="nav-admin-label">ADMINISTRAÇÃO</div>
       <button data-tab="approvals" class="nav-approval">Acessos <span id="approvalBadge" class="nav-badge" hidden>0</span></button>
@@ -72,7 +71,7 @@
         <div id="operationalHistoryList"></div>
       </div>
 
-      <div class="panel quick-presence-panel">
+      <details class="manual-tools"><summary>Lançamento manual por nome</summary><div class="panel quick-presence-panel">
         <div class="panel-head">
           <div>
             <span class="eyebrow">LANÇAMENTO RÁPIDO</span>
@@ -109,6 +108,8 @@
         </div>
       </div>
 
+      </div></details>
+
       <div id="monthGoalsStrip" class="month-goals-strip"></div>
       <div id="todayPerformance" class="today-performance-grid"></div>
 
@@ -123,17 +124,16 @@
         </div>
       </div>
 
-      <div class="today-help">Padrão do dia: <b>todos começam como “Compareceu”</b>. Altere somente as exceções e depois clique em <b>Salvar o dia</b>.</div>
-      <div class="panel">
-        <div class="panel-head"><div><span class="eyebrow">REGISTRO OPERACIONAL</span><h2>Presença e observações</h2></div><span class="pill">salvar no fim do ajuste</span></div>
-        <div id="todayPeople" class="presence-list"></div>
-      </div>
+      <details class="manual-tools"><summary>Ajuste manual completo do dia</summary>
+        <div class="today-help">Use somente quando precisar corrigir pessoa por pessoa. A XIA continua sendo o lançamento principal.</div>
+        <div class="panel"><div class="panel-head"><div><span class="eyebrow">REGISTRO MANUAL</span><h2>Presença e observações</h2></div><span class="pill">exceção</span></div><div id="todayPeople" class="presence-list"></div></div>
+      </details>
     </section>
 
     <section id="goals" class="ceo-tab">
       <div class="goal-book-hero panel">
         <div>
-          <span class="eyebrow">LIVRO DE METAS</span>
+          <span class="eyebrow">METAS</span>
           <h2>Objetivos oficiais da operação</h2>
           <p>Pesquisas, Casais, Vendas e VGV em um só lugar. Defina a Meta, a Super Meta e depois distribua entre as equipes.</p>
         </div>
@@ -167,11 +167,6 @@
         <div id="teamAssignments" class="assignment-list"></div>
       </div>
 
-      <div class="panel">
-        <div class="panel-head"><div><span class="eyebrow">METAS INDIVIDUAIS</span><h2>Meta de cada profissional</h2><p>Defina a meta mensal de cada pessoa e acompanhe o realizado, quanto falta e o percentual atingido.</p></div><span class="pill">Individual</span></div>
-        <div id="individualGoalSummary" class="team-goal-summary"></div>
-        <div id="individualGoalsEditor" class="assignment-list"></div>
-      </div>
     </section>
 
     <section id="people" class="ceo-tab">
@@ -217,6 +212,12 @@
           <div class="profile-block-head"><span>EVOLUÇÃO</span><b>Produção diária</b></div>
           <div id="professionalDaily" class="professional-daily"></div>
         </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head"><div><span class="eyebrow">METAS INDIVIDUAIS</span><h2>Meta de cada profissional</h2><p>Defina a meta mensal de cada pessoa e acompanhe o realizado, quanto falta e o percentual atingido.</p></div><span class="pill">Individual</span></div>
+        <div id="individualGoalSummary" class="team-goal-summary"></div>
+        <div id="individualGoalsEditor" class="assignment-list"></div>
       </div>
 
       <div class="panel">
@@ -510,6 +511,6 @@
 <script src="./area-data.js"></script>
 <script src="./fx-data.js"></script>
 <script src="./xia-performance.js?v=2"></script>
-<script src="./ceo.js?v=22"></script>
+<script src="./ceo.js?v=17"></script>
 </body>
 </html>
