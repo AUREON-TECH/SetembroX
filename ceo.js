@@ -639,7 +639,7 @@ function xiaParseCommand(raw){
   else if(/trein/.test(t)){status='training';label='Treinamento';}
   else if(/indispon/.test(t)){status='unavailable';label='Indisponível';}
   let start=$('todayDate')?.value||new Date().toISOString().slice(0,10), end=start;
-  const range=t.match(/(?:dia\s*)?(\d{1,2})(?:\/(\d{1,2}))?\s*(?:ao|ate|a)\s*(?:dia\s*)?(\d{1,2})(?:\/(\d{1,2}))?/);
+  const range=t.match(/(?:dia\\s*)?(\\d{1,2})(?:\\/(\\d{1,2}))?\\s*(?:ao|ate|a|e(?:\\s+dia)?)\\s*(?:dia\\s*)?(\\d{1,2})(?:\\/(\\d{1,2}))?/);
   if(range){start=xiaDateISO(+range[1],range[2]?+range[2]:null);end=xiaDateISO(+range[3],range[4]?+range[4]:(range[2]?+range[2]:null));}
   else {const one=t.match(/(?:dia\s+)(\d{1,2})(?:\/(\d{1,2}))?/); if(one)start=end=xiaDateISO(+one[1],one[2]?+one[2]:null);}
   return {people,status,label,start,end,raw};
@@ -659,6 +659,18 @@ async function xiaLoadHistory(){
   box.innerHTML='<div class="panel-head"><div><b>Histórico XIA do mês</b><p>Resumo operacional contínuo. Tudo aqui alimenta presença, histórico individual e diagnóstico.</p></div></div>'+(rows.length?[...groups.values()].map(g=>{const first=g[0],dates=g.map(x=>x.work_date).sort(),people=[...new Set(g.map(x=>personById(x.person_id)?.full_name||'Profissional'))],raw=(first.note||'').replace(/^XIA:\\s*/,'');const fmt=d=>d.split('-').reverse().join('/'),period=dates[0]===dates[dates.length-1]?fmt(dates[0]):fmt(dates[0])+' a '+fmt(dates[dates.length-1]);return '<div class="xia-history-row xia-history-summary"><b>Resumo</b><span>'+period+' • '+esc(STATUS[first.status]||first.status)+'</span><small>'+esc(raw)+'</small><em>'+people.length+' profissional(is): '+esc(people.join(', '))+'</em></div>';}).join(''):'<div class="empty">Nenhum comando registrado neste mês.</div>');
 }
 
+let operationalHistoryRows=[];
+async function loadOperationalHistory(){
+  const box=$('operationalHistoryList');if(!box||!state.month)return;
+  try{operationalHistoryRows=await rest('ceo_daily_presence?select=*&month_id=eq.'+state.month.id+'&order=work_date.desc');renderOperationalHistory();}catch(e){box.innerHTML='<div class="empty">'+esc(e.message)+'</div>';}
+}
+function renderOperationalHistory(){
+  const q=norm($('opHistorySearch')?.value||''), st=$('opHistoryStatus')?.value||'';
+  const rows=operationalHistoryRows.filter(r=>{const p=personById(r.person_id), hay=norm((p?.full_name||'')+' '+(r.note||''));return (!q||hay.includes(q))&&(!st||r.status===st);});
+  const counts={};rows.forEach(r=>counts[r.status]=(counts[r.status]||0)+1);
+  if($('operationalHistorySummary'))$('operationalHistorySummary').innerHTML=[['Registros',rows.length],['Faltas',counts.absent||0],['Atrasos',counts.late||0],['Folgas',counts.agreed_off||0]].map(x=>'<div class="summary-card"><small>'+x[0]+'</small><b>'+x[1]+'</b></div>').join('');
+  $('operationalHistoryList').innerHTML=rows.length?rows.map(r=>{const p=personById(r.person_id);return '<div class="op-history-row"><b>'+esc(p?.full_name||'Profissional')+'</b><span>'+r.work_date.split('-').reverse().join('/')+'</span><span>'+esc(STATUS[r.status]||r.status)+'</span><small>'+esc((r.note||'').replace(/^XIA:\\s*/,''))+'</small></div>';}).join(''):'<div class="empty">Nenhum registro encontrado.</div>';
+}
 function teamGoalFor(teamId){return state.teamGoals.find(g=>g.team_id===teamId)||null;}
 function sumTeamGoal(field){return state.teamGoals.reduce((a,g)=>a+Number(g[field]||0),0);}
 function distributionCard(label,total,distributed,fmt){
@@ -2396,4 +2408,8 @@ async function init(){
 document.addEventListener('DOMContentLoaded',init);
 if($('xiaInterpretBtn'))$('xiaInterpretBtn').onclick=xiaInterpretCommand;
 if($('xiaHistoryBtn'))$('xiaHistoryBtn').onclick=xiaLoadHistory;
+if($('refreshOperationalHistory'))$('refreshOperationalHistory').onclick=loadOperationalHistory;
+if($('opHistorySearch'))$('opHistorySearch').oninput=renderOperationalHistory;
+if($('opHistoryStatus'))$('opHistoryStatus').onchange=renderOperationalHistory;
+loadOperationalHistory();
 })();
