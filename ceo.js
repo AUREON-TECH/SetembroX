@@ -2403,8 +2403,9 @@ async function init(){
     $('oneDate').value=localDate();
     if($('agendaDate'))$('agendaDate').value=localDate();
     if($('strategyDate'))$('strategyDate').value=localDate();
-    bind(); await loadBase();
+    bind();
     $('ceoLoading').style.display='none'; $('ceoApp').hidden=false;
+    await loadBase();
   }catch(err){
     $('ceoLoading').innerHTML='<div class="loader-mark">RX</div><b>'+esc(err.message)+'</b><a href="./" style="color:#18e7ff;font-size:11px">Voltar ao RAIO X</a>';
   }
