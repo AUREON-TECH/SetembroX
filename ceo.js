@@ -775,15 +775,18 @@ function renderTeams(){
     '<div class="team-card"><small>EQUIPE</small><h3>'+esc(t.name)+'</h3><b>'+time5(t.start_time)+'</b><p>Tolerância '+t.tolerance_minutes+' min'+(t.end_time?' • saída '+time5(t.end_time):'')+'</p></div>'
   ).join(''):'<div class="team-card"><h3>Nenhuma equipe criada</h3><p>Crie a primeira e defina o horário combinado.</p></div>';
 
-  $('teamAssignments').innerHTML=workingPeople().map(p=>{
-    const current=teamByPerson(p.id);
-    const options='<option value="">Sem equipe</option>'+state.teams.map(t=>'<option value="'+t.id+'" '+(current?.id===t.id?'selected':'')+'>'+esc(t.name)+' • '+time5(t.start_time)+'</option>').join('');
-    return '<div class="assignment-row"><div><b>'+esc(p.full_name)+'</b><span>'+esc(roleOf(p))+' • horário individual '+esc(time5(p.default_start_time)||'não definido')+'</span></div><select data-assign="'+p.id+'">'+options+'</select></div>';
-  }).join('');
-  document.querySelectorAll('[data-assign]').forEach(sel=>sel.onchange=()=>assignTeam(sel.dataset.assign,sel.value));
   renderTeamGoalDistribution();
   renderIndividualGoals();
   fillAgendaTeams();
+}
+async function ensureDefaultTeams(){
+  const defs=[['Diurno','10:00'],['Noturno','13:00'],['Agendamento','10:00']];
+  try{
+    for(const [name,start] of defs){
+      if(!state.teams.some(t=>norm(t.name)===norm(name)))await rest('ceo_teams',{method:'POST',headers:{Prefer:'return=minimal'},body:JSON.stringify({month_id:state.month.id,name,start_time:start,tolerance_minutes:10})});
+    }
+    await loadTeams();renderTeams();toast('Equipes padrão configuradas.');
+  }catch(err){toast(err.message,true);}
 }
 async function addTeam(){
   const name=prompt('Nome da equipe:','Equipe 10h'); if(!name)return;
@@ -2332,7 +2335,8 @@ function bind(){
   $('saveQuickPresenceBtn').onclick=saveQuickPresence;
   $('markAllPresentBtn').onclick=markAllPresent;
   $('saveDayBtn').onclick=saveDay;
-  $('addTeamBtn').onclick=addTeam;
+  if($('addTeamBtn'))$('addTeamBtn').onclick=addTeam;
+  if($('ensureDefaultTeamsBtn'))$('ensureDefaultTeamsBtn').onclick=ensureDefaultTeams;
   $('addPersonBtn').onclick=()=>openPersonModal();
   $('closePersonModal').onclick=closePersonModal;
   $('cancelPersonModal').onclick=closePersonModal;
