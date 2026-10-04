@@ -622,16 +622,16 @@ async function saveDay(){
 }
 
 
-function xiaFindPerson(text){
-  const q=norm(text); const people=(state.people||[]).filter(p=>p.active!==false);
-  return people.find(p=>q.includes(norm(p.full_name))) || people.find(p=>{const n=norm(p.full_name).split(/\s+/);return n[0]&&q.includes(n[0]);});
+function xiaFindPeople(text){
+  const q=norm(text), people=(state.people||[]).filter(p=>p.active!==false);
+  return people.filter(p=>{const full=norm(p.full_name), first=full.split(/\s+/)[0];return (full&&q.includes(full))||(first&&first.length>=3&&q.split(/[^a-z0-9]+/).includes(first));});
 }
 function xiaDateISO(day,month,year){
   const y=year||Number(state.month.ref_month.slice(0,4)), m=month||Number(state.month.ref_month.slice(5,7));
   return String(y)+'-'+String(m).padStart(2,'0')+'-'+String(day).padStart(2,'0');
 }
 function xiaParseCommand(raw){
-  const t=norm(raw), p=xiaFindPerson(raw); if(!p)return {error:'Não encontrei o profissional no cadastro.'};
+  const t=norm(raw), people=xiaFindPeople(raw); if(!people.length)return {error:'Não encontrei nenhum profissional citado no cadastro.'};
   let status='present', label='Presente';
   if(/mini ferias|ferias|folga/.test(t)){status='agreed_off';label=/mini ferias|ferias/.test(t)?'Mini férias':'Folga combinada';}
   else if(/atras/.test(t)){status='late';label='Atraso';}
@@ -642,14 +642,14 @@ function xiaParseCommand(raw){
   const range=t.match(/(?:dia\s*)?(\d{1,2})(?:\/(\d{1,2}))?\s*(?:ao|ate|a)\s*(?:dia\s*)?(\d{1,2})(?:\/(\d{1,2}))?/);
   if(range){start=xiaDateISO(+range[1],range[2]?+range[2]:null);end=xiaDateISO(+range[3],range[4]?+range[4]:(range[2]?+range[2]:null));}
   else {const one=t.match(/(?:dia\s+)(\d{1,2})(?:\/(\d{1,2}))?/); if(one)start=end=xiaDateISO(+one[1],one[2]?+one[2]:null);}
-  return {person:p,status,label,start,end,raw};
+  return {people,status,label,start,end,raw};
 }
 function xiaDays(a,b){const out=[];let d=new Date(a+'T12:00:00'),e=new Date(b+'T12:00:00');while(d<=e&&out.length<62){out.push(d.toISOString().slice(0,10));d.setDate(d.getDate()+1);}return out;}
 async function xiaInterpretCommand(){
   const raw=$('xiaDayCommand').value.trim(); if(!raw)return toast('Escreva o comando primeiro.',true);
   const x=xiaParseCommand(raw); if(x.error){$('xiaCommandPreview').innerHTML='<div class="empty">'+esc(x.error)+'</div>';return;}
-  const days=xiaDays(x.start,x.end); $('xiaCommandPreview').innerHTML='<div class="xia-preview-card"><b>'+esc(x.person.full_name)+'</b><span>'+esc(x.label)+' • '+x.start.split('-').reverse().join('/')+(x.end!==x.start?' até '+x.end.split('-').reverse().join('/'):'')+' • '+days.length+' dia(s)</span><button id="xiaConfirmCommand" class="primary" type="button">Confirmar e registrar</button></div>';
-  $('xiaConfirmCommand').onclick=async()=>{try{const body=days.map(date=>({person_id:x.person.id,month_id:state.month.id,work_date:date,status:x.status,note:'XIA: '+raw,updated_at:new Date().toISOString()}));await rest('ceo_daily_presence?on_conflict=person_id,work_date',{method:'POST',headers:{Prefer:'resolution=merge-duplicates,return=minimal'},body:JSON.stringify(body)});toast(days.length+' registro(s) salvos no histórico.');$('xiaDayCommand').value='';$('xiaCommandPreview').innerHTML='';await loadToday();await xiaLoadHistory();}catch(e){toast(e.message,true);}};
+  const days=xiaDays(x.start,x.end), names=x.people.map(p=>p.full_name).join(', '); $('xiaCommandPreview').innerHTML='<div class="xia-preview-card"><b>'+x.people.length+' profissional(is)</b><span>'+esc(names)+'<br>'+esc(x.label)+' • '+x.start.split('-').reverse().join('/')+(x.end!==x.start?' até '+x.end.split('-').reverse().join('/'):'')+' • '+days.length+' dia(s)</span><button id="xiaConfirmCommand" class="primary" type="button">Confirmar e registrar</button></div>';
+  $('xiaConfirmCommand').onclick=async()=>{try{const body=[];x.people.forEach(p=>days.forEach(date=>body.push({person_id:p.id,month_id:state.month.id,work_date:date,status:x.status,note:'XIA: '+raw,updated_at:new Date().toISOString()})));await rest('ceo_daily_presence?on_conflict=person_id,work_date',{method:'POST',headers:{Prefer:'resolution=merge-duplicates,return=minimal'},body:JSON.stringify(body)});toast(x.people.length+' profissional(is) • '+body.length+' registro(s) salvos.');$('xiaDayCommand').value='';$('xiaCommandPreview').innerHTML='';await loadToday();await xiaLoadHistory();}catch(e){toast(e.message,true);}};
 }
 async function xiaLoadHistory(){
   const box=$('xiaCommandHistory'); if(!box)return; box.hidden=false;
