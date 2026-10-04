@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#060a18">
 <title>RAIO X • Portal de Gestão</title>
 <link rel="icon" href="./icon.svg">
-<link rel="stylesheet" href="./ceo.css?v=17">
+<link rel="stylesheet" href="./ceo.css?v=18">
 </head>
 <body>
 <div id="ceoLoading" class="ceo-loading"><div class="loader-mark">RX</div><b>Validando acesso de gestão...</b></div>
@@ -158,13 +158,8 @@
 
     <section id="teams" class="ceo-tab">
       <div class="panel">
-        <div class="panel-head"><div><span class="eyebrow">ESTRUTURA</span><h2>Equipes e horários</h2><p>Defina o horário combinado de cada equipe, por exemplo 10:00 ou 13:00.</p></div><button id="addTeamBtn" class="primary small">+ Nova equipe</button></div>
+        <div class="panel-head"><div><span class="eyebrow">ESTRUTURA</span><h2>Equipes da operação</h2><p>Estrutura padrão: Diurno, Noturno e Agendamento.</p></div><button id="ensureDefaultTeamsBtn" class="primary small">Configurar equipes padrão</button></div>
         <div id="teamsGrid" class="team-grid"></div>
-      </div>
-
-      <div class="panel">
-        <div class="panel-head"><div><span class="eyebrow">VÍNCULOS DO MÊS</span><h2>Pessoas por equipe</h2></div></div>
-        <div id="teamAssignments" class="assignment-list"></div>
       </div>
 
     </section>
@@ -511,6 +506,6 @@
 <script src="./area-data.js"></script>
 <script src="./fx-data.js"></script>
 <script src="./xia-performance.js?v=2"></script>
-<script src="./ceo.js?v=17"></script>
+<script src="./ceo.js?v=18"></script>
 </body>
 </html>
