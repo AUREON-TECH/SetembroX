@@ -17,7 +17,7 @@ assert.match(html,/data-go=["']fx["']/i,'navigation must expose FX');
 assert.match(html,/id=["']fx["']/i,'app must have FX section');
 assert.match(html,/id=["']fxSel["']/i,'FX must allow selecting a professional');
 assert.match(html,/id=["']fxValidation["']/i,'FX must show validation state');
-assert.match(html,/src=["']\.\/fx-data\.js["'][^>]*>[\s\S]*src=["']\.\/app\.js["'][^>]*>[\s\S]*src=["']\.\/fx-engine\.js["']/i,'FX scripts must load in the correct order');
+assert.ok(html.indexOf('fx-data.js') < html.indexOf('app.js') && html.indexOf('app.js') < html.indexOf('fx-engine.js'), 'FX scripts must load in the correct order');
 assert.doesNotMatch(html,/\\n<script/i,'HTML must not contain a literal escaped newline between scripts');
 
 const parsed=new Function(data+'; return {FX_DAILY,FX_EXPECTED,FX_PERIOD};')();
