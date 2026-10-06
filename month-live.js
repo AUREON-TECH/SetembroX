@@ -421,8 +421,11 @@
     dynamicCosts(month,people);
   }
 
+  function markLiveReady(){ document.body.classList.remove('raiox-live-loading'); document.body.classList.add('raiox-live-ready'); }
+
   async function load(ctx){
     if(!ctx?.session?.access_token||!cfg.url||!cfg.key)return;
+    document.body.classList.add('raiox-live-loading');
     try{
       const token=ctx.session.access_token;
       const months=await rest('ceo_months?select=ref_month,label,status,goal_research,goal_couples,goal_sales,goal_vgv,super_goal_research,super_goal_couples,super_goal_sales,super_goal_vgv&order=ref_month.desc',token);
@@ -445,6 +448,7 @@
         updateGoalHero(month,rows||[]);
         renderDynamicMonth(month,rows||[]);
       }
+      markLiveReady();
     }catch(err){
       console.error('RAIO X mês selecionado:',err);
     }
