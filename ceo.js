@@ -639,7 +639,7 @@ function xiaParseCommand(raw){
   else if(/trein/.test(t)){status='training';label='Treinamento';}
   else if(/indispon/.test(t)){status='unavailable';label='Indisponível';}
   let start=$('todayDate')?.value||new Date().toISOString().slice(0,10), end=start;
-  const range=t.match(/(?:dia\\s*)?(\\d{1,2})(?:\\/(\\d{1,2}))?\\s*(?:ao|ate|a|e(?:\\s+dia)?)\\s*(?:dia\\s*)?(\\d{1,2})(?:\\/(\\d{1,2}))?/);
+  const range=t.match(/(?:dia\s*)?(\d{1,2})(?:\/(\d{1,2}))?\s*(?:ao|ate|a|e(?:\s+dia)?)\s*(?:dia\s*)?(\d{1,2})(?:\/(\d{1,2}))?/);
   if(range){start=xiaDateISO(+range[1],range[2]?+range[2]:null);end=xiaDateISO(+range[3],range[4]?+range[4]:(range[2]?+range[2]:null));}
   else {const one=t.match(/(?:dia\s+)(\d{1,2})(?:\/(\d{1,2}))?/); if(one)start=end=xiaDateISO(+one[1],one[2]?+one[2]:null);}
   return {people,status,label,start,end,raw};
