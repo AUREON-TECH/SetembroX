@@ -21,7 +21,7 @@
 <link rel="stylesheet" href="./layout-premium.css?v=2">
 <link rel="stylesheet" href="./auth.css?v=3">
 </head>
-<body>
+<body class="raiox-live-loading">
 <div id="authGate" class="auth-gate">
   <div class="auth-login">
     <div class="auth-logo"><div class="auth-logo-mark">RX</div><div><b>RAIO X</b><small>RELATÓRIO DE PERFORMANCE</small></div></div>
@@ -62,25 +62,11 @@
     <div class="over">AUREON • PERFORMANCE INTELLIGENCE</div>
     <h1>RAIO X</h1>
     <h2>RELATÓRIO DE PERFORMANCE</h2>
-    <p id="missionText">Carregando sua missão...</p>
+    <p id="missionText"><b>RAIO X</b> • Carregando dados oficiais do mês...</p>
 
     <div class="mission-label"><span></span><b>META OFICIAL DO MÊS</b><span></span></div>
-    <div class="goal-grid">
-      <article class="goal-card cyan-goal">
-        <div class="goal-icon">◎</div>
-        <div class="goal-copy"><strong>400</strong><b>CASAIS</b><small id="goalCouplesText">0 / 400</small></div>
-        <div class="goal-track"><i id="barCouples"></i></div>
-      </article>
-      <article class="goal-card purple-goal">
-        <div class="goal-icon">◇</div>
-        <div class="goal-copy"><strong id="goalSalesTotal">0</strong><b>VENDAS TOTAIS</b><small id="goalSalesText">META 100</small></div>
-        <div class="goal-track"><i id="barSales"></i></div>
-      </article>
-      <article class="goal-card violet-goal">
-        <div class="goal-icon">↗</div>
-        <div class="goal-copy"><strong>R$ 8,5 MI</strong><b>VGV</b><small id="goalVgvText">R$ 0 / R$ 8,5 mi</small></div>
-        <div class="goal-track"><i id="barVgv"></i></div>
-      </article>
+    <div class="goal-grid live-month-goals" aria-live="polite">
+      <article class="goal-card"><div class="goal-copy"><strong>—</strong><b>DADOS OFICIAIS</b><small>Carregando metas e resultados do mês...</small></div></article>
     </div>
 
     <div class="hero-leader" id="heroLeader">
@@ -130,7 +116,7 @@
     <button data-go="proj">07 · Projeções</button>
     <button data-go="custos">08 · Custos</button>
   </nav>
-  <div class="foot"><span class="dot"></span>Base oficial até 30/09/2026
+  <div class="foot"><span class="dot"></span>Base atual • carregando
     <div class="auth-session-box">
       <small>USUÁRIO CONECTADO</small>
       <b id="authUserName">—</b>
@@ -237,7 +223,7 @@
   </div>
 
   <div class="fx-card fx-daily-wrap">
-    <div class="fx-title"><h3>Calendário de evidências • 01 a 30/09</h3><span id="fxLegendText">Captação • Sala/Conversão • Equilibrado</span></div>
+    <div class="fx-title"><h3>Calendário de evidências • mês selecionado</h3><span id="fxLegendText">Captação • Sala/Conversão • Equilibrado</span></div>
     <div class="fx-daily" id="fxDaily"></div>
   </div>
 
@@ -291,7 +277,7 @@
 </section>
 
 <section id="perfil" class="sec">
-  <div class="card hero"><div class="eye">PERFIL IDEAL DO MÊS</div><h3>Empresários de 40–49 anos com renda de R$ 15 mil+</h3><p>Na base atual, esse segmento tem <b>26 casais</b>, <b>6 vendas</b> e <b class="g">23,1% de conversão</b>. A leitura só usa grupos com amostra mínima de 3 casais.</p></div>
+  <div class="card hero"><div class="eye">PERFIL DO MÊS</div><h3>Carregando dados oficiais...</h3><p>O perfil será calculado a partir da base do mês selecionado.</p></div>
   <div class="grid tri" style="margin-top:12px">
     <div class="card pad"><div class="title"><h3>Profissões</h3></div><div class="bars" id="pb"></div></div>
     <div class="card pad"><div class="title"><h3>Faixa etária</h3></div><div class="bars" id="ab"></div></div>
@@ -329,10 +315,10 @@
 <script src="./auth.js?v=7" defer></script>
 <script src="./area-data.js" defer></script>
 <script src="./fx-data.js" defer></script>
-<script src="./app.js" defer></script>
+<script src="./app.js?v=63" defer></script>
 <script src="./fx-engine.js" defer></script>
 <script src="./sales-count-fix.js" defer></script>
-<script src="./month-live.js?v=4" defer></script>
+<script src="./month-live.js?v=5" defer></script>
 <script>
 if ("serviceWorker" in navigator) { window.addEventListener("load", () => navigator.serviceWorker.register("./sw.js", {scope:"./"}).catch(console.error)); }
 </script>
