@@ -47,9 +47,8 @@ assert.match(appJs, /registration\.update\s*\(/, 'service worker registration sh
 assert.match(html, /entry-v2\.css/i, 'index must load the refined entry visual layer');
 assert.ok(fs.existsSync('entry-v2.css'), 'entry-v2.css must exist');
 assert.match(html, /META OFICIAL DO MÊS/i, 'entry must show the official monthly target section');
-assert.match(html, />400<\/strong>\s*<b>CASAIS<\/b>/i, 'entry must show the 400-couple target');
-assert.match(html, /id=["']goalSalesTotal["'][^>]*>[\s\S]*?<b>VENDAS TOTAIS<\/b>/i, 'entry must show total sales in the main sales card');
-assert.match(html, /R\$ 8,5 MI/i, 'entry must show the R$ 8.5M VGV target');
+assert.match(html, /DADOS OFICIAIS/i, 'entry must start neutral while official month data loads');
+assert.doesNotMatch(html, />400<\/strong>\s*<b>CASAIS<\/b>|R\$ 8,5 MI|Base oficial até 30\/09\/2026/i, 'entry must not expose September fallback values');
 assert.match(html, /heroLeaderName/i, 'entry must keep the weekly/top-couples leader highlight');
 
 assert.match(html, /id=["']arenaX["']/i, 'dashboard must provide a dedicated ARENA X slot');
